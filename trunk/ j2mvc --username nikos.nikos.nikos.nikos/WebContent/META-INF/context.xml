@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context>
+
+  <Resource name="jdbc/db" auth="Container" type="javax.sql.DataSource"
+              username="root" password="nikosk" url="jdbc:mysql://localhost:3306/acms_test"
+              driverClassName="com.mysql.jdbc.Driver"
+              maxActive="20" maxIdle="10"/>
+
+</Context>
