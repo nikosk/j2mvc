@@ -1,5 +1,4 @@
-#summary One-sentence summary of this page.
-
+#summary Overview
 = Introduction =
 
 Jmvc is a lightweight web framework built on java. It is based on the View-Model-Controller pattern and currently supports only MySQL. Jmvc was created as a substitute to all those complicated, inflexible frameworks that are currently in fashion in the Java world.
