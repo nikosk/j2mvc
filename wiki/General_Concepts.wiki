@@ -2,7 +2,7 @@
 
 = Introduction =
 
-The concept behind j2mvc
+The concepts behind j2mvc.
 
 
 = Details =
