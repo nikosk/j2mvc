@@ -1,0 +1,27 @@
+#summary General concepts.
+
+= Introduction =
+
+The concept behind j2mvc
+
+
+= Details =
+
+
+==URLs==
+Jmvc URLs are an important part of the framework. Instead of having ugly query string in your URLs you have instead plain URLs that are mapped by the framework to parameter that you use in your application.
+Example: http://jmvc.org/blog/post/value1/value2  OR http://jmvc.org/blog/post/parameter1/value1/parameter2/value2
+As you can see each url is mapped to a Controller and a Method. These correspond directly to your Controller class. The above URL for example would be answered by a Java class in the controller package named Blog. The code that would respond to this request would have to live inside a method of the Blog class named post.
+With jmvc your URLs are inherently optimized for search engines and
+Controllers
+
+
+==Views==
+==Models==
+==Renderers==
+==Libraries==
+==Creating Your Own Libraries==
+==Auto-loading Resources==
+==Error Handling==
+==Caching==
+==Security==
