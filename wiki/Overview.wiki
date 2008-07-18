@@ -8,6 +8,7 @@ Jmvc is a lightweight web framework built on java. It is based on the View-Model
 = Details =
 
 Jmvc was inspired by Code Igniter, a lightweight, small, powerful PHP framework and Django, the python web framework. If you have done development in any of those frameworks and you understand a bit of Java then you'll be at home with jmvc.
+
 Why use it?
 
     * Jmvc was designed to help you concentrate on coding for your application and not for your framework. No configuration, no XML, no nothing. Get in and start coding.
