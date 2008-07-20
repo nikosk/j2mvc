@@ -112,12 +112,20 @@ public class QuerySet {
         limitSet = "\nLIMIT " + limit;
         return this;
     }
-
+    /**
+     * Build the LIMIT part
+     * @param limit
+     * @param offset
+     * @return
+     */
     public QuerySet limit(int limit, int offset) {
         limitSet = "\nLIMIT " + limit + ", " + offset;
         return this;
     }
-
+    /**
+     * Builds the query and returns an sql string.
+     * @return SQL query
+     */
     protected String compileSelect() {
         String sql = (distinctSet) ? "SELECT DISTINCT " : "SELECT ";
         sql += (selectSet == null) ? "*" : selectSet;
@@ -130,6 +138,7 @@ public class QuerySet {
         System.out.println(sql);
         return sql;
     }
+    
     protected String compileCount() {
         String sql = (distinctSet) ? "SELECT DISTINCT " : "SELECT ";
         sql += "count(*) AS count";

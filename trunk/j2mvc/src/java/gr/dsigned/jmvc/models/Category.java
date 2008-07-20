@@ -15,13 +15,13 @@ import gr.dsigned.jmvc.db.Model;
  * 
  */
 public class Category extends Model {
-	
-	public Category() throws Exception{
-		this.tableName=  "categories";		
-	}
-	
-	public ArrayList<LinkedHashMap<String,String>> getCategories() throws SQLException{
-		db.from(this.tableName);
-		return db.get();
-	}
+
+    public Category() throws Exception {
+        this.tableName = "categories";
+    }
+
+    public ArrayList<LinkedHashMap<String, String>> getCategories() throws SQLException {
+        db.from(this.tableName);
+        return db.get();
+    }
 }
