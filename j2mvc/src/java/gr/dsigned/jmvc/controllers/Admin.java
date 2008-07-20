@@ -42,7 +42,6 @@ public class Admin extends Controller {
     public void control_panel() throws Exception {
         if ($.session.data("loggedin").equals("true")) {
             $.loadView("admin/control_panel", new PageDict() {
-
                 {
                     put("post_data", "control panel");
                 }
@@ -69,17 +68,18 @@ public class Admin extends Controller {
         String page = $.input.segment(3);
         // Lets see if the current page is correct
         int offset = 0;
-        if (page != null) offset = Integer.parseInt(page);
+        if (page != null) {
+            offset = Integer.parseInt(page);
         // If we have too many results then we need to
         // paginate them.
+        }
         Pagination p = new Pagination();
         p.baseUrl = "/admin/show_articles/" + category;
         p.perPage = 15;
         p.totalRows = article.countArticlesByCat(category);
         // Now we are ready to get some data (limit to 10
         // articles with offset page number * 10)
-        ArrayList<LinkedHashMap<String, String>> posts = article.getArticlesByCat(category, p.perPage, p.perPage
-                * offset);
+        ArrayList<LinkedHashMap<String, String>> posts = article.getArticlesByCat(category, p.perPage, p.perPage * offset);
         // Render db results to html
         String output = "";
         int i = (p.perPage * offset) + 1;
@@ -93,9 +93,9 @@ public class Admin extends Controller {
         data.put("page_links", p.createLinks(offset));
         data.put("styles", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/admin_styles.css\" >\r\n");
         $.loadView("admin/control_panel", data);
-        // } else {
-        // $.response.sendRedirect("/admin");
-        // }
+    // } else {
+    // $.response.sendRedirect("/admin");
+    // }
     }
 
     public void edit_article() throws Exception {
