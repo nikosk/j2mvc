@@ -135,5 +135,5 @@ public class FileFilter implements Filter {
     public void destroy() {
         filterConfig = null;
     }
-    }
+}
 

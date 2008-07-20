@@ -1,3 +1,17 @@
+/*
+ *  Jmvc.java
+ * 
+ *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ * 
+ *  This module is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Lesser General Public License as published by the Free
+ *  Software Foundation, either version 3 of the License, or (at your option)
+ *  any later version. See http://www.gnu.org/licenses/lgpl.html.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ */
 package gr.dsigned.jmvc.framework;
 
 import gr.dsigned.jmvc.Settings;
@@ -40,11 +54,11 @@ public class Jmvc {
         init();
     }
 
-	public static Jmvc getIstance() throws Exception {
-		return (instance == null) ? new Jmvc() : instance;		
-	}
+    public static Jmvc getIstance() throws Exception {
+        return (instance == null) ? new Jmvc() : instance;
+    }
 
-	private void init() throws Exception {
+    private void init() throws Exception {
         input = new Input();
         if (!Settings.DATABASE_TYPE.equalsIgnoreCase("none")) {
             if (Settings.DATABASE_TYPE.equalsIgnoreCase("mysql")) {
@@ -162,8 +176,7 @@ public class Jmvc {
                 html += "<pre>";
                 StackTraceElement[] causeTraceElements = e.getCause().getStackTrace();
                 for (StackTraceElement elem : causeTraceElements) {
-                    html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber()
-                            + "\n";
+                    html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
                 }
                 html += "</pre>";
             }

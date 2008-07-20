@@ -1,7 +1,16 @@
-/**
- * 02 ��� 2008, gr.dsigned.jmvc.libraries DataForm.java
+/*
+ *  DataForm.java
  * 
- * @author Nikosk <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ * 
+ *  This module is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Lesser General Public License as published by the Free
+ *  Software Foundation, either version 3 of the License, or (at your option)
+ *  any later version. See http://www.gnu.org/licenses/lgpl.html.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 package gr.dsigned.jmvc.libraries;
 
@@ -10,16 +19,16 @@ import gr.dsigned.jmvc.framework.Library;
 import java.util.LinkedHashMap;
 
 /**
+ * 02 ��� 2008, gr.dsigned.jmvc.libraries DataForm.java
  * 
+ * @author Nikosk <nikosk@dsigned.gr>
  */
 public class DataForm extends Library {
-
     private StringBuilder output = new StringBuilder();
     private String baseUrl;
     private LinkedHashMap<String, String> fields = new LinkedHashMap<String, String>();
     private LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
     private boolean customFormTag = false;
-
     public DataForm() {
         this.baseUrl = "";
     }
@@ -31,12 +40,12 @@ public class DataForm extends Library {
     public void setBaseUrl(String bu) {
         this.baseUrl = bu;
     }
-
     public String build() {
         StringBuilder out = new StringBuilder();
         if (!customFormTag) {
             out.append(String.format(FormElems.FORM_OPEN.toString(), "jmvc_form", this.baseUrl, "POST", ""));
-        } else {}
+        } else {
+        }
         if (!fields.containsKey("formClose")) {
             formClose();
         }
@@ -93,16 +102,16 @@ public class DataForm extends Library {
      * an OPTION.
      */
     public enum FormElems {
-        FORM_OPEN("<form id='%1$s' name='%1$s' action='%2$s' method='%3$s' %4$s >%n") , FORM_CLOSE("</form>%n") , SUBMIT(
-                "<input id='%1$s' type='submit' value='%2$s'/>%n") , INPUT_TEXT(
-                "<input type='text' name='%1$s' id='%1$s' value='%2$s'/>%n") , INPUT_PASS("%n") , TEXTAREA(
-                "<textarea name='%1$s' id='%1$s'>%2$s</textarea>%n") , HIDDEN(
-                "<input type='hidden' name='%1$s' value='%2$s' />%n") , CHECKBOX(
-                "<input type='checkbox' name='%1$s' value='%2$s' id='%1$s' />%n") , BUTTON("") , RADIOBUTTON(
-                "<input name='%1$s' type='radio' value='%2$s' id='%1$s' />%n") , FILE(
-                "<input type='file' name='%1$s' id='%1$s' />%n") , SELECT(
-                "<select name='%1$s' id='%1$s'>%2$s</select>%n") , OPTION("<option value='%2$s' %4$s>%3$s</option>%n");
 
+        FORM_OPEN("<form id='%1$s' name='%1$s' action='%2$s' method='%3$s' %4$s >%n"), FORM_CLOSE("</form>%n"), SUBMIT(
+        "<input id='%1$s' type='submit' value='%2$s'/>%n"), INPUT_TEXT(
+        "<input type='text' name='%1$s' id='%1$s' value='%2$s'/>%n"), INPUT_PASS("%n"), TEXTAREA(
+        "<textarea name='%1$s' id='%1$s'>%2$s</textarea>%n"), HIDDEN(
+        "<input type='hidden' name='%1$s' value='%2$s' />%n"), CHECKBOX(
+        "<input type='checkbox' name='%1$s' value='%2$s' id='%1$s' />%n"), BUTTON(""), RADIOBUTTON(
+        "<input name='%1$s' type='radio' value='%2$s' id='%1$s' />%n"), FILE(
+        "<input type='file' name='%1$s' id='%1$s' />%n"), SELECT(
+        "<select name='%1$s' id='%1$s'>%2$s</select>%n"), OPTION("<option value='%2$s' %4$s>%3$s</option>%n");
         private final String body;
 
         FormElems(String body) {

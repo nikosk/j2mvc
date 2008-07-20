@@ -1,3 +1,17 @@
+/*
+ *  Adapter.java
+ * 
+ *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ * 
+ *  This module is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Lesser General Public License as published by the Free
+ *  Software Foundation, either version 3 of the License, or (at your option)
+ *  any later version. See http://www.gnu.org/licenses/lgpl.html.
+ * 
+ *  This program is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ */
 package gr.dsigned.jmvc;
 
 import gr.dsigned.jmvc.framework.Controller;
@@ -47,15 +61,15 @@ public class Adapter extends HttpServlet {
 			gr.dsigned.jmvc.framework.Controller o = c.newInstance();
 			o.$.setEnv(request, response, this.getServletContext());			
 			Method m = c.getMethod(Input.getController(path).get("method"), new Class[0]);
-			if (m.getModifiers() != java.lang.reflect.Modifier.PRIVATE) {
+			if (m.getModifiers() != java.lang.reflect.Modifier.PRIVATE) { // We only call public methods
 				m.invoke(o, new Object[0]);
 			} else {
 				Exception e = new Exception("Method not found");
 				this.getServletContext().log(e.getMessage());
-				Jmvc.loadErrorPage(e, response, this.getServletContext());
+				Jmvc.loadErrorPage(e, response, this.getServletContext());  // This should return 404
 			}
 		} catch (Exception e) {
-			this.getServletContext().log(e.getMessage());
+			this.getServletContext().log(e.getMessage());                        
 			Jmvc.loadErrorPage(e, response, this.getServletContext());
 		} finally {
 			out.close();
