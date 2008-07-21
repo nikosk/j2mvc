@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import gr.dsigned.jmvc.db.Model;
+import gr.dsigned.jmvc.db.QuerySet;
 
 /**
  * 15 Μαρ 2008, gr.dsigned.jmvc.models 
@@ -32,7 +33,8 @@ public class Category extends Model {
     }
 
     public ArrayList<LinkedHashMap<String, String>> getCategories() throws SQLException {
-        db.from(this.tableName);
-        return db.get();
+        QuerySet qs = new QuerySet();
+        qs.from(this.tableName);
+        return db.get(qs);
     }
 }
