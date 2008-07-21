@@ -58,7 +58,8 @@ Example of a View:
   <br/>
   <% content %>
   </body>
-</html>}}}
+</html>
+}}}
 Every template may contain placeholders for data. The above template contains 2 placeholders name title and content respectively. To load a template you need to add the line $.loadView("template_name"); at the very end of your controller method. To pass data to the template create a LinkedHashMap<String, String> and put each tag name as the key and the data as the value. In the above example you would need to do something like the following:
 {{{
 LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
@@ -70,7 +71,9 @@ A template may also contain callbacks to helper methods to make developer life e
 
 The following tag creates a link to the controller home and the method blog with a title="title" attribute and a style:
 
-{{{<% anchor("/home/blog/","title","style='color:#000;'")%>}}}
+{{{
+<% anchor("/home/blog/","title","style='color:#000;'")%>
+}}}
 
 See also PageDict for an object with predefined values for tags you will almost alway need when loading templates.
 
