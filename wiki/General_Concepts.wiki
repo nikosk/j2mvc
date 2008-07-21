@@ -11,15 +11,15 @@ The concepts behind j2mvc.
 ==URLs==
 Jmvc URLs are an important part of the framework. Instead of having ugly query string in your URLs you have instead plain URLs that are mapped by the framework to parameter that you use in your application.
 Example: 
-{{{http://jmvc.org/blog/post/value1/value2  }}}
+`http://jmvc.org/blog/post/value1/value2  `
 OR 
-{{{ http://jmvc.org/blog/post/parameter1/value1/parameter2/value2 }}}
+` http://jmvc.org/blog/post/parameter1/value1/parameter2/value2 `
 
 As you can see each url is mapped to a Controller and a Method. These correspond directly to your Controller class. The above URL for example would be answered by a Java class in the controller package named Blog. The code that would respond to this request would have to live inside a method of the Blog class named post.
 With jmvc your URLs are inherently optimized for search engines and
 
 ==Controllers==
-Controllers contain the logic behind your application. They accept a request, process data, load a template and return HTML to the browser.  For example when the web application receives a request for http://domain/blog/post  it will automatically create an instance of the controller Blog and run the method post() of this controller.
+Controllers contain the logic behind your application. They accept a request, process data, load a template and return HTML to the browser.  For example when the web application receives a request for `http://domain/blog/post`  it will automatically create an instance of the controller Blog and run the method post() of this controller.
 
 Example:
 {{{
@@ -38,8 +38,8 @@ public class Home extends Controller {
 }
 }}}
 The above controller contains only the method index(). This method does not do anything but display the template named blog_frontpage.
-Index is a special case because it is called whenever the framework does not find a method name in the URL. I.e.: The URL http://domain/blog/  will find the controller Blog and execute the method index().
-By default the framework searches for controllers in the package gr.dsigned.jmvc.controllers so make sure you create your controllers in that package. Also make sure that methods that you want exposed to visitors are public. If you need helper methods in your controller declare them private show they wont get called by URL.
+Index is a special case because it is called whenever the framework does not find a method name in the URL. I.e.: The URL `http://domain/blog/`  will find the controller Blog and execute the method index().
+By default the framework searches for controllers in the package `gr.dsigned.jmvc.controllers` so make sure you create your controllers in that package. Also make sure that methods that you want exposed to visitors are public. If you need helper methods in your controller declare them private show they wont get called by URL.
 
 
 ==Views==
@@ -60,7 +60,7 @@ Example of a View:
   </body>
 </html>
 }}}
-Every template may contain placeholders for data. The above template contains 2 placeholders name title and content respectively. To load a template you need to add the line $.loadView("template_name"); at the very end of your controller method. To pass data to the template create a LinkedHashMap<String, String> and put each tag name as the key and the data as the value. In the above example you would need to do something like the following:
+Every template may contain placeholders for data. The above template contains 2 placeholders name title and content respectively. To load a template you need to add the line `$.loadView("template_name");` at the very end of your controller method. To pass data to the template create a `LinkedHashMap<String, String>` and put each tag name as the key and the data as the value. In the above example you would need to do something like the following:
 {{{
 LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
 data.put("title", "This is the page title");
