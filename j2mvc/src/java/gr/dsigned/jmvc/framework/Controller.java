@@ -24,6 +24,6 @@ public class Controller {
     public Jmvc $ = null;
 
     public Controller() throws Exception{
-    	$ = Jmvc.getIstance();
+    	$ = Jmvc.getInstance();
     }
 }

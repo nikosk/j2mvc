@@ -54,7 +54,7 @@ public class Jmvc {
         init();
     }
 
-    public static Jmvc getIstance() throws Exception {
+    public static Jmvc getInstance() throws Exception {
         return (instance == null) ? new Jmvc() : instance;
     }
 
