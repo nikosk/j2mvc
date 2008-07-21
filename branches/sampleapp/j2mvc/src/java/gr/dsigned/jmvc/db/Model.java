@@ -55,8 +55,8 @@ public class Model {
         },}
     public String tableName = "";
     public DB db;
-    protected LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
-    protected LinkedHashMap<String, String> modelDefinition = new LinkedHashMap<String, String>();
+    public LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
+    public LinkedHashMap<String, String> modelDefinition = new LinkedHashMap<String, String>();
     
     /**
      * Creates a new instance of Model
