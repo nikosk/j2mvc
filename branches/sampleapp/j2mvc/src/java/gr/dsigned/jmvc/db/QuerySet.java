@@ -148,7 +148,6 @@ public class QuerySet {
         sql += (whereSet == null) ? "" : whereSet;
         sql += (orderBySet == null) ? "" : orderBySet;
         sql += (limitSet == null) ? "" : limitSet;
-        reset();
         System.out.println(sql);
         return sql;
     }
@@ -161,20 +160,7 @@ public class QuerySet {
         sql += (whereSet == null) ? "" : whereSet;
         sql += (orderBySet == null) ? "" : orderBySet;
         sql += (limitSet == null) ? "" : limitSet;
-        reset();
         System.out.println(sql);
         return sql;
-    }
-    /**
-     * Reset for re-use.
-     */
-    private void reset() {
-        selectSet = null;
-        distinctSet = false;
-        fromSet = null;
-        joinSet = null;
-        whereSet = null;
-        orderBySet = null;
-        limitSet = null;
     }
 }
