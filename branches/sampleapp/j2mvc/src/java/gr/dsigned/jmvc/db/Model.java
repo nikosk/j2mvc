@@ -55,7 +55,6 @@ public class Model {
         },}
     public String tableName = "";
     public DB db;
-    public QuerySet qs;
     protected LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
     protected LinkedHashMap<String, String> modelDefinition = new LinkedHashMap<String, String>();
     
@@ -72,7 +71,6 @@ public class Model {
     }
 
     private void init() throws Exception {
-        qs = new QuerySet();
         if (!Settings.DATABASE_TYPE.equalsIgnoreCase("none")) {
             if (Settings.DATABASE_TYPE.equalsIgnoreCase("mysql")) {
                 db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
