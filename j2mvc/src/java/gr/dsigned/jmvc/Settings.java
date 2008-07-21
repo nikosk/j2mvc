@@ -17,11 +17,11 @@ public class Settings {
     public static String JS_PATH = "";  // Where to find scripts, leave empty for www-root/js
     /************************************** DB Settings ****************************************/
     public static String DATABASE_TYPE = "mysql";    // mysql only for now.
-    public static String DB_URL = "localhost"; 
+    public static String DB_URL = "193.218.86.8"; 
     public static int DB_PORT = 3306;  // default (3306).
-    public static String DB_NAME = "prosxedia_db"; //Name of the database 
-    public static String DB_USER = "root";
-    public static String DB_PASS = "";
+    public static String DB_NAME = "c2s"; //Name of the database 
+    public static String DB_USER = "vas";
+    public static String DB_PASS = "vas";
     
     /************************************** Auto load classes Settings ****************************************/
     

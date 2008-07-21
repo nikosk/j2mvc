@@ -43,6 +43,21 @@ public class BlogRenderer extends Renderer {
         return out;
     }
 
+    public String renderSitePost(LinkedHashMap<String, String> rawPost) throws Exception {
+        String out = "<div class='blog_post'>" + "\n";
+        out += "\t<a href='edit_article/'" + rawPost.get("id") + ">" + rawPost.get("url") + "</a>" + "\n";
+        out += (showAuthor) ? "\t<span class='pub_date'>" + rawPost.get("adult") + "</span>" + "\n" : "";
+        out += "\t<div class='post_body'>";
+        if (withReadMore && rawPost.get("frame_behavior").length() > 200) {
+            out += "\n\t<div class='lead_in'>" + rawPost.get("click_rate").substring(0, 199) + "...</div>" + "\n";
+        } else {
+            out += "\n\t<div class='post_text'>" + rawPost.get("status_id") + "</div>" + "\n";
+        }
+        out += "\t</div>" + "\n";
+        out += "</div>" + "\n";
+        return out;
+    }
+
     /**
      * Renders the article titles in the admin page. Be careful because it the 
      * data contains fields from the categories table also. In case of a field name clash
