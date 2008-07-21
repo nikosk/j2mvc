@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 
 import gr.dsigned.jmvc.db.Model;
+import gr.dsigned.jmvc.db.QuerySet;
 
 /**
  * 12 Μαρ 2008, gr.dsigned.jmvc.models 
@@ -33,34 +34,38 @@ public class Article extends Model {
     }
 
     public ArrayList<LinkedHashMap<String, String>> getLatestPosts(int numberToFetch) throws SQLException {
-        db.from("articles");
-        db.join("categories", "categories.id = articles.category_id", "left");
-        db.where("categories.name = 'basket'");
-        db.orderBy("published", "DESC");
-        db.limit(numberToFetch);
-        return db.get();
+        QuerySet qs = new QuerySet();
+        qs.from("articles");
+        qs.join("categories", "categories.id = articles.category_id", "left");
+        qs.where("categories.name = 'basket'");
+        qs.orderBy("published", "DESC");
+        qs.limit(numberToFetch);
+        return db.get(qs);
     }
 
     public ArrayList<LinkedHashMap<String, String>> getPostsInInterval(Date from, Date to) throws SQLException {
-        db.from("articles");
-        db.orderBy("published", "DESC");
-        return db.get();
+        QuerySet qs = new QuerySet();
+        qs.from("articles");
+        qs.orderBy("published", "DESC");
+        return db.get(qs);
     }
 
     public ArrayList<LinkedHashMap<String, String>> getArticlesByCat(String cat, int limit, int offset) throws SQLException {
-        db.from("articles");
-        db.orderBy("published", "DESC");
-        db.limit(offset, limit);
-        db.join("categories", "Articles.category_id = Categories.id", "left");
-        db.where("Categories.name = '" + cat + "'");
-        return db.get();
+        QuerySet qs = new QuerySet();
+        qs.from("articles");
+        qs.orderBy("published", "DESC");
+        qs.limit(offset, limit);
+        qs.join("categories", "Articles.category_id = Categories.id", "left");
+        qs.where("Categories.name = '" + cat + "'");
+        return db.get(qs);
     }
 
     public int countArticlesByCat(String cat) throws SQLException {
-        db.from("articles");
-        db.orderBy("published", "DESC");
-        db.join("categories", "Articles.category_id = Categories.id", "left");
-        db.where("Categories.name = '" + cat + "'");
-        return db.count();
+        QuerySet qs = new QuerySet();
+        qs.from("articles");
+        qs.orderBy("published", "DESC");
+        qs.join("categories", "Articles.category_id = Categories.id", "left");
+        qs.where("Categories.name = '" + cat + "'");
+        return db.count(qs);
     }
 }

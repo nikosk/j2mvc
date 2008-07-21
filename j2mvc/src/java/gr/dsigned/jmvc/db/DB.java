@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  *
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class DB extends QuerySet {   
+public class DB {   
     protected Connection conn;
     
     public Connection getConn()throws SQLException{
@@ -130,11 +130,12 @@ public class DB extends QuerySet {
      * Execute query set
      * @return ArrayList<LinkedHashMap> of results
      */
-    public ArrayList<LinkedHashMap<String,String>> get() throws SQLException{        
-        return executeQuery(compileSelect());
+    public ArrayList<LinkedHashMap<String,String>> get(QuerySet qs) throws SQLException{        
+        return executeQuery(qs.compileSelect());
     }
-    public int count() throws SQLException{
-    	ArrayList<LinkedHashMap<String,String>> a = executeQuery(compileCount());
+    
+    public int count(QuerySet qs) throws SQLException{
+    	ArrayList<LinkedHashMap<String,String>> a = executeQuery(qs.compileCount());
     	if(a.size()>0){
     		return Integer.parseInt(a.get(0).get("count"));
     	} else {

@@ -26,18 +26,21 @@ import java.util.LinkedHashMap;
  *
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class Sites extends Controller {
+public class Sites extends Controller
+{
 
-	public Sites() throws Exception{
-		
-	}
-    public  void index() throws Exception{    	
+    public Sites() throws Exception
+    {
+    }
+
+    public void index() throws Exception
+    {
         Site site = $.loadModel("Site"); // Load model
-        $.input.post("email");
-$.loadLibrary("TableRenderer");
+//        $.input.post("email");
+//        $.loadLibrary("TableRenderer");
 
         //        BlogRenderer renderer = $.loadRenderer("BlogRenderer"); //Load renderer
-        LinkedHashMap<String,String> data = new LinkedHashMap<String,String>(); // We'll pass this to the template
+        LinkedHashMap<String, String> data = new LinkedHashMap<String, String>(); // We'll pass this to the template
 //        ArrayList<LinkedHashMap<String,String>> posts = site.getSites(); // Get data from model
 //        String output = "";
 //        for (LinkedHashMap<String,String> lhm : posts) {
@@ -47,13 +50,40 @@ $.loadLibrary("TableRenderer");
 //        //data.put("menu", renderer.getMenu());
         String g = "";
         LinkedHashMap<String, String> map = site.insertTestQuerySets();
-        for(String s:map.keySet())
+        for (String s : map.keySet())
         {
-            
-            g+= s + " " + map.get(s);
-            
+
+            g += s + " " + map.get(s);
+
         }
         data.put("head", g);
+        $.loadView("blog_frontpage", data);
+    }
+
+    public void myindex() throws Exception
+    {
+        Site site = $.loadModel("Site"); // Load model
+//        $.input.post("email");
+//        $.loadLibrary("TableRenderer");
+
+        //        BlogRenderer renderer = $.loadRenderer("BlogRenderer"); //Load renderer
+        LinkedHashMap<String, String> data = new LinkedHashMap<String, String>(); // We'll pass this to the template
+//        ArrayList<LinkedHashMap<String,String>> posts = site.getSites(); // Get data from model
+//        String output = "";
+//        for (LinkedHashMap<String,String> lhm : posts) {
+//            output = output + renderer.renderSitePost(lhm); // Render each post
+//        }
+//        data.put("head", output); // Include the output for parsing 
+//        //data.put("menu", renderer.getMenu());
+        String g = "";
+        LinkedHashMap<String, String> map = site.insertTestQuerySets();
+        for (String s : map.keySet())
+        {
+
+            g += s + " " + map.get(s);
+
+        }
+        data.put("head", "!!!testText!!");
         $.loadView("blog_frontpage", data);
     }
 }

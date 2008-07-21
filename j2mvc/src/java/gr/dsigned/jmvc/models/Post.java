@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.models;
 
+import gr.dsigned.jmvc.db.QuerySet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,16 +31,18 @@ public class Post extends gr.dsigned.jmvc.db.Model {
     }
 
     public ArrayList<LinkedHashMap<String, String>> getLatestPosts(int numberToFetch) throws SQLException {
-        db.from("posts");
-        db.orderBy("pub_date", "DESC");
-        db.limit(numberToFetch);
-        return db.get();
+        QuerySet qs = new QuerySet();
+        qs.from("posts");
+        qs.orderBy("pub_date", "DESC");
+        qs.limit(numberToFetch);
+        return db.get(qs);
     }
 
     public ArrayList<LinkedHashMap<String, String>> getPostsInInterval(Date from, Date to) throws SQLException {
-        db.from("posts");
-        db.orderBy("pub_date", "DESC");
-        return db.get();
+        QuerySet qs = new QuerySet();
+        qs.from("posts");
+        qs.orderBy("pub_date", "DESC");
+        return db.get(qs);
     }
 }
 
