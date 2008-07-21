@@ -72,7 +72,7 @@ public class DB {
      * @param q The SQL query to execute.
      * @return ArrayList of LinkedHashMap<String,String> Each ArrayList entry is a row.
      */
-    public synchronized ArrayList<LinkedHashMap<String,String>> executeQuery(String q) throws SQLException {
+    public ArrayList<LinkedHashMap<String,String>> executeQuery(String q) throws SQLException {
         ArrayList<LinkedHashMap<String,String>> result = new ArrayList<LinkedHashMap<String,String>>();
         int resultIndex = 0;
         Statement stmt = getConn().createStatement();
