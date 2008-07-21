@@ -29,7 +29,7 @@ import gr.dsigned.jmvc.framework.Controller;
 
 public class Home extends Controller {
     
-        public Home() throws Exception {
+    public Home() throws Exception {
     }
 
     public void index() throws Exception {
@@ -51,12 +51,11 @@ Example of a View:
 <html>
   <head>
     <title><% title %></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
-  <body style="background-color:#00f;color:#f00;">
+  <body>
   this is a view.
   <br/>
-  <% content %>
+          <% content %>
   </body>
 </html>
 }}}
