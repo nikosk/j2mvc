@@ -113,8 +113,7 @@ public ArrayList<LinkedHashMap<String, String>> getLatestPosts() throws SQLExcep
 When accessing a single row we can load the data of the row in the model: 
 {{{
  public ArrayList<LinkedHashMap<String, String>> getLatestPosts() throws SQLException {
-       ArrayList<LinkedHashMap<String, String>> data =  this.db.executeQuery("SELECT * FROM tablename");
-       return data;
+       return this.db.executeQuery("SELECT * FROM tablename");
 }
 }}}
 3. Querysets
