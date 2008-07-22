@@ -24,11 +24,9 @@ Controllers contain the logic behind your application. They accept a request, pr
 Example:
 {{{
 package gr.dsigned.jmvc.controllers;
-
 import gr.dsigned.jmvc.framework.Controller;
 
-public class Home extends Controller {
-    
+public class Home extends Controller {    
     public Home() throws Exception {
     }
 
@@ -137,21 +135,15 @@ Renders are classes that contain methods that receive data and render them in HT
 
 {{{
 package gr.dsigned.jmvc.renderers;
-
 import gr.dsigned.jmvc.framework.Renderer;
-
 import java.util.ArrayList;
-
 import java.util.LinkedHashMap;
 
 public class BlogRenderer extends Renderer {
-
     private boolean showAuthor = true;
-
     private boolean withReadMore = true; 
 
     public String renderMenu(LinkedHashMap<String, String> menuElements) throws Exception {
-
         String out = "<ul>";
         for (String title : menuElements.keySet()) {
             out += String.format("<li>%1$s</li>", anchor(menuElements.get(title), title, "class='menu_link'"));
