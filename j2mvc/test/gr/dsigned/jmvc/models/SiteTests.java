@@ -40,7 +40,7 @@ public class SiteTests extends TestCase
 
         ArrayList<LinkedHashMap<String, String>> siteFetched = site.getSites();
         int initialSitesCounter = siteFetched.size();
-        site.insertTest();
+        //site.insertTest();
         siteFetched = site.getSites();
         int finalSitesCounter = siteFetched.size();        
         assertEquals(initialSitesCounter + 1, finalSitesCounter);
