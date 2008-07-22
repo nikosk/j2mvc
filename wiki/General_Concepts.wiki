@@ -105,8 +105,7 @@ Models by default reside in the gr.dsigned.jmvc.models package and extend Model.
 Using the db object of the model we can pass SQL statements:
 {{{
 public ArrayList<LinkedHashMap<String, String>> getLatestPosts() throws SQLException {
-       ArrayList<LinkedHashMap<String, String>> data =  this.db.executeQuery("SELECT * FROM tablename");
-       return data;
+      return  db.executeQuery("SELECT * FROM tablename");
 }
 }}}
 2. Using Active record (for single instances of data)
