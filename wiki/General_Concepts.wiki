@@ -77,6 +77,63 @@ The following tag creates a link to the controller home and the method blog with
 See also PageDict for an object with predefined values for tags you will almost alway need when loading templates.
 
 ==Models==
+Models are classes that represent data in your system. They provide mechanisms to retrieve, store and search your database and they also provide methods to read these data. 
+
+A typical model:
+{{{
+package gr.dsigned.jmvc.models;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import gr.dsigned.jmvc.db.Model;
+
+public class Category extends Model {
+    public Category() throws Exception {
+        this.tableName = "categories";
+    }
+    public ArrayList<LinkedHashMap<String, String>> getCategories() throws SQLException {
+        db.from(this.tableName);
+        return db.get();
+    }
+}
+}}}
+
+Models by default reside in the gr.dsigned.jmvc.models package and extend Model.  There are 3 ways to access data from the database:
+
+1. SQL 
+
+Using the db object of the model we can pass SQL statements:
+{{{
+public ArrayList<LinkedHashMap<String, String>> getLatestPosts() throws SQLException {
+       ArrayList<LinkedHashMap<String, String>> data =  this.db.executeQuery("SELECT * FROM tablename");
+       return data;
+}
+}}}
+2. Using Active record (for single instances of data)
+
+When accessing a single row we can load the data of the row in the model: 
+{{{
+ public ArrayList<LinkedHashMap<String, String>> getLatestPosts() throws SQLException {
+       ArrayList<LinkedHashMap<String, String>> data =  this.db.executeQuery("SELECT * FROM tablename");
+       return data;
+}
+}}}
+3. Querysets
+
+The most advanced feature is querysets. Querysets are a way to access data with simple java statements. 
+
+Example:
+{{{
+public ArrayList<LinkedHashMap<String, String>> getLatestPosts(int numberToFetch) throws SQLException {
+        db.from("frontend_article");
+        db.join("frontend_category", "frontend_category.id = frontend_article.category_id", "left");
+        db.where("frontend_category.name = 'basket'");
+        db.orderBy("sub_title", "DESC");
+        db.limit(numberToFetch);
+        return db.get();
+}
+}}}
+
 ==Renderers==
 ==Libraries==
 ==Creating Your Own Libraries==
