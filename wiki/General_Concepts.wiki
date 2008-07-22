@@ -156,9 +156,12 @@ public class BlogRenderer extends Renderer {
 
 
 ==Libraries==
-j2mvc contains several libraries to help with repetitive tasks. 
+j2mvc contains several libraries to help with repetitive tasks.
+ 
 *Input library contains methods to deal with URLs, POST data etc. 
+
 *Pagination library contains methods to build pagination from data. 
+
 *Session contains methods to deal with session management.
 
 To load a library all you need to do is call : `Pagination p = $.loadLibrary("Pagination");`
