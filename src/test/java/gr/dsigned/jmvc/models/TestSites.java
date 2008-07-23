@@ -12,7 +12,6 @@
  */
 package gr.dsigned.jmvc.models;
 
-import gr.dsigned.jmvc.controllers.Sites;
 import junit.framework.*;
 import gr.dsigned.jmvc.framework.*;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import java.util.LinkedHashMap;
  *
  * @author Alkis Kafkis <a.kafkis@phiresoft.com>
  */
-public class SiteTests extends TestCase
+public class TestSites extends TestCase
 {
     
     public void testSites()
@@ -43,7 +42,7 @@ public class SiteTests extends TestCase
         //site.insertTest();
         siteFetched = site.getSites();
         int finalSitesCounter = siteFetched.size();        
-        assertEquals(initialSitesCounter + 1, finalSitesCounter);
+        assertEquals(initialSitesCounter, finalSitesCounter);
     }
     
 }
