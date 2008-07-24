@@ -4,6 +4,7 @@
 
 The concepts behind j2mvc.
 
+[http://dsigned.gr/MVC.jpg]
 
 = Details =
 
