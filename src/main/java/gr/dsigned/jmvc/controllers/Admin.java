@@ -16,7 +16,7 @@ package gr.dsigned.jmvc.controllers;
 
 import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.framework.Controller;
-import gr.dsigned.jmvc.libraries.PageDict;
+import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.libraries.Pagination;
 import gr.dsigned.jmvc.models.Article;
 import gr.dsigned.jmvc.models.Category;
@@ -55,7 +55,7 @@ public class Admin extends Controller {
     @SuppressWarnings("serial")
     public void control_panel() throws Exception {
         if ($.session.data("loggedin").equals("true")) {
-            $.loadView("admin/control_panel", new PageDict() {
+            $.loadView("admin/control_panel", new PageData() {
                 {
                     put("post_data", "control panel");
                 }
@@ -69,7 +69,7 @@ public class Admin extends Controller {
         // Only for logged users
         // if ($.session.data("loggedin").equals("true")) {
         // Our page data
-        PageDict data = new PageDict();
+        PageData data = new PageData();
         // Load the models we'll need
         Article article = $.loadModel("Article");
         Category cat = $.loadModel("Category");
@@ -117,7 +117,7 @@ public class Admin extends Controller {
         // Only for logged users
         if ($.session.data("loggedin").equals("true")) {
             // Our page data
-            PageDict data = new PageDict();
+            PageData data = new PageData();
             // Lookup segment 2 (the article id)
             String article_id = $.input.segment(2);
             article.load(article_id);

@@ -1,5 +1,5 @@
 /*
- *  PageDict.java
+ *  PageData.java
  * 
  *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
  * 
@@ -20,17 +20,17 @@ import java.util.LinkedHashMap;
 
 /**
  * 12 Μαρ 2008, gr.dsigned.jmvc.libraries 
- * PageDict.java
+ * PageData.java
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class PageDict extends LinkedHashMap<String, String> {
+public class PageData extends LinkedHashMap<String, String> {
 
     /**
      * 
      */
     private static final long serialVersionUID = 5521489114124146406L;
 
-    public PageDict() {
+    public PageData() {
         put("title", "My title");
         put("keywords", "jmvc, framework, java, mvc");
         put("description", "Java mvc framework inspired by Code Igniter,Ruby on Rails and Django");
