@@ -41,6 +41,7 @@ public class PageDict extends LinkedHashMap<String, String> {
         put("styles-yui-reset", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/reset.css\" >\r\n");
         put("styles-yui-grids", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/grids.css\">");
         put("styles-yui-fonts", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/fonts.css\">");
+        put("styles-typography", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/typography.css\">");
         /* mootools */
         put("mootools", "<script type=\"text/javascript\" src=\"/js/mootools-release-1.11.js\"></script>");
         put("mootools-no-comp", "<script type=\"text/javascript\" src=\"/js/mootools-release-1.11-no-comp.js\"></script>");

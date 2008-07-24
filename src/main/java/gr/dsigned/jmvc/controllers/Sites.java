@@ -15,9 +15,10 @@
 package gr.dsigned.jmvc.controllers;
 
 import gr.dsigned.jmvc.framework.Controller;
-import gr.dsigned.jmvc.models.Article;
+import gr.dsigned.jmvc.framework.Renderer;
+import gr.dsigned.jmvc.libraries.PageDict;
+import gr.dsigned.jmvc.models.Issue;
 import gr.dsigned.jmvc.models.Site;
-import gr.dsigned.jmvc.renderers.BlogRenderer;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,64 +27,80 @@ import java.util.LinkedHashMap;
  *
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class Sites extends Controller
-{
+public class Sites extends Controller {
 
-    public Sites() throws Exception
-    {
+    public Sites() throws Exception {
     }
 
-    public void index() throws Exception
-    {
+    public void index() throws Exception {
+        PageDict data = new PageDict();
         Site site = $.loadModel("Site"); // Load model
-//        $.input.post("email");
-//        $.loadLibrary("TableRenderer");
-
-        //        BlogRenderer renderer = $.loadRenderer("BlogRenderer"); //Load renderer
-        LinkedHashMap<String, String> data = new LinkedHashMap<String, String>(); // We'll pass this to the template
-//        ArrayList<LinkedHashMap<String,String>> posts = site.getSites(); // Get data from model
-//        String output = "";
-//        for (LinkedHashMap<String,String> lhm : posts) {
-//            output = output + renderer.renderSitePost(lhm); // Render each post
-//        }
-//        data.put("head", output); // Include the output for parsing 
-//        //data.put("menu", renderer.getMenu());
-        String g = "";
-        LinkedHashMap<String, String> map = site.insertTestQuerySets();
-        for (String s : map.keySet())
-        {
-
-            g += s + " " + map.get(s);
-
+        Issue issue = $.loadModel("Issue");
+        Renderer lr = $.loadRenderer("ListRenderer");
+        LinkedHashMap<String,ArrayList<LinkedHashMap<String,String>>> issues = new LinkedHashMap<String,ArrayList<LinkedHashMap<String,String>>>();
+        LinkedHashMap<String, String> sitesNissues = new LinkedHashMap<String, String>();
+        ArrayList<LinkedHashMap<String, String>> sites = site.getSites();  
+        for(LinkedHashMap<String, String> s : sites){
+            issues.put(s.get("label"), issue.getBySiteId(s.get("id")));
         }
-        data.put("head", g);
-        $.loadView("blog_frontpage", data);
+        data.put("label", "");        
+        data.put("content", lr.runMethod("renderLists", sites, issues));
+        $.loadView("list", data);
     }
 
-    public void myindex() throws Exception
-    {
+    public void add_site() throws Exception {
+        PageDict data = new PageDict();
         Site site = $.loadModel("Site"); // Load model
-//        $.input.post("email");
-//        $.loadLibrary("TableRenderer");
-
-        //        BlogRenderer renderer = $.loadRenderer("BlogRenderer"); //Load renderer
-        LinkedHashMap<String, String> data = new LinkedHashMap<String, String>(); // We'll pass this to the template
-//        ArrayList<LinkedHashMap<String,String>> posts = site.getSites(); // Get data from model
-//        String output = "";
-//        for (LinkedHashMap<String,String> lhm : posts) {
-//            output = output + renderer.renderSitePost(lhm); // Render each post
-//        }
-//        data.put("head", output); // Include the output for parsing 
-//        //data.put("menu", renderer.getMenu());
-        String g = "";
-        LinkedHashMap<String, String> map = site.insertTestQuerySets();
-        for (String s : map.keySet())
-        {
-
-            g += s + " " + map.get(s);
-
+        Renderer lr = $.loadRenderer("ListRenderer");
+        ArrayList<LinkedHashMap<String, String>> sites = site.getSites();
+        if ($.input.post("label").isEmpty()) {
+            data.put("label", "");
+            data.put("redirect_to", "/" + $.input.segment(0));
+            $.loadView("list_form", data);
+        } else {
+            site.insertSite($.input.post("label"));
+            $.response.sendRedirect($.input.post("redirect_to"));
         }
-        data.put("head", "!!!testText!!");
-        $.loadView("blog_frontpage", data);
+    }
+
+    public void delete_site() throws Exception {
+        String id = $.input.segment(2);
+        Site site = $.loadModel("Site"); // Load model
+        site.db.delete("sites", id);
+        $.response.sendRedirect("/sites");
+    }
+
+    public void edit_site() throws Exception {
+        String id = $.input.segment(2);
+        PageDict data = new PageDict();
+        Site site = $.loadModel("Site"); // Load model        
+        Renderer lr = $.loadRenderer("ListRenderer");
+        ArrayList<LinkedHashMap<String, String>> sites = site.getSites();
+        if ($.input.post("label").isEmpty()) {
+            site.load(id);
+            data.put("label", site.data.get("label"));
+            data.put("redirect_to", "/" + $.input.segment(0));
+            $.loadView("list_form", data);
+        } else {
+            site.updateSite($.input.post("label"));
+            $.response.sendRedirect($.input.post("redirect_to"));
+        }
+    }
+
+    public void add_task() throws Exception {
+        String id = $.input.segment(2);
+        PageDict data = new PageDict();
+        Site site = $.loadModel("Site"); // Load model  
+        Issue issue = $.loadModel("Issue"); // Load model  
+        if ($.input.post("label").isEmpty()) {
+            data.put("id", id);
+            data.put("label", "");
+            data.put("description", "");
+            data.put("redirect_to", "/" + $.input.segment(0));
+            $.loadView("list_form_add_task", data);
+        } else {
+            issue.insertIssue(id, $.input.post("label"), $.input.post("description"));
+            $.response.sendRedirect($.input.post("redirect_to"));
+        }
     }
 }

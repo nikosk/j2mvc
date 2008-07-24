@@ -20,14 +20,24 @@ public class Site extends Model {
     
     public ArrayList<LinkedHashMap<String, String>> getSites() throws SQLException {
         QuerySet qs = new QuerySet();
-        qs.from("sites");
-        //db.join("", "categories.id = articles.category_id", "left");
-        //db.where("categories.name = 'basket'");
-        qs.orderBy("id", "DESC");
-        //db.limit(numberToFetch);
-    return db.get(qs);
+        qs.from("sites");       
+        qs.orderBy("label", "DESC");
+        return db.get(qs);
     } 
-
+    public void insertSite(String label) throws Exception{
+        this.data.put("label", label);
+        this.data.put("status", "1");
+        this.store();
+    }
+    
+    public void updateSite(String label) throws Exception{
+        this.data.put("label", label);
+        this.store();
+    }
+    
+    
+    
+    
     public void insertTest(LinkedHashMap<String, String> hashMap) throws SQLException {
        this.data.put("id", "111");
        this.data.put("url", "");

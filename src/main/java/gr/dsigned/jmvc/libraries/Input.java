@@ -102,7 +102,7 @@ public class Input extends Library {
 	 * @return The parameter value
 	 */
 	public String post(String paramName) {
-		return this.postParams.get(paramName);
+		return (this.postParams.get(paramName) != null) ? this.postParams.get(paramName): "";
 	}
 	
 	/**

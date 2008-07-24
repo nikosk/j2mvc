@@ -11,17 +11,17 @@ public class Settings {
     public static String SUB_DIR = ""; // Set this if you deployed Jmvc in a subdirectory.
     public static String DEFAULT_ENCODING = "UTF-8"; // Sets default encoding
     public static int	 SESSION_EXPIRY = 7200; // Time in seconds until a session becomes inactive
-    public static String DEFAULT_CONTROLLER = "Home"; // the controller to handle initial requests
+    public static String DEFAULT_CONTROLLER = "Sites"; // the controller to handle initial requests
     public static String VIEW_PATH = ""; // Where to find templates, leave empty for www-root/views
     public static String IMG_PATH = "";  // Where to find images, leave empty for www-root/images
     public static String JS_PATH = "";  // Where to find scripts, leave empty for www-root/js
     /************************************** DB Settings ****************************************/
     public static String DATABASE_TYPE = "mysql";    // mysql only for now.
-    public static String DB_URL = "193.218.86.8"; 
+    public static String DB_URL = "localhost"; 
     public static int DB_PORT = 3306;  // default (3306).
-    public static String DB_NAME = "c2s"; //Name of the database 
-    public static String DB_USER = "vas";
-    public static String DB_PASS = "vas";
+    public static String DB_NAME = "acms"; //Name of the database 
+    public static String DB_USER = "root";
+    public static String DB_PASS = "";
     
     /************************************** Auto load classes Settings ****************************************/
     
