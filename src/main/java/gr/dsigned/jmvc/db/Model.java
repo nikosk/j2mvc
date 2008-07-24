@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.db;
 
+import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.Settings;
 
 import java.sql.ResultSet;
@@ -91,7 +92,7 @@ public class Model {
      */
     public void load(String id) throws SQLException{
         Hashtable<String, String> ht = new Hashtable<String, String>();
-        ArrayList<LinkedHashMap<String,String>> results = new ArrayList<LinkedHashMap<String,String>>();
+        ArrayList<Bean> results = new ArrayList<Bean>();
         ht.put("id", id);
         results = db.query(tableName, "*", ht);
         for (LinkedHashMap<String, String> lhm : results) {
@@ -108,7 +109,7 @@ public class Model {
      */
     public void load(String table, String id) throws SQLException{
         Hashtable<String, String> ht = new Hashtable<String, String>();
-        ArrayList<LinkedHashMap<String,String>> results = new ArrayList<LinkedHashMap<String,String>>();
+        ArrayList<Bean> results = new ArrayList<Bean>();
         ht.put("id", id);
         results = db.query(table, "*", ht);
         for (LinkedHashMap<String, String> lhm : results) {
@@ -157,7 +158,7 @@ public class Model {
      * @param criteria Hashtable where key is a column name and value is the criterion.
      */
     public void filter(Hashtable<String,String> criteria) throws SQLException{
-        ArrayList<LinkedHashMap<String,String>> results = new ArrayList<LinkedHashMap<String,String>>();
+        ArrayList<Bean> results = new ArrayList<Bean>();
         results = db.query(this.tableName, "*", criteria);
         for (LinkedHashMap<String, String> lhm : results) {
             for (String s : lhm.keySet()) {
@@ -172,7 +173,7 @@ public class Model {
      * @param criteria Hashtable where key is a column name and value is the criterion.
      */
     public void filter(String table, Hashtable<String,String> criteria) throws SQLException{
-        ArrayList<LinkedHashMap<String,String>> results = new ArrayList<LinkedHashMap<String,String>>();
+        ArrayList<Bean> results = new ArrayList<Bean>();
         results = db.query(table, "*", criteria);
         for (LinkedHashMap<String, String> lhm : results) {
             for (String s : lhm.keySet()) {
