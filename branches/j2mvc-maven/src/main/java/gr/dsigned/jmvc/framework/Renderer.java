@@ -15,7 +15,10 @@
 package gr.dsigned.jmvc.framework;
 
 import gr.dsigned.jmvc.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -23,7 +26,7 @@ import java.util.HashMap;
  */
 public class Renderer {
 
-    public static String anchor(String segments, String title, String attributes) {        
+    public static String anchor(String segments, String title, String attributes) {
         String href = Settings.ROOT_URL;
         href = (!Settings.SUB_DIR.isEmpty()) ? Settings.SUB_DIR + "/" : "";
         href = (segments.startsWith("/") && segments.length() < 2) ? "" : segments;
@@ -52,5 +55,23 @@ public class Renderer {
 
     public static String root_url() {
         return Settings.ROOT_URL;
+    }
+    /**
+     * Allows dynamically calling methods on extending classes.
+     * @param methodName the name of the method you need to run.
+     * @param args The arguments you need to pass to the method
+     * @return String (rendered HTML)
+     * @throws java.lang.Exception
+     */
+    public String runMethod(String methodName, Object... args) throws Exception {
+        Class[] classNames = new Class[args.length];
+        int index = 0;
+        for (Object o : args) {
+           classNames[index] = o.getClass();
+           index++;
+        }
+        Class c = this.getClass();
+        Method m = c.getMethod(methodName, classNames);
+        return (String) m.invoke(this, args);
     }
 }
