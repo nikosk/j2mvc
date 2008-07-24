@@ -88,15 +88,15 @@ public class Admin extends Controller {
         // paginate them.
         }
         Pagination p = new Pagination();
-        p.baseUrl = "/admin/show_articles/" + category;
-        p.perPage = 15;
-        p.totalRows = article.countArticlesByCat(category);
+        p.setBaseUrl( "/admin/show_articles/" + category);
+        p.setTotalRows(article.countArticlesByCat(category));
         // Now we are ready to get some data (limit to 10
         // articles with offset page number * 10)
-        ArrayList<LinkedHashMap<String, String>> posts = article.getArticlesByCat(category, p.perPage, p.perPage * offset);
+        ArrayList<LinkedHashMap<String, String>> posts = article.getArticlesByCat(category, p.getPerPage(), p.getPerPage() * offset);
+        p.setNoItemsPerQuery(posts.size());
         // Render db results to html
         String output = "";
-        int i = (p.perPage * offset) + 1;
+        int i = (p.getPerPage() * offset) + 1;
         for (LinkedHashMap<String, String> lhm : posts) {
             output += "<b>" + i + "</b>" + renderer.renderArticleTitles(lhm);
             i++;
@@ -104,7 +104,8 @@ public class Admin extends Controller {
         data.put("data", output);
         // Build our menu of categories
         data.put("menu", renderer.buildMenu("admin", "show_articles", cat.getCategories()));
-        data.put("page_links", p.createLinks(offset));
+        data.put("item_links", p.createPagingLinks(offset,Pagination.PagingType.ITEM));
+        data.put("search_links", p.createPagingLinks(offset,Pagination.PagingType.SEARCH));
         data.put("styles", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/admin_styles.css\" >\r\n");
         $.loadView("admin/control_panel", data);
     // } else {
