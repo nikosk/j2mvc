@@ -5,6 +5,7 @@
 
 package gr.dsigned.jmvc.models;
 
+import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class Issue extends Model {
     public Issue() throws Exception {
         this.tableName = "issues";
     }
-    public ArrayList<LinkedHashMap<String, String>> getBySiteId(String siteId) throws Exception{
+    public ArrayList<Bean> getBySiteId(String siteId) throws Exception{
         QuerySet qs = new QuerySet();
         qs.from("issues"); 
         qs.where("site_id = " + siteId);

@@ -1,6 +1,7 @@
 
 package gr.dsigned.jmvc.models;
 
+import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ public class Site extends Model {
         this.tableName = "sites";
     }
     
-    public ArrayList<LinkedHashMap<String, String>> getSites() throws SQLException {
+    public ArrayList<Bean> getSites() throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("sites");       
         qs.orderBy("label", "DESC");
@@ -38,11 +39,18 @@ public class Site extends Model {
     
     
     
-    public void insertTest(LinkedHashMap<String, String> hashMap) throws SQLException {
-       this.data.put("id", "111");
-       this.data.put("url", "");
-       this.data.put("", "");
+    public void insertTest(String id) throws SQLException {
+       this.data.put("id", id);
+       this.data.put("account_id", id);
+       this.data.put("url", "111");
+       this.data.put("click_rate", "111");
+       this.data.put("status_id", id);
+       this.data.put("revenue_split", id);
        this.store();
+    } 
+
+    public void deleteTest(String id) throws SQLException {
+       this.delete(id);
     } 
      public LinkedHashMap insertTestQuerySets() throws SQLException {
       return db.tableDef("sites");
