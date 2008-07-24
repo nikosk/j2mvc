@@ -32,17 +32,15 @@ public class TestSites extends TestCase
 
     public void testSimpleTest() throws Exception
     {
-//        Controller c = new Sites();
-//        Site site = c.$.loadModel("Site");
-        Jmvc framework = Jmvc.getInstance();        
-        Site site = framework.loadModel("Site");
-
-        ArrayList<LinkedHashMap<String, String>> siteFetched = site.getSites();
-        int initialSitesCounter = siteFetched.size();
-        //site.insertTest();
-        siteFetched = site.getSites();
-        int finalSitesCounter = siteFetched.size();        
-        assertEquals(initialSitesCounter, finalSitesCounter);
+//        Jmvc framework = Jmvc.getInstance();        
+//        Site site = framework.loadModel("Site");
+//
+//        ArrayList<LinkedHashMap<String, String>> siteFetched = site.getSites();
+//        int initialSitesCounter = siteFetched.size();
+//        site.insertTest("112");
+//        assertEquals(initialSitesCounter + 1, site.getSites().size());
+//        site.delete("112");
+//        assertEquals(initialSitesCounter, site.getSites().size());
     }
     
 }

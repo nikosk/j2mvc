@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.db;
 
+import gr.dsigned.jmvc.Bean;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -72,8 +73,8 @@ public class DB {
      * @param q The SQL query to execute.
      * @return ArrayList of LinkedHashMap<String,String> Each ArrayList entry is a row.
      */
-    public ArrayList<LinkedHashMap<String,String>> executeQuery(String q) throws SQLException {
-        ArrayList<LinkedHashMap<String,String>> result = new ArrayList<LinkedHashMap<String,String>>();
+    public ArrayList<Bean> executeQuery(String q) throws SQLException {
+        ArrayList<Bean> result = new ArrayList<Bean>();
         int resultIndex = 0;
         Statement stmt = getConn().createStatement();
         ResultSet rs = stmt.executeQuery(q);
@@ -81,7 +82,7 @@ public class DB {
         int columnCount = rsmd.getColumnCount();
         String columnName = "" ; // this string is used in the loop so we create it now once instead of every cycle.
         while (rs.next()) {
-            LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+            Bean row = new Bean();
             for (int i = 1; i <= columnCount; i++) {
                 String val = rs.getString(i);
                 if (val == null) {
@@ -130,12 +131,12 @@ public class DB {
      * Execute query set
      * @return ArrayList<LinkedHashMap> of results
      */
-    public ArrayList<LinkedHashMap<String,String>> get(QuerySet qs) throws SQLException{        
+    public ArrayList<Bean> get(QuerySet qs) throws SQLException{        
         return executeQuery(qs.compileSelect());
     }
     
     public int count(QuerySet qs) throws SQLException{
-    	ArrayList<LinkedHashMap<String,String>> a = executeQuery(qs.compileCount());
+    	ArrayList<Bean> a = executeQuery(qs.compileCount());
     	if(a.size()>0){
     		return Integer.parseInt(a.get(0).get("count"));
     	} else {
@@ -172,7 +173,7 @@ public class DB {
      * @param table the name of the table
      * @return LinkedHashMap of the resultset
      */
-    public ArrayList<LinkedHashMap<String,String>> query(String table) throws SQLException {
+    public ArrayList<Bean> query(String table) throws SQLException {
         String sql = "SELECT * FROM " + table;
         return executeQuery(sql);
     }
@@ -183,7 +184,7 @@ public class DB {
      * @param cols columns to return separate with comma
      * @return LinkedHashMap of the resultset
      */
-    public ArrayList<LinkedHashMap<String,String>> query(String table, String cols) throws SQLException {
+    public ArrayList<Bean> query(String table, String cols) throws SQLException {
         String sql = "SELECT " + cols + " FROM " + table;
         return executeQuery(sql);
     }
@@ -197,7 +198,7 @@ public class DB {
      * equals is used when no operator is used in the key.
      * @return LinkedHashMap of the resultset
      */
-    public ArrayList<LinkedHashMap<String,String>> query(String table, String cols, Hashtable<String, String> criteria) throws SQLException {
+    public ArrayList<Bean> query(String table, String cols, Hashtable<String, String> criteria) throws SQLException {
         if (cols.isEmpty()) {
             cols = "*";
         }

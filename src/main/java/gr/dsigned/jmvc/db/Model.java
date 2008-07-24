@@ -180,4 +180,11 @@ public class Model {
             }
         }
     }
+    
+    public void delete(String id) throws SQLException {
+
+        db.delete(tableName, id);
+        
+    }
+
 }

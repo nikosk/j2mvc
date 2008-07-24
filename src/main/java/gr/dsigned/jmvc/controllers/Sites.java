@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.controllers;
 
+import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Renderer;
 import gr.dsigned.jmvc.libraries.PageDict;
@@ -37,10 +38,10 @@ public class Sites extends Controller {
         Site site = $.loadModel("Site"); // Load model
         Issue issue = $.loadModel("Issue");
         Renderer lr = $.loadRenderer("ListRenderer");
-        LinkedHashMap<String,ArrayList<LinkedHashMap<String,String>>> issues = new LinkedHashMap<String,ArrayList<LinkedHashMap<String,String>>>();
-        LinkedHashMap<String, String> sitesNissues = new LinkedHashMap<String, String>();
-        ArrayList<LinkedHashMap<String, String>> sites = site.getSites();  
-        for(LinkedHashMap<String, String> s : sites){
+        LinkedHashMap<String,ArrayList<Bean>> issues = new LinkedHashMap<String,ArrayList<Bean>>();
+        Bean sitesNissues = new Bean();
+        ArrayList<Bean> sites = site.getSites();  
+        for(Bean s : sites){
             issues.put(s.get("label"), issue.getBySiteId(s.get("id")));
         }
         data.put("label", "");        
@@ -52,7 +53,7 @@ public class Sites extends Controller {
         PageDict data = new PageDict();
         Site site = $.loadModel("Site"); // Load model
         Renderer lr = $.loadRenderer("ListRenderer");
-        ArrayList<LinkedHashMap<String, String>> sites = site.getSites();
+        ArrayList<Bean> sites = site.getSites();
         if ($.input.post("label").isEmpty()) {
             data.put("label", "");
             data.put("redirect_to", "/" + $.input.segment(0));
@@ -75,7 +76,7 @@ public class Sites extends Controller {
         PageDict data = new PageDict();
         Site site = $.loadModel("Site"); // Load model        
         Renderer lr = $.loadRenderer("ListRenderer");
-        ArrayList<LinkedHashMap<String, String>> sites = site.getSites();
+        ArrayList<Bean> sites = site.getSites();
         if ($.input.post("label").isEmpty()) {
             site.load(id);
             data.put("label", site.data.get("label"));
