@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.renderers;
 
+import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.framework.Renderer;
 
 import java.util.ArrayList;
@@ -83,9 +84,9 @@ public class BlogRenderer extends Renderer {
         return out;
     }
 
-    public String buildMenu(String controller, String method, ArrayList<LinkedHashMap<String, String>> rawCats) throws Exception {
+    public String buildMenu(String controller, String method, ArrayList<Bean> rawCats) throws Exception {
         String out = "<ul>";
-        for (LinkedHashMap<String, String> row : rawCats) {
+        for (Bean row : rawCats) {
             out += "\n" + "<a href='/" + controller + "/" + method + "/" + row.get("name") + "' >" + row.get("display_name") + "</a>";
         }
         out += "</ul>";

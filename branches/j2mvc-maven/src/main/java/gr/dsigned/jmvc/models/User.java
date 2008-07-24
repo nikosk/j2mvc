@@ -14,11 +14,11 @@
  */
 package gr.dsigned.jmvc.models;
 
+import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.db.Model;
 
 import gr.dsigned.jmvc.db.QuerySet;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
  *
@@ -36,7 +36,7 @@ public class User extends Model {
         qs.where("username = '" + username + "'");
         qs.where("password = '" + password + "'");
         qs.from(this.tableName);
-        ArrayList<LinkedHashMap<String, String>> al = db.get(qs);
+        ArrayList<Bean> al = db.get(qs);
         return (al.size() > 0) ? true : false;
     }
 }

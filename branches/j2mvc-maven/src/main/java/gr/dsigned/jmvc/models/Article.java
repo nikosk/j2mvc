@@ -14,10 +14,10 @@
  */
 package gr.dsigned.jmvc.models;
 
+import gr.dsigned.jmvc.Bean;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
@@ -33,7 +33,7 @@ public class Article extends Model {
         this.tableName = "articles";
     }
 
-    public ArrayList<LinkedHashMap<String, String>> getLatestPosts(int numberToFetch) throws SQLException {
+    public ArrayList<Bean> getLatestPosts(int numberToFetch) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.join("categories", "categories.id = articles.category_id", "left");
@@ -43,14 +43,14 @@ public class Article extends Model {
         return db.get(qs);
     }
 
-    public ArrayList<LinkedHashMap<String, String>> getPostsInInterval(Date from, Date to) throws SQLException {
+    public ArrayList<Bean> getPostsInInterval(Date from, Date to) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.orderBy("published", "DESC");
         return db.get(qs);
     }
 
-    public ArrayList<LinkedHashMap<String, String>> getArticlesByCat(String cat, int limit, int offset) throws SQLException {
+    public ArrayList<Bean> getArticlesByCat(String cat, int limit, int offset) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.orderBy("published", "DESC");

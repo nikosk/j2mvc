@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.controllers;
 
+import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.libraries.PageDict;
 import gr.dsigned.jmvc.libraries.Pagination;
@@ -23,7 +24,6 @@ import gr.dsigned.jmvc.models.User;
 import gr.dsigned.jmvc.renderers.BlogRenderer;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
  * @author Nikosk <nikosk@dsigned.gr>
@@ -92,12 +92,12 @@ public class Admin extends Controller {
         p.setTotalRows(article.countArticlesByCat(category));
         // Now we are ready to get some data (limit to 10
         // articles with offset page number * 10)
-        ArrayList<LinkedHashMap<String, String>> posts = article.getArticlesByCat(category, p.getPerPage(), p.getPerPage() * offset);
+        ArrayList<Bean> posts = article.getArticlesByCat(category, p.getPerPage(), p.getPerPage() * offset);
         p.setNoItemsPerQuery(posts.size());
         // Render db results to html
         String output = "";
         int i = (p.getPerPage() * offset) + 1;
-        for (LinkedHashMap<String, String> lhm : posts) {
+        for (Bean lhm : posts) {
             output += "<b>" + i + "</b>" + renderer.renderArticleTitles(lhm);
             i++;
         }

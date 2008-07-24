@@ -14,9 +14,9 @@
  */
 package gr.dsigned.jmvc.models;
 
+import gr.dsigned.jmvc.Bean;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
@@ -32,7 +32,7 @@ public class Category extends Model {
         this.tableName = "categories";
     }
 
-    public ArrayList<LinkedHashMap<String, String>> getCategories() throws SQLException {
+    public ArrayList<Bean> getCategories() throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from(this.tableName);
         return db.get(qs);
