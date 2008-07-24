@@ -17,7 +17,7 @@ package gr.dsigned.jmvc.controllers;
 import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Renderer;
-import gr.dsigned.jmvc.libraries.PageDict;
+import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.models.Issue;
 import gr.dsigned.jmvc.models.Site;
 
@@ -34,7 +34,7 @@ public class Sites extends Controller {
     }
 
     public void index() throws Exception {
-        PageDict data = new PageDict();
+        PageData data = new PageData();
         Site site = $.loadModel("Site"); // Load model
         Issue issue = $.loadModel("Issue");
         Renderer lr = $.loadRenderer("ListRenderer");
@@ -50,7 +50,7 @@ public class Sites extends Controller {
     }
 
     public void add_site() throws Exception {
-        PageDict data = new PageDict();
+        PageData data = new PageData();
         Site site = $.loadModel("Site"); // Load model
         Renderer lr = $.loadRenderer("ListRenderer");
         ArrayList<Bean> sites = site.getSites();
@@ -73,7 +73,7 @@ public class Sites extends Controller {
 
     public void edit_site() throws Exception {
         String id = $.input.segment(2);
-        PageDict data = new PageDict();
+        PageData data = new PageData();
         Site site = $.loadModel("Site"); // Load model        
         Renderer lr = $.loadRenderer("ListRenderer");
         ArrayList<Bean> sites = site.getSites();
@@ -90,7 +90,7 @@ public class Sites extends Controller {
 
     public void add_task() throws Exception {
         String id = $.input.segment(2);
-        PageDict data = new PageDict();
+        PageData data = new PageData();
         Site site = $.loadModel("Site"); // Load model  
         Issue issue = $.loadModel("Issue"); // Load model  
         if ($.input.post("label").isEmpty()) {
