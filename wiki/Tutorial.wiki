@@ -121,4 +121,7 @@ public class ListRenderer extends Renderer {
 }
 }}}
 
-The code above loops though the array and builds an unordered list containing the labels of our todo lists.
+The code above loops though the array and builds an unordered list containing the labels of our todo lists. We also need a link to add a list somewhere so add this line just before the opening <ul> tag.
+{{{
+ sb.append(this.anchor("/sites/add_site/", "add site", "id='add_site'"));
+}}}
