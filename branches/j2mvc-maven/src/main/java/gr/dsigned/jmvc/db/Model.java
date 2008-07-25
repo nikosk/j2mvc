@@ -30,43 +30,49 @@ import java.util.LinkedHashMap;
 public class Model {
 
     public enum operands {
+
         GREATER_THAN {
+
             @Override
             public String toString() {
                 return ">";
             }
         },
         LESS_THAN {
+
             @Override
             public String toString() {
                 return "<";
             }
         },
         GREATER_THAN_OR_EQUAL {
+
             @Override
             public String toString() {
                 return ">=";
             }
         },
         LESS_THAN_OR_EQUAL {
+
             @Override
             public String toString() {
                 return ">=";
             }
-        },}
+        },
+    }
     public String tableName = "";
     public DB db;
     public LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
     public LinkedHashMap<String, String> modelDefinition = new LinkedHashMap<String, String>();
-    
+
     /**
      * Creates a new instance of Model
      */
-    public Model() throws Exception{
+    public Model() throws Exception {
         init();
     }
 
-    public Model(String name)throws Exception {
+    public Model(String name) throws Exception {
         this.tableName = name;
         init();
     }
@@ -90,7 +96,7 @@ public class Model {
      * @todo Do something in case we didn't find any data to load
      * @param id The id of the row to load
      */
-    public void load(String id) throws SQLException{
+    public void load(String id) throws SQLException {
         Hashtable<String, String> ht = new Hashtable<String, String>();
         ArrayList<Bean> results = new ArrayList<Bean>();
         ht.put("id", id);
@@ -107,7 +113,7 @@ public class Model {
      * @param table The table name to look into.
      * @param id The id of the row to load
      */
-    public void load(String table, String id) throws SQLException{
+    public void load(String table, String id) throws SQLException {
         Hashtable<String, String> ht = new Hashtable<String, String>();
         ArrayList<Bean> results = new ArrayList<Bean>();
         ht.put("id", id);
@@ -124,7 +130,7 @@ public class Model {
      * @param table The table name to use when storing.
      * @todo Is the table name really needed ?
      */
-    public void store(String table)throws SQLException {
+    public void store(String table) throws SQLException {
         String genID = "";
         ResultSet rs = db.insertRow(table, data);
         while (rs.next()) {
@@ -157,7 +163,7 @@ public class Model {
      * Loads the first row that matches the passed in criteria
      * @param criteria Hashtable where key is a column name and value is the criterion.
      */
-    public void filter(Hashtable<String,String> criteria) throws SQLException{
+    public void filter(Hashtable<String, String> criteria) throws SQLException {
         ArrayList<Bean> results = new ArrayList<Bean>();
         results = db.query(this.tableName, "*", criteria);
         for (LinkedHashMap<String, String> lhm : results) {
@@ -172,7 +178,7 @@ public class Model {
      * @param table The table name to use.
      * @param criteria Hashtable where key is a column name and value is the criterion.
      */
-    public void filter(String table, Hashtable<String,String> criteria) throws SQLException{
+    public void filter(String table, Hashtable<String, String> criteria) throws SQLException {
         ArrayList<Bean> results = new ArrayList<Bean>();
         results = db.query(table, "*", criteria);
         for (LinkedHashMap<String, String> lhm : results) {
@@ -181,11 +187,8 @@ public class Model {
             }
         }
     }
-    
+
     public void delete(String id) throws SQLException {
-
         db.delete(tableName, id);
-        
     }
-
 }
