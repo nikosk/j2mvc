@@ -1,4 +1,5 @@
 #summary General concepts.
+#labels Featured
 
 = Introduction =
 
