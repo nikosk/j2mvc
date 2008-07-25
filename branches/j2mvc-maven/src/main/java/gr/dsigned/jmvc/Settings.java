@@ -19,7 +19,7 @@ public class Settings {
     public static String DATABASE_TYPE = "mysql";    // mysql only for now.
     public static String DB_URL = "localhost"; 
     public static int DB_PORT = 3306;  // default (3306).
-    public static String DB_NAME = "acms"; //Name of the database 
+    public static String DB_NAME = "todolist"; //Name of the database 
     public static String DB_USER = "root";
     public static String DB_PASS = "";
     
