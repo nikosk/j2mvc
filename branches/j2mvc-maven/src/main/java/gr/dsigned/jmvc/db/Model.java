@@ -20,7 +20,6 @@ import gr.dsigned.jmvc.Settings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
 /**
@@ -62,8 +61,8 @@ public class Model {
     }
     public String tableName = "";
     public DB db;
-    public LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
-    public LinkedHashMap<String, String> modelDefinition = new LinkedHashMap<String, String>();
+    public Bean data = new Bean();
+    public Bean modelDefinition = new Bean();
 
     /**
      * Creates a new instance of Model
@@ -95,9 +94,10 @@ public class Model {
      * Loads the data from the db to this models data
      * @todo Do something in case we didn't find any data to load
      * @param id The id of the row to load
+     * @throws SQLException 
      */
     public void load(String id) throws SQLException {
-        Hashtable<String, String> ht = new Hashtable<String, String>();
+        Bean ht = new Bean();
         ArrayList<Bean> results = new ArrayList<Bean>();
         ht.put("id", id);
         results = db.query(tableName, "*", ht);
@@ -114,7 +114,7 @@ public class Model {
      * @param id The id of the row to load
      */
     public void load(String table, String id) throws SQLException {
-        Hashtable<String, String> ht = new Hashtable<String, String>();
+        Bean ht = new Bean();
         ArrayList<Bean> results = new ArrayList<Bean>();
         ht.put("id", id);
         results = db.query(table, "*", ht);
@@ -128,6 +128,7 @@ public class Model {
     /**
      * Stores the data currently stored in the model.
      * @param table The table name to use when storing.
+     * @throws SQLException 
      * @todo Is the table name really needed ?
      */
     public void store(String table) throws SQLException {
@@ -163,7 +164,7 @@ public class Model {
      * Loads the first row that matches the passed in criteria
      * @param criteria Hashtable where key is a column name and value is the criterion.
      */
-    public void filter(Hashtable<String, String> criteria) throws SQLException {
+    public void filter(Bean criteria) throws SQLException {
         ArrayList<Bean> results = new ArrayList<Bean>();
         results = db.query(this.tableName, "*", criteria);
         for (LinkedHashMap<String, String> lhm : results) {
@@ -178,7 +179,7 @@ public class Model {
      * @param table The table name to use.
      * @param criteria Hashtable where key is a column name and value is the criterion.
      */
-    public void filter(String table, Hashtable<String, String> criteria) throws SQLException {
+    public void filter(String table, Bean criteria) throws SQLException {
         ArrayList<Bean> results = new ArrayList<Bean>();
         results = db.query(table, "*", criteria);
         for (LinkedHashMap<String, String> lhm : results) {
