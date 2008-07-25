@@ -4,10 +4,10 @@ j2mvc tutorial
 
 This document will guide you through writing a sample application with j2mvc. The application is a simple todo list. 
 
-You will need:
-A working copy of Mysql.
-A database to work on.
-A copy of j2mvc.
+  * You will need:
+  * A working copy of Mysql.
+  * A database to work on.
+  * A copy of j2mvc.
 
 ==Step 1: Create todo list table==
 
@@ -67,8 +67,6 @@ public class Sites extends Controller {
     }
 }
 }}}
-
-
 
 
 
