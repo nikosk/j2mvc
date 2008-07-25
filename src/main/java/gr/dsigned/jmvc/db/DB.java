@@ -25,8 +25,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,18 +33,20 @@ import java.util.regex.Pattern;
  *
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class DB {   
+public class DB {
+
     protected Connection conn;
-    
-    public Connection getConn()throws SQLException{
-    	return conn;
+
+    public Connection getConn() throws SQLException {
+        return conn;
     }
-    public void closeConn() throws SQLException{
-    	conn.close();
+
+    public void closeConn() throws SQLException {
+        conn.close();
     }
-    
-    public ResultSet executePreparedStatement(String sql, LinkedHashMap<String, String> values) throws SQLException {
-    	PreparedStatement pstmt = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+    public ResultSet executePreparedStatement(String sql, Bean values) throws SQLException {
+        PreparedStatement pstmt = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         int parameterIndex = 1;
         for (String s : values.keySet()) {
             if (values.get(s) == null || values.get(s).equalsIgnoreCase("null")) {
@@ -63,7 +63,7 @@ public class DB {
 
     public ResultSet executeUpdate(String q) throws SQLException {
         Statement stmt = getConn().createStatement();
-        stmt.executeUpdate(q); 
+        stmt.executeUpdate(q);
         closeConn();
         return stmt.getGeneratedKeys();
     }
@@ -72,6 +72,7 @@ public class DB {
      * Executes the given query and returns the result as a ArrayList<LinkedHashMap>
      * @param q The SQL query to execute.
      * @return ArrayList of LinkedHashMap<String,String> Each ArrayList entry is a row.
+     * @throws SQLException 
      */
     public ArrayList<Bean> executeQuery(String q) throws SQLException {
         ArrayList<Bean> result = new ArrayList<Bean>();
@@ -80,7 +81,7 @@ public class DB {
         ResultSet rs = stmt.executeQuery(q);
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
-        String columnName = "" ; // this string is used in the loop so we create it now once instead of every cycle.
+        String columnName = ""; // this string is used in the loop so we create it now once instead of every cycle.
         while (rs.next()) {
             Bean row = new Bean();
             for (int i = 1; i <= columnCount; i++) {
@@ -89,15 +90,15 @@ public class DB {
                     val = "";
                 }
                 columnName = rsmd.getColumnName(i);
-                if(row.containsKey(columnName)){
-                	row.put(rsmd.getTableName(i)+"."+columnName, val);
+                if (row.containsKey(columnName)) {
+                    row.put(rsmd.getTableName(i) + "." + columnName, val);
                 } else {
-                	row.put(columnName, val);
+                    row.put(columnName, val);
                 }
             }
             result.add(row);
             resultIndex++;
-        }        
+        }
         closeConn();
         return result;
     }
@@ -112,66 +113,74 @@ public class DB {
         try {
             DatabaseMetaData dbm = getConn().getMetaData();
             ResultSet tables = dbm.getTables(null, null, table, null);
-            if (tables.next()) {                
+            if (tables.next()) {
                 closeConn();
                 return true;
-            } else {                
+            } else {
                 closeConn();
                 return false;
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
-        } finally{
-        	closeConn();
+        } finally {
+            closeConn();
         }
     }
 
     /**
      * Execute query set
+     * @param qs 
      * @return ArrayList<LinkedHashMap> of results
+     * @throws SQLException 
      */
-    public ArrayList<Bean> get(QuerySet qs) throws SQLException{        
+    public ArrayList<Bean> get(QuerySet qs) throws SQLException {
         return executeQuery(qs.compileSelect());
     }
-    
-    public int count(QuerySet qs) throws SQLException{
-    	ArrayList<Bean> a = executeQuery(qs.compileCount());
-    	if(a.size()>0){
-    		return Integer.parseInt(a.get(0).get("count"));
-    	} else {
-    		throw new SQLException("Failed while counting");
-    	}
+
+    /**
+     * Count returned rows of a querySet
+     * @param qs
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public int count(QuerySet qs) throws SQLException {
+        ArrayList<Bean> a = executeQuery(qs.compileCount());
+        if (a.size() > 0) {
+            return Integer.parseInt(a.get(0).get("count"));
+        } else {
+            throw new SQLException("Failed while counting");
+        }
     }
+
     /**
      * Inserts a row in the given table. 
      * @param table The table name to insert.
      * @param values LinkedHashMap of key => value strings
      * @return returns the id of the record that got created
+     * @throws SQLException 
      */
-    public ResultSet insertRow(String table, LinkedHashMap<String, String> values) throws SQLException {
-        String sql = "INSERT INTO " + table + "(";
-        boolean isFirst = true;
+    public ResultSet insertRow(String table, Bean values) throws SQLException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO ").append(table).append("(");
         for (String s : values.keySet()) {
-            sql += (isFirst) ? "" : ",";
-            isFirst = false;
-            sql += s;
+            sb.append(s).append(",");
         }
-        sql += ") VALUES (";
-        isFirst = true;
-        for (int i= 0;i<values.size();i++) {
-            sql += (isFirst) ? "" : ",";
-            isFirst = false;
-            sql += "?";
+        sb.deleteCharAt(sb.length() - 1); //remove last ','
+        sb.append(") VALUES (");
+        for (int i = 0; i < values.size(); i++) {
+            sb.append("?,");
         }
-        sql += ")";
-        return executePreparedStatement(sql, values);
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(")");
+        return executePreparedStatement(sb.toString(), values);
     }
 
     /**
      * Performs a "SELECT * FROM" query
      * @param table the name of the table
      * @return LinkedHashMap of the resultset
+     * @throws SQLException 
      */
     public ArrayList<Bean> query(String table) throws SQLException {
         String sql = "SELECT * FROM " + table;
@@ -183,6 +192,7 @@ public class DB {
      * @param table name of the table
      * @param cols columns to return separate with comma
      * @return LinkedHashMap of the resultset
+     * @throws SQLException 
      */
     public ArrayList<Bean> query(String table, String cols) throws SQLException {
         String sql = "SELECT " + cols + " FROM " + table;
@@ -197,32 +207,29 @@ public class DB {
      * aHashMap.put("id >","1");
      * equals is used when no operator is used in the key.
      * @return LinkedHashMap of the resultset
+     * @throws SQLException 
      */
-    public ArrayList<Bean> query(String table, String cols, Hashtable<String, String> criteria) throws SQLException {
-        if (cols.isEmpty()) {
-            cols = "*";
-        }
-        String sql = "SELECT " + cols + " FROM " + table + " WHERE ";
-        boolean isFirst = true;
+    public ArrayList<Bean> query(String table, String cols, Bean criteria) throws SQLException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ").append(cols.isEmpty() ? "*" : cols).append(" FROM ").append(table).append(" WHERE ");
+
         for (String key : criteria.keySet()) {
-            if (!isFirst) {
-                sql += " AND ";
-            } else {
-                isFirst = false;
-            }
-            sql += key;
+            sb.append(key);
             if (!hasOperator(key)) {
-                sql += " = ";
+                sb.append(" = ");
             }
-            sql += escape(criteria.get(key));
+            sb.append(escape(criteria.get(key)));
+            sb.append(" AND ");
         }
-        return executeQuery(sql);
+        sb.delete(sb.length() - 5, sb.length()); //delete last " AND "
+        return executeQuery(sb.toString());
     }
 
     /**
      * Drops a table
      *
      * @param table table name to dropTable.
+     * @throws SQLException 
      */
     public void dropTable(String table) throws SQLException {
         if (tableExists(table)) {
@@ -234,18 +241,22 @@ public class DB {
     /**
      * reads the structure and creates the table. (Do not use yet - NOT READY)
      * @param table name of the table to create
+     * @throws SQLException 
      */
     public void create(String table) throws SQLException {
-        if (tableExists(table)) {
-            String sql = "DROP TABLE " + table;
-            executeUpdate(sql);
-        //@TODO Build the sql to create a table then execute
-        }
+        dropTable(table);
+    //@TODO Build the sql to create a table then execute
     }
 
-    public void delete(String tableName, String id) throws SQLException {
+    /**
+     * Deletes a row from a table
+     * @param table
+     * @param id
+     * @throws java.sql.SQLException
+     */
+    public void delete(String table, String id) throws SQLException {
         if (!id.isEmpty()) {
-            String sql = "DELETE FROM " + tableName + " WHERE id=" + id;
+            String sql = "DELETE FROM " + table + " WHERE id=" + id;
             executeUpdate(sql);
         }
     }
@@ -255,21 +266,22 @@ public class DB {
      * the table definition. This might not work for all dbs
      * Primarily used to instrument Models to sync them selfs to the db.
      * 
-     * @param tableName the table name to define.
-     * @throws SQLException 
+     * @param table the table name to define.
+     * @return Bean
+     * @throws SQLException
      */
-    public LinkedHashMap<String, String> tableDef(String tableName) throws SQLException {
+    public Bean tableDef(String table) throws SQLException {
         try {
 
             DatabaseMetaData dbm = getConn().getMetaData(); // Get database meta data  
-            ResultSet pk = dbm.getPrimaryKeys(null, null, tableName); // get list of primary keys
+            ResultSet pk = dbm.getPrimaryKeys(null, null, table); // get list of primary keys
             String primaryKeyColumnName = ""; // store the name of the column that is the pk for later reference            
             while (pk.next()) {
                 primaryKeyColumnName = pk.getString("COLUMN_NAME");
             }
             ///// GET COLUMN DEFS
-            ResultSet columns = dbm.getColumns(null, null, tableName, null); // Get the column meta data.
-            LinkedHashMap<String, String> definition = new LinkedHashMap<String, String>(); // To store the definition. Key = (table) column name, Value = column definition in "attribute:value" pairs (| separated).
+            ResultSet columns = dbm.getColumns(null, null, table, null); // Get the column meta data.
+            Bean definition = new Bean(); // To store the definition. Key = (table) column name, Value = column definition in "attribute:value" pairs (| separated).
             // Iterate through the column definitions and build each column.
             while (columns.next()) {
                 String attr = "";
@@ -298,7 +310,7 @@ public class DB {
                         attr = "type:timestamp" + "|" +
                                 "canBeNull:" + (columns.getString("NULLABLE").equalsIgnoreCase("1") ? "true" : "false");
                         break;
-                    }
+                }
                 if (columns.getString("COLUMN_NAME").equals(primaryKeyColumnName)) {
                     attr += "|key:true";
                 }
@@ -310,7 +322,7 @@ public class DB {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-        	closeConn();
+            closeConn();
         }
         return null;
     }
