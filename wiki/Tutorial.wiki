@@ -24,3 +24,66 @@ CREATE TABLE `todo_lists` (
 
 
 ==Step 2: Create your model==
+
+Models help you group your data access code in one coherent piece of code specifically created to handle conceptually related tasks. This piece of code is called a model and serves as an abstraction of the underlying database. Lets create our first model:
+
+{{{
+package gr.dsigned.jmvc.models;
+public class TodoList extends Model {    
+    public TodoList() throws Exception {
+        this.tableName = "todo_lists";
+    }
+}
+}}}
+
+As you can see from the above code each of your app's model must reside inside the gr.dsigned.jmvc.models package. Your model must extend gr.dsigned.jmvc.db.Model and the constructor throws an exception.
+Be careful to set the name of the table that this model corresponds to because some methods of depend on it.
+
+For the first step we will need to create a method that returns a list of all the todo lists currently stored in the database: 
+
+{{{
+public ArrayList<Bean> getLists() throws SQLException {
+        QuerySet qs = new QuerySet();
+        qs.from("todo_lists");             
+        return db.get(qs);
+    }
+}}}
+
+First we need to explain what Bean and QuerySet are. Bean is a shorthand way of writing LinkedHashMap<String, String>. Bean extends LinkedHashMap and therefore contains all the methods provided by it. 
+QuerySet is a class that helps you write SQL statements, we will see how it works later on.
+
+The above method will return an ArrayList of hashmaps containing the values for each column in the result of the query. Each entry in the ArrayList corresponds to one row from the results and each entry of Bean contains the name/value pair of each column in the result.
+
+Remember you must make all your methods throw an Exception so that the framework reports the error.  
+
+==Step 3: Create you first controller==
+
+Controllers contain the logic in your application. Each controller has methods to handle requests and return the response. As with the models, the controllers must reside in the gr.dsigned.jmvc.controllers package :
+
+{{{
+package gr.dsigned.jmvc.controllers;
+public class Sites extends Controller {
+    public Sites() throws Exception {
+    }
+}
+}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
