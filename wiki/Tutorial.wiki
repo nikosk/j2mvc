@@ -74,11 +74,26 @@ public class Sites extends Controller {
 }
 }}}
 
+Now that we have our controller we need to create the default method. When the controller is called without an action this is the method that gets called: 
 
+{{{
+public void index() throws Exception {
+        PageData data = new PageData();
+        $.loadView("list", data);
+}
+}}}
 
+We just created an empty controller with a default method that only load a template.
+When someone visits the home page of our app we want to show him our todo_lists. That's where our model from step 2 comes in to play:
 
-
-
+{{{
+public void index() throws Exception {
+        PageData data = new PageData();
+        TodoList todoList = $.loadModel("TodoList"); // Load model
+        ArrayList<Bean> todoList = todoList. getLists();  
+        $.loadView("list", data);
+}
+}}}
 
 
 
