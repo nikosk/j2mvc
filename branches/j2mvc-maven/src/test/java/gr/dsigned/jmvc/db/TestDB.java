@@ -10,37 +10,30 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package gr.dsigned.jmvc.models;
+package gr.dsigned.jmvc.db;
 
-import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.framework.Jmvc;
-import java.util.ArrayList;
 import junit.framework.*;
 
 /**
  *
  * @author Alkis Kafkis <a.kafkis@phiresoft.com>
  */
-public class TestSites extends TestCase
-{
-    
-    public void testSites()
-    {
+public class TestDB extends TestCase {
+
+    public void testSites() {
         int answer = 2;
         assertEquals((1 + 1), answer);
     }
 
-    public void testSimpleTest() throws Exception
-    {
-        Jmvc framework = Jmvc.getInstance();        
-        Site site = framework.loadModel("Site");
-
-        ArrayList<Bean> siteFetched = site.getSites();
-        int initialSitesCounter = siteFetched.size();
-        site.insertTest("112");
-        assertEquals(initialSitesCounter + 1, site.getSites().size());
-        site.delete("112");
-        assertEquals(initialSitesCounter, site.getSites().size());
+    public void testCreateDropTable() throws Exception {
+        Jmvc framework = Jmvc.getInstance();
+        
+        if (!framework.db.tableExists("tttt")) {
+            framework.db.create("tttt");
+        }
+        assertTrue(framework.db.tableExists("tttt"));
+        framework.db.dropTable("tttt");
+        assertFalse(framework.db.tableExists("tttt"));
     }
-    
 }

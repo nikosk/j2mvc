@@ -37,11 +37,8 @@ public class Site extends Model {
 
     public void insertTest(String id) throws SQLException {
         this.data.put("id", id);
-        this.data.put("account_id", id);
-        this.data.put("url", "111");
-        this.data.put("click_rate", "111");
-        this.data.put("status_id", id);
-        this.data.put("revenue_split", id);
+        this.data.put("label", id);
+        this.data.put("status", id);
         this.store();
     }
 
