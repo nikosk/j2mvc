@@ -84,7 +84,9 @@ public class Adapter extends HttpServlet {
 	 * @param request
 	 *            servlet request
 	 * @param response
-	 *            servlet response
+         *            servlet response
+         * @throws ServletException
+         * @throws IOException 
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -97,7 +99,9 @@ public class Adapter extends HttpServlet {
 	 * @param request
 	 *            servlet request
 	 * @param response
-	 *            servlet response
+         *            servlet response
+         * @throws ServletException
+         * @throws IOException 
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
