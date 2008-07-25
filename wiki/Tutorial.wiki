@@ -151,8 +151,7 @@ We now have an instance of the ListRenderer and we pass it the ArrayList which r
 He have the data, the logic and now we need to create the view. Views in j2mvc are plain HTML files that contain placeholders that will be replaced with the actual data once the view is loaded.
 
 {{{
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />        
         <title><% title %></title>
@@ -206,3 +205,36 @@ public void insertSite(String label) throws Exception{
         this.store();
 }
 }}}
+
+==Step 9: Create the form==
+
+Now we need a form for our controller in order to input data and submit it back.
+Notice that now the view contains more parameters than the previous.
+
+{{{
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    </head>
+    <body>
+        <div id="doc" class="yui-t7">
+            <div id="hd"><h1>To do list</h1></div>
+            <div id="bd">
+                <div class="yui-g">	 
+                    <form action="<%action%>" method="post">
+                        <input type="text" size="10" name="label" value="<%label%>"></input>
+                        <input type="hidden" value="<%redirect_to%>" name="redirect_to"></input>
+                        <button type="submit" value="Go" name="go">Go</button>
+                    </form>      
+                </div>                
+            </div>
+            <div id="ft">Footer is here.</div>
+        </div>
+    </body>
+</html>
+}}}
+
+==Step 10: Test your app so far==
+
+Run the project (mvn jetty:run) and test adding lists. 
+Go to http:localhost:8080/ which only contains a link to add more for now. Click on that
