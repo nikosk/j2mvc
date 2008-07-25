@@ -1,3 +1,4 @@
+#labels Featured
 j2mvc tutorial
 
 = Introduction =
@@ -123,5 +124,56 @@ public class ListRenderer extends Renderer {
 
 The code above loops though the array and builds an unordered list containing the labels of our todo lists. We also need a link to add a list somewhere so add this line just before the opening <ul> tag.
 {{{
- sb.append(this.anchor("/sites/add_site/", "add site", "id='add_site'"));
+ sb.append(anchor("/sites/add_list/", "add list", "id='add_list'"));
 }}}
+
+The anchor is one of the helper methods contained in the Renderer super class and helps you build links to controllers. 
+
+==Step 5: Use the renderer to display the lists==
+
+Now that the renderer is ready we can use it in our controller.
+
+{{{
+public void index() throws Exception {
+        PageData data = new PageData();
+        TodoList todoList = $.loadModel("TodoList"); // Load model
+        ArrayList<Bean> todoList = todoList. getLists();  // Get all lists
+        ListRenderer lr = new ListRenderer();
+        data.put("list", lr. renderLists(todoList));
+        $.loadView("list", data);
+}
+}}}
+
+We now have an instance of the ListRenderer and we pass it the ArrayList which returns the rendered HTML. The final step is to add the html to the PageData object and load the template.
+
+==Step 6: Create the view==
+
+He have the data, the logic and now we need to create the view. Views in j2mvc are plain HTML files that contain placeholders that will be replaced with the actual data once the view is loaded.
+
+{{{
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title><% title %></title>
+        <% styles-yui-all-min %>
+        <% styles-typography %>
+        <% mootools %> 
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    </head>
+    <body>
+        <div id="doc" class="yui-t7">
+            <div id="hd"><h1>To do list</h1></div>
+            <div id="bd">
+                <div class="yui-g">
+                    <%content%>
+                </div>
+                
+            </div>
+            <div id="ft">Footer is here.</div>
+        </div>
+    </body>
+</html>
+}}}
+
