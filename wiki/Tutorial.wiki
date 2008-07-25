@@ -95,11 +95,24 @@ public void index() throws Exception {
 }
 }}}
 
-By adding just 2 lines we now have an ArrayList of our todo lists. All we need to do now is put the results in HTML and display them. This is where Renderers come in to play. A common task in web applications is the retrieval of data from the database which we render in HTML and send them to the browser. Instead of polluting are controller logic with ugly loops going through the data and appending HTML tags we use a Renderer to  do this job elsewhere. This way our controller is clean and readable and we also have the ability to reuse the rendering code elsewhere.
+By adding just 2 lines we now have an ArrayList of our todo lists. All we need to do now is put the results in HTML and display them. This is where Renderers come in to play. A common task in web applications is the retrieval of data from the database which we render in HTML and send them to the browser. Instead of polluting our controller logic with ugly loops going through the data and appending HTML tags we use a Renderer to  do this job elsewhere. This way our controller is clean and readable and we also have the ability to reuse the rendering code elsewhere.
 
 
+==Step 4: Create a Renderer for the todo lists==
 
+Create a class in the package gr.dsigned.jmvc.renderers with the following structure:
 
+{{{
+package gr.dsigned.jmvc.renderers;
+
+public class ListRenderer extends Renderer {
+
+    public String renderLists(ArrayList<Bean> sites) {
+        StringBuilder sb = new StringBuilder();
+        return sb.toString();
+    }
+}
+}}}
 
 
 
