@@ -1,0 +1,26 @@
+j2mvc tutorial
+
+= Introduction =
+
+This document will guide you through writing a sample application with j2mvc. The application is a simple todo list. 
+
+You will need:
+A working copy of Mysql.
+A database to work on.
+A copy of j2mvc.
+
+==Step 1: Create todo list table==
+
+Assuming you have installed Mysql and created a database you will also need to create the tables that hold your data.
+First we will create a table to hold your todo lists :
+
+{{{
+CREATE TABLE `todo_lists` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `label` varchar(45) NOT NULL,
+  PRIMARY KEY  (`id`)
+) DEFAULT CHARSET=utf8 ;
+}}}
+
+
+==Step 2: Create your model==
