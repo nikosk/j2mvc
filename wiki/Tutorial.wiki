@@ -29,10 +29,13 @@ Models help you group your data access code in one coherent piece of code specif
 
 {{{
 package gr.dsigned.jmvc.models;
-public class TodoList extends Model {    
+
+public class TodoList extends Model {
+    
     public TodoList() throws Exception {
         this.tableName = "todo_lists";
     }
+
 }
 }}}
 
@@ -46,7 +49,7 @@ public ArrayList<Bean> getLists() throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("todo_lists");             
         return db.get(qs);
-    }
+}
 }}}
 
 First we need to explain what Bean and QuerySet are. Bean is a shorthand way of writing LinkedHashMap<String, String>. Bean extends LinkedHashMap and therefore contains all the methods provided by it. 
@@ -62,13 +65,14 @@ Controllers contain the logic in your application. Each controller has methods t
 
 {{{
 package gr.dsigned.jmvc.controllers;
+
 public class Sites extends Controller {
+
     public Sites() throws Exception {
     }
+
 }
 }}}
-
-
 
 
 
