@@ -66,9 +66,9 @@ Controllers contain the logic in your application. Each controller has methods t
 {{{
 package gr.dsigned.jmvc.controllers;
 
-public class Sites extends Controller {
+public class TodoLists extends Controller {
 
-    public Sites() throws Exception {
+    public TodoLists() throws Exception {
     }
 
 }
@@ -107,13 +107,18 @@ package gr.dsigned.jmvc.renderers;
 
 public class ListRenderer extends Renderer {
 
-    public String renderLists(ArrayList<Bean> sites) {
+    public String renderLists(ArrayList<Bean> lists) {
         StringBuilder sb = new StringBuilder();
+        sb.append("<ul>");
+        for(Bean list : lists){
+                 sb.append("<li>");
+                 sb.append(list.get("label"));
+                 sb.append("</li>");                 
+        }
+        sb.append("</ul>");
         return sb.toString();
     }
 }
 }}}
 
-
-
-
+The code above loops though the array and builds an unordered list containing the labels of our todo lists.
