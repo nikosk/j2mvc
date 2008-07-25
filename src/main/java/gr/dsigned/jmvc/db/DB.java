@@ -245,7 +245,12 @@ public class DB {
      */
     public void create(String table) throws SQLException {
         dropTable(table);
-    //@TODO Build the sql to create a table then execute
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("CREATE TABLE ").append(table).append(" (id int(10) unsigned NOT NULL auto_increment,");
+        sb.append(" PRIMARY KEY (id))").append(" ENGINE=InnoDB ").append(" DEFAULT CHARSET=utf8 ");
+        System.out.println(sb.toString());
+        executeUpdate(sb.toString());
     }
 
     /**
