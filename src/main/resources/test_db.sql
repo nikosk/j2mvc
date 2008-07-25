@@ -7,6 +7,10 @@
 -- Server version: 5.0.45
 -- PHP Version: 5.2.5
 
+CREATE DATABASE `todolist`;
+
+USE todolist;
+
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 -- 
