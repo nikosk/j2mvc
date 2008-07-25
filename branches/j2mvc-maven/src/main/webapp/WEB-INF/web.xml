@@ -4,10 +4,10 @@
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
     <servlet>
-        <description>Entry point to JMVC. Everything is called from here.</description>
         <servlet-name>
             Adapter
         </servlet-name>
+        <description>Entry point to JMVC. Everything is called from here.</description>
         <servlet-class>
             gr.dsigned.jmvc.Adapter
         </servlet-class>
