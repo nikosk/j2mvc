@@ -13,9 +13,6 @@
 package gr.dsigned.jmvc.models;
 
 import junit.framework.*;
-import gr.dsigned.jmvc.framework.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
  *
