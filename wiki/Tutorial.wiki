@@ -162,9 +162,7 @@ He have the data, the logic and now we need to create the view. Views in j2mvc a
             <div id="hd"><h1>To do list</h1></div>
             <div id="bd">
                 <div class="yui-g">
-}}}
-                    *<% list %>*
-{{{
+                    <% list %>
                 </div>                
             </div>
             <div id="ft">Footer is here.</div>
@@ -173,4 +171,39 @@ He have the data, the logic and now we need to create the view. Views in j2mvc a
 </html>
 }}}
 
-The view contains tags in the form <% variable name %> tha will be replaced by the data with the same name you pass in the PageData object in your controller.
+The view contains tags in the form <% variable name %> tha will be replaced by the data with the same name you pass in the PageData object in your controller. In our case the tag <% list %> will be replaced with the HTML we got from our renderer.
+
+
+==Step 7: Add method to add a new list==
+
+Create a new method in your controller :
+
+{{{
+public void add_site() throws Exception {
+        PageData data = new PageData();
+        Site site = $.loadModel("Site"); // Load model
+        ArrayList<Bean> sites = site.getSites();
+        if ($.input.post("label").isEmpty()) {
+            data.put("label", "");
+            data.put("action", "/sites/add_list/");
+            data.put("redirect_to", "/" + $.input.segment(0));
+            $.loadView("list_form", data);
+        } else {
+            site.insertSite($.input.post("label"));
+            $.response.sendRedirect($.input.post("redirect_to"));
+        }
+    }
+}}}
+
+The above method when accessed normally ( GET ) will display a form to add a new list. When this form is filled and submitted the controller will get the data, insert a new row in the database and redirect to the default controller method.
+
+==Step 8: Add the appropriate methods in the model==
+After we received the data back from the form we need to save them. This is a task that should be handled by our model. Let's add the method that gets the label of the todo list and save it in the database.
+
+{{{
+public void insertSite(String label) throws Exception{
+        this.data.put("label", label);
+        this.store();
+}
+}}}
+
