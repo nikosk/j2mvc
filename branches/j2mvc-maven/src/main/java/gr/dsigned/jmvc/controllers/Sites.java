@@ -39,7 +39,6 @@ public class Sites extends Controller {
         Issue issue = $.loadModel("Issue");
         Renderer lr = $.loadRenderer("ListRenderer");
         LinkedHashMap<String,ArrayList<Bean>> issues = new LinkedHashMap<String,ArrayList<Bean>>();
-        Bean sitesNissues = new Bean();
         ArrayList<Bean> sites = site.getSites();  
         for(Bean s : sites){
             issues.put(s.get("label"), issue.getBySiteId(s.get("id")));

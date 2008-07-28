@@ -21,7 +21,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,39 +45,38 @@ public class DB {
     }
 
     public ResultSet executePreparedStatement(String sql, Bean values) throws SQLException {
-        PreparedStatement pstmt = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        int parameterIndex = 1;
-        for (String s : values.keySet()) {
-            if (values.get(s) == null || values.get(s).equalsIgnoreCase("null")) {
-                pstmt.setNull(parameterIndex, Types.NULL);
-            } else {
-                pstmt.setObject(parameterIndex, values.get(s));
+        PreparedStatement pstmt = getConn().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        if (values != null) {
+            int parameterIndex = 1;
+            for (String s : values.keySet()) {
+                if (values.get(s) == null || values.get(s).equalsIgnoreCase("null")) {
+                    pstmt.setNull(parameterIndex, Types.NULL);
+                } else {
+                    pstmt.setObject(parameterIndex, values.get(s));
+                }
+                parameterIndex++;
             }
-            parameterIndex++;
         }
         pstmt.executeUpdate();
         closeConn();
         return pstmt.getGeneratedKeys();
     }
 
-    public ResultSet executeUpdate(String q) throws SQLException {
-        Statement stmt = getConn().createStatement();
-        stmt.executeUpdate(q);
-        closeConn();
-        return stmt.getGeneratedKeys();
+    public ResultSet executePreparedStatement(String sql) throws SQLException {
+        return executePreparedStatement(sql, null);
     }
 
     /**
      * Executes the given query and returns the result as a ArrayList<LinkedHashMap>
-     * @param q The SQL query to execute.
+     * @param sql The SQL query to execute.
      * @return ArrayList of LinkedHashMap<String,String> Each ArrayList entry is a row.
      * @throws SQLException 
      */
-    public ArrayList<Bean> executeQuery(String q) throws SQLException {
+    public ArrayList<Bean> executeQuery(String sql) throws SQLException {
         ArrayList<Bean> result = new ArrayList<Bean>();
         int resultIndex = 0;
-        Statement stmt = getConn().createStatement();
-        ResultSet rs = stmt.executeQuery(q);
+        PreparedStatement pstmt = getConn().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        ResultSet rs = pstmt.executeQuery(sql);
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
         String columnName = ""; // this string is used in the loop so we create it now once instead of every cycle.
@@ -234,7 +232,7 @@ public class DB {
     public void dropTable(String table) throws SQLException {
         if (tableExists(table)) {
             String sql = "DROP TABLE " + table;
-            executeUpdate(sql);
+            executePreparedStatement(sql);
         }
     }
 
@@ -245,12 +243,12 @@ public class DB {
      */
     public void create(String table) throws SQLException {
         dropTable(table);
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE ").append(table).append(" (id int(10) unsigned NOT NULL auto_increment,");
         sb.append(" PRIMARY KEY (id))").append(" ENGINE=InnoDB ").append(" DEFAULT CHARSET=utf8 ");
         System.out.println(sb.toString());
-        executeUpdate(sb.toString());
+        executePreparedStatement(sb.toString());
     }
 
     /**
@@ -262,7 +260,7 @@ public class DB {
     public void delete(String table, String id) throws SQLException {
         if (!id.isEmpty()) {
             String sql = "DELETE FROM " + table + " WHERE id=" + id;
-            executeUpdate(sql);
+            executePreparedStatement(sql);
         }
     }
 
