@@ -7,7 +7,6 @@ package gr.dsigned.jmvc.models;
 import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 
 /**
@@ -20,22 +19,15 @@ public class Issue extends Model {
         tableName = "issues";
     }
     
-    public ArrayList<Bean> getBySiteId(String siteId) throws Exception {
+    public ArrayList<Bean> getIssuesBySiteId(String siteId) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("issues");
         qs.where("site_id",siteId, Operands.EQUAL.toString());
         qs.orderBy("id", "ASC");
         return db.getList(qs);
     }
-    
-    public Bean getIssueById(String id) throws Exception {
-        QuerySet qs = new QuerySet();
-        qs.from("issues");
-        qs.where("id", id, Operands.EQUAL.toString());
-        return db.getObject(qs);
-    }
 
-    public ResultSet insertIssue(String siteId, String label, String description) throws Exception {
+    public Bean insertIssue(String siteId, String label, String description) throws Exception {
         QuerySet qs = new QuerySet();
         qs.table(tableName);
         qs.insert("site_id", siteId);

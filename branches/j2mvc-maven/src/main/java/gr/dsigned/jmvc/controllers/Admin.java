@@ -120,7 +120,7 @@ public class Admin extends Controller {
             PageData data = new PageData();
             // Lookup segment 2 (the article id)
             String article_id = $.input.segment(2);
-            article.load(article_id);
+            Bean currentArticle = article.getById(article_id);
             $.loadView("admin/control_panel", data);
         } else {
             $.response.sendRedirect("/admin");

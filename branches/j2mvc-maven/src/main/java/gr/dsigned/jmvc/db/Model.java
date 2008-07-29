@@ -16,11 +16,7 @@ package gr.dsigned.jmvc.db;
 
 import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.Settings;
-
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
  *
@@ -77,89 +73,22 @@ public class Model {
      * ORM Methods
      ***************************************************************************/
     /**
-     * Loads the data from the db to this models data
+     * Retrieves a bean from the db
      * @todo Do something in case we didn't find any data to load
      * @param id The id of the row to load
-     * @throws SQLException 
+     * @return 
+     * @throws SQLException
      */
-    public void load(String id) throws SQLException {
-        Bean ht = new Bean();
-        ArrayList<Bean> results = new ArrayList<Bean>();
-        ht.put("id", id);
-        results = db.query(tableName, "*", ht);
-        for (LinkedHashMap<String, String> lhm : results) {
-            for (String s : lhm.keySet()) {
-                data.put(s, lhm.get(s));
-            }
-        }
-    }
-
-    /**
-     * Loads the data from the db to this models data.
-     * @param table The table name to look into.
-     * @param id The id of the row to load
-     */
-    public void load(String table, String id) throws SQLException {
-        Bean ht = new Bean();
-        ArrayList<Bean> results = new ArrayList<Bean>();
-        ht.put("id", id);
-        results = db.query(table, "*", ht);
-        for (LinkedHashMap<String, String> lhm : results) {
-            for (String s : lhm.keySet()) {
-                data.put(s, lhm.get(s));
-            }
-        }
-    }
-
-    /**
-     * Store the current Model object to the db.
-     * @throws SQLException 
-     * @TODO Check for required fields and fail if such a field is missing.
-     */
-    public void store() throws SQLException {
-//        String genID = "";
-//        ResultSet rs = db.insertRow(tableName, data);
-//        try {
-//            while (rs.next()) {
-//                genID = rs.getString(1);
-//            }
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//        }
-//        this.load(genID);
+    public Bean getById(String id) throws SQLException {
+        QuerySet qs = new QuerySet();
+        qs.from(tableName);
+        qs.where("id", id, Operands.EQUAL.toString());
+        return db.getObject(qs);
     }
 
     /***************************************************************************
      *  QuerySets
      ***************************************************************************/
-    /**
-     * Loads the first row that matches the passed in criteria
-     * @param criteria Hashtable where key is a column name and value is the criterion.
-     */
-    public void filter(Bean criteria) throws SQLException {
-        ArrayList<Bean> results = new ArrayList<Bean>();
-        results = db.query(this.tableName, "*", criteria);
-        for (LinkedHashMap<String, String> lhm : results) {
-            for (String s : lhm.keySet()) {
-                data.put(s, lhm.get(s));
-            }
-        }
-    }
-
-    /**
-     * Loads the first row that matches the passed in criteria
-     * @param table The table name to use.
-     * @param criteria Hashtable where key is a column name and value is the criterion.
-     */
-    public void filter(String table, Bean criteria) throws SQLException {
-        ArrayList<Bean> results = new ArrayList<Bean>();
-        results = db.query(table, "*", criteria);
-        for (LinkedHashMap<String, String> lhm : results) {
-            for (String s : lhm.keySet()) {
-                data.put(s, lhm.get(s));
-            }
-        }
-    }
 
     public void delete(String id) throws SQLException {
         db.delete(tableName, id);
