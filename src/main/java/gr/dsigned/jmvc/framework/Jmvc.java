@@ -80,7 +80,7 @@ public class Jmvc
      * processed.
      * 
      * @param req
-     *            (passed from the adapter)
+     * (passed from the adapter)
      */
     public void setRequest(HttpServletRequest req)
     {
@@ -279,7 +279,7 @@ public class Jmvc
      * @return the model
      */
     @SuppressWarnings("unchecked")
-    public <T extends Model> T loadModel(String modelName) throws ClassNotFoundException, InstantiationException,
+    public static <T extends Model> T loadModel(String modelName) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException
     {
         Class<T> c = (Class<T>) Class.forName("gr.dsigned.jmvc.models." + modelName);

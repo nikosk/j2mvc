@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.db.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Renderer;
 import gr.dsigned.jmvc.libraries.PageData;
@@ -51,10 +51,10 @@ public class Sites extends Controller {
     public void add_site() throws Exception {
         PageData data = new PageData();
         Site site = $.loadModel("Site"); // Load model
-        Renderer lr = $.loadRenderer("ListRenderer");
         ArrayList<Bean> sites = site.getSites();
         if ($.input.post("label").isEmpty()) {
             data.put("label", "");
+            data.put("action", "/sites/add_site/");
             data.put("redirect_to", "/" + $.input.segment(0));
             $.loadView("list_form", data);
         } else {
@@ -78,6 +78,8 @@ public class Sites extends Controller {
         ArrayList<Bean> sites = site.getSites();
         if ($.input.post("label").isEmpty()) {
             site.load(id);
+            data.put("id", id);
+            data.put("action", "/sites/edit_site/"+id);
             data.put("label", site.data.get("label"));
             data.put("redirect_to", "/" + $.input.segment(0));
             $.loadView("list_form", data);
@@ -95,6 +97,7 @@ public class Sites extends Controller {
         if ($.input.post("label").isEmpty()) {
             data.put("id", id);
             data.put("label", "");
+            data.put("action", "/sites/add_task/"+id);
             data.put("description", "");
             data.put("redirect_to", "/" + $.input.segment(0));
             $.loadView("list_form_add_task", data);

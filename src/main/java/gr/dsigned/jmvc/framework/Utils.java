@@ -14,6 +14,11 @@
  */
 package gr.dsigned.jmvc.framework;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *
  * @author Nikosk <nikosk@dsigned.gr>
@@ -25,5 +30,58 @@ public class Utils {
             return s;
         }
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+    }
+    
+    /***************************************************************************
+    *     DB Utility methods
+    ***************************************************************************/
+    
+    
+    /**
+     * Given a string it tries to find if the string
+     * contains a valid SQL logic operator
+     * @param str An SQL String
+     * @return true or false
+     */
+    public static boolean hasOperator(String str) {
+        Pattern p = Pattern.compile("[<>=!]|(?i)is null|(?i)is not null");
+        Matcher m = p.matcher(str);
+        boolean b = m.find();
+        return b;
+    }
+
+    public static String escape(String str) {
+        if (str == null) {
+            str = "null";
+        }
+        if (!isNumeric(str) && !str.equals("null") && !isDate(str) && !str.isEmpty()) {
+            str = "'" + str + "'";
+        }
+        return str;
+    }
+
+    public static boolean isNumeric(String str) {
+        if (str == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+    }
+
+    public static boolean isDate(String str) {
+        SimpleDateFormat d = new SimpleDateFormat("yyyy-mm-dd");
+        if (str == null) {
+            return false;
+        }
+        try {
+            d.parse(str);
+            return true;
+        } catch (ParseException ex) {
+            return false;
+        }
     }
 }
