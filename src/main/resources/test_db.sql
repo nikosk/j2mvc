@@ -114,3 +114,35 @@ CREATE TABLE `status_types` (
 -- Dumping data for table `status_types`
 -- 
 
+DROP TABLE IF EXISTS `articles`;
+CREATE TABLE `articles` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `feed_id` int(8) DEFAULT NULL,
+  `title` varchar(300) NOT NULL,
+  `real_title` varchar(300) DEFAULT NULL,
+  `sub_title` varchar(300) DEFAULT NULL,
+  `lead_in` varchar(150) DEFAULT NULL,
+  `content` varchar(20000) NOT NULL,
+  `url` varchar(250) DEFAULT NULL,
+  `uri` varchar(250) DEFAULT NULL,
+  `published` datetime NOT NULL,
+  `updated` datetime DEFAULT NULL,
+  `category_id` int(8) DEFAULT NULL,
+  `signature` varchar(100) DEFAULT NULL,
+  `user_id` int(8) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `Index_2` (`published`)
+) ENGINE=MyISAM AUTO_INCREMENT=54871 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `CATEGORIES`;
+CREATE TABLE `categories` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(8) DEFAULT NULL,
+  `priority` int(8) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `display_name` varchar(100) DEFAULT NULL,
+  `enabled` int(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
+
