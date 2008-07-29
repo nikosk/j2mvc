@@ -230,60 +230,15 @@ public class DB {
     /**
      * Inserts a row in the given table. 
      * @param qs the queryset with the sql template and the data to insert
-     * @return returns the id of the record that got created
+     * @return returns the Bean that was inserted with its auto-generated key
      * @throws SQLException 
      */
-    public ResultSet insert(QuerySet qs) throws SQLException {
-        return executeUpdate(qs.compileInsert(), qs.getData());
-    }
-
-    /**
-     * Performs a "SELECT * FROM" query
-     * @param table the name of the table
-     * @return LinkedHashMap of the resultset
-     * @throws SQLException 
-     */
-    public ArrayList<Bean> query(String table) throws SQLException {
-        String sql = "SELECT * FROM " + table;
-        return executeQueryForList(sql, null);
-    }
-
-    /**
-     * Performs a "SELECT cols FROM table" query
-     * @param table name of the table
-     * @param cols columns to return separate with comma
-     * @return LinkedHashMap of the resultset
-     * @throws SQLException 
-     */
-    public ArrayList<Bean> query(String table, String cols) throws SQLException {
-        String sql = "SELECT " + cols + " FROM " + table;
-        return executeQueryForList(sql, null);
-    }
-
-    /**
-     * Performs a "SELECT cols FROM table WHERE criteria" query 
-     * @param table name of the table
-     * @param cols columns to return separate with comma
-     * @param criteria Hashmap where key is the column and value is the criterion
-     * aHashMap.put("id >","1");
-     * equals is used when no operator is used in the key.
-     * @return LinkedHashMap of the resultset
-     * @throws SQLException 
-     */
-    public ArrayList<Bean> query(String table, String cols, Bean criteria) throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ").append(cols.isEmpty() ? "*" : cols).append(" FROM ").append(table).append(" WHERE ");
-
-        for (String key : criteria.keySet()) {
-            sb.append(key);
-            if (!hasOperator(key)) {
-                sb.append(" = ");
-            }
-            sb.append(escape(criteria.get(key)));
-            sb.append(" AND ");
+    public Bean insert(QuerySet qs) throws SQLException {
+        ResultSet rs = executeUpdate(qs.compileInsert(), qs.getData());
+        if (rs.next()) {
+            qs.getData().put("id",rs.getString(1));
         }
-        sb.delete(sb.length() - 5, sb.length()); //delete last " AND "
-        return executeQueryForList(sb.toString(), null);
+        return qs.getData();
     }
 
     /**

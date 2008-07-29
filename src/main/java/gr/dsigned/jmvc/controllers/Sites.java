@@ -45,7 +45,7 @@ public class Sites extends Controller {
         LinkedHashMap<String,ArrayList<Bean>> issues = new LinkedHashMap<String,ArrayList<Bean>>();
         ArrayList<Bean> sites = site.getSites();  
         for(Bean s : sites){
-            issues.put(s.get("label"), issue.getBySiteId(s.get("id")));
+            issues.put(s.get("label"), issue.getIssuesBySiteId(s.get("id")));
         }
         data.put("label", "");        
         data.put("content", lr.runMethod("renderLists", sites, issues));
@@ -91,7 +91,6 @@ public class Sites extends Controller {
     public void add_site() throws Exception {
         PageData data = new PageData();
         Site site = $.loadModel("Site"); // Load model
-        ArrayList<Bean> sites = site.getSites();
         if ($.input.post("label").isEmpty()) {
             data.put("label", "");
             data.put("action", "/sites/add_site/");
@@ -113,18 +112,16 @@ public class Sites extends Controller {
     public void edit_site() throws Exception {
         String id = $.input.segment(2);
         PageData data = new PageData();
-        Site site = $.loadModel("Site"); // Load model        
-        Renderer lr = $.loadRenderer("ListRenderer");
-        ArrayList<Bean> sites = site.getSites();
+        Site siteModel = $.loadModel("Site"); // Load model        
         if ($.input.post("label").isEmpty()) {
-            site.load(id);
+            Bean site = siteModel.getById(id);
             data.put("id", id);
             data.put("action", "/sites/edit_site/"+id);
-            data.put("label", site.data.get("label"));
+            data.put("label", site.get("label"));
             data.put("redirect_to", "/" + $.input.segment(0));
             $.loadView("list_form", data);
         } else {
-            site.updateSite($.input.post("label"));
+            siteModel.updateSite($.input.post("label"),id);
             $.response.sendRedirect($.input.post("redirect_to"));
         }
     }
@@ -132,7 +129,6 @@ public class Sites extends Controller {
     public void add_task() throws Exception {
         String id = $.input.segment(2);
         PageData data = new PageData();
-        Site site = $.loadModel("Site"); // Load model  
         Issue issue = $.loadModel("Issue"); // Load model  
         if ($.input.post("label").isEmpty()) {
             data.put("id", id);

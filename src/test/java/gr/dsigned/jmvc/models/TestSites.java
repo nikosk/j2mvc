@@ -33,14 +33,14 @@ public class TestSites extends TestCase
     public void testSimpleTest() throws Exception
     {
         Jmvc framework = Jmvc.getInstance();        
-        Site site = framework.loadModel("Site");
+        Site siteModel = framework.loadModel("Site");
 
-        ArrayList<Bean> siteFetched = site.getSites();
+        ArrayList<Bean> siteFetched = siteModel.getSites();
         int initialSitesCounter = siteFetched.size();
-        site.insertTest("112");
-        assertEquals(initialSitesCounter + 1, site.getSites().size());
-        site.delete("112");
-        assertEquals(initialSitesCounter, site.getSites().size());
+        Bean site = siteModel.insertSite("112");
+        assertEquals(initialSitesCounter + 1, siteModel.getSites().size());
+        siteModel.delete(site.get("id"));
+        assertEquals(initialSitesCounter, siteModel.getSites().size());
     }
     
 }

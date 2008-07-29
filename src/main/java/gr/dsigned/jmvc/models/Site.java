@@ -14,38 +14,30 @@ import java.util.LinkedHashMap;
 public class Site extends Model {
 
     public Site() throws Exception {
-        this.tableName = "sites";
+        tableName = "sites";
     }
-
+    
     public ArrayList<Bean> getSites() throws SQLException {
         QuerySet qs = new QuerySet();
-        qs.from("sites");
+        qs.from(tableName);
         qs.orderBy("label", "DESC");
         return db.getList(qs);
     }
 
-    public void insertSite(String label) throws Exception {
+    public Bean insertSite(String label) throws Exception {
         QuerySet qs = new QuerySet();
         qs.table(tableName);
         qs.insert("label", label);
         qs.insert("status", "1");
-        db.insert(qs);
+        return db.insert(qs);
     }
 
-    public void updateSite(String label) throws Exception {
+    public void updateSite(String label, String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.table(tableName);
         qs.update("label", label);
+        qs.where("id", id, Operands.EQUAL.toString());
         db.update(qs);        
-    }
-
-    public void insertTest(String id) throws SQLException {
-        QuerySet qs = new QuerySet();
-        qs.table(tableName);
-        qs.insert("id", id);
-        qs.insert("label", id);
-        qs.insert("status", "1");
-        db.insert(qs);                
     }
 
     public void deleteTest(String id) throws SQLException {
