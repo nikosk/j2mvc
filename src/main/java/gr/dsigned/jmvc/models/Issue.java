@@ -7,6 +7,7 @@ package gr.dsigned.jmvc.models;
 import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 /**
@@ -16,21 +17,39 @@ import java.util.ArrayList;
 public class Issue extends Model {
 
     public Issue() throws Exception {
-        this.tableName = "issues";
+        tableName = "issues";
     }
-
+    
     public ArrayList<Bean> getBySiteId(String siteId) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("issues");
-        qs.where("site_id = " + siteId);
+        qs.where("site_id",siteId, Operands.EQUAL.toString());
         qs.orderBy("id", "ASC");
-        return db.get(qs);
+        return db.getList(qs);
+    }
+    
+    public Bean getIssueById(String id) throws Exception {
+        QuerySet qs = new QuerySet();
+        qs.from("issues");
+        qs.where("id", id, Operands.EQUAL.toString());
+        return db.getObject(qs);
     }
 
-    public void insertIssue(String siteId, String label, String description) throws Exception {
-        this.data.put("site_id", siteId);
-        this.data.put("label", label);
-        this.data.put("description", description);
-        this.store();
+    public ResultSet insertIssue(String siteId, String label, String description) throws Exception {
+        QuerySet qs = new QuerySet();
+        qs.table(tableName);
+        qs.insert("site_id", siteId);
+        qs.insert("label", label);
+        qs.insert("description", description);
+        return db.insert(qs);
+    }
+    
+    public void updateIssue(String id, String label, String description) throws Exception {
+        QuerySet qs = new QuerySet();
+        qs.table(tableName);
+        qs.update("label", label);
+        qs.update("description", description);
+        qs.where("id", id, Operands.EQUAL.toString());
+        db.update(qs);
     }
 }

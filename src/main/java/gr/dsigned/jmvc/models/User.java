@@ -33,10 +33,10 @@ public class User extends Model {
     public boolean auth(String username, String password) throws Exception {
         // TODO Fix db to escape values properly
         QuerySet qs = new QuerySet();
-        qs.where("username = '" + username + "'");
-        qs.where("password = '" + password + "'");
+        qs.where("username", username, Operands.EQUAL.toString());
+        qs.where("password", password, Operands.EQUAL.toString());
         qs.from(this.tableName);
-        ArrayList<Bean> al = db.get(qs);
+        ArrayList<Bean> al = db.getList(qs);
         return (al.size() > 0) ? true : false;
     }
 }

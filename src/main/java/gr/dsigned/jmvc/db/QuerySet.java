@@ -14,6 +14,8 @@
  */
 package gr.dsigned.jmvc.db;
 
+import gr.dsigned.jmvc.Bean;
+
 /**
  * This object permits you to chain 
  * commands to build a query. QuerySets do not
@@ -30,6 +32,11 @@ public class QuerySet {
     private String whereSet;
     private String orderBySet;
     private String limitSet;
+    private String updateSet;
+    private String insertSet;
+    private String valuesSet;
+    private String table;
+    private Bean data;
 
     /**
      * Build the select statement.
@@ -90,28 +97,6 @@ public class QuerySet {
         return this;
     }
 
-    /**
-     * Builds the where part. If its called more than once it seperates 
-     * clauses with AND
-     * @param clause post.id = "something"
-     * @return QuerySet
-     */
-    public QuerySet where(String clause) {
-        whereSet = (whereSet == null) ? "\nWHERE " + clause : whereSet + "\nAND " + clause;
-        return this;
-    }
-
-    /**
-     * Builds the where part. If its called more than once it seperates 
-     * clauses with OR
-     * @param clause post.id = "something"
-     * @return QuerySet
-     */
-    public QuerySet orWhere(String clause) {
-        whereSet = (whereSet == null || whereSet.isEmpty()) ? whereSet + clause : whereSet + " OR " + clause;
-        return this;
-    }
-
     public QuerySet orderBy(String field, String direction) {
         orderBySet = "\nORDER BY " + field + " " + direction;
         return this;
@@ -126,6 +111,7 @@ public class QuerySet {
         limitSet = "\nLIMIT " + limit;
         return this;
     }
+
     /**
      * Build the LIMIT part
      * @param limit
@@ -136,31 +122,126 @@ public class QuerySet {
         limitSet = "\nLIMIT " + limit + ", " + offset;
         return this;
     }
+
     /**
      * Builds the query and returns an sql string.
      * @return SQL query
      */
     protected String compileSelect() {
-        String sql = (distinctSet) ? "SELECT DISTINCT " : "SELECT ";
-        sql += (selectSet == null) ? "*" : selectSet;
-        sql += (fromSet == null) ? "FROM" : fromSet;
-        sql += (joinSet == null) ? "" : joinSet;
-        sql += (whereSet == null) ? "" : whereSet;
-        sql += (orderBySet == null) ? "" : orderBySet;
-        sql += (limitSet == null) ? "" : limitSet;
-        System.out.println(sql);
-        return sql;
+        StringBuilder sb = new StringBuilder();
+        sb.append(distinctSet ? "SELECT DISTINCT " : "SELECT ");
+        sb.append(selectSet == null ? "*" : selectSet);
+        sb.append(fromSet == null ? "FROM" : fromSet);
+        sb.append(joinSet == null ? "" : joinSet);
+        sb.append(whereSet == null ? "" : whereSet);
+        sb.append(orderBySet == null ? "" : orderBySet);
+        sb.append(limitSet == null ? "" : limitSet);
+
+        System.out.println(sb.toString());
+        return sb.toString();
     }
-    
+
     protected String compileCount() {
-        String sql = (distinctSet) ? "SELECT DISTINCT " : "SELECT ";
-        sql += "count(*) AS count";
-        sql += (fromSet == null) ? "FROM" : fromSet;
-        sql += (joinSet == null) ? "" : joinSet;
-        sql += (whereSet == null) ? "" : whereSet;
-        sql += (orderBySet == null) ? "" : orderBySet;
-        sql += (limitSet == null) ? "" : limitSet;
-        System.out.println(sql);
-        return sql;
+        StringBuilder sb = new StringBuilder();
+        sb.append(distinctSet ? "SELECT DISTINCT " : "SELECT ");
+        sb.append("count(*) AS count");
+        sb.append(fromSet == null ? "FROM" : fromSet);
+        sb.append(joinSet == null ? "" : joinSet);
+        sb.append(whereSet == null ? "" : whereSet);
+        sb.append(orderBySet == null ? "" : orderBySet);
+        sb.append(limitSet == null ? "" : limitSet);
+
+        System.out.println(sb.toString());
+        return sb.toString();
+    }
+
+    protected String compileUpdate() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("UPDATE ").append(table);
+        sb.append(updateSet);
+        sb.append(whereSet == null ? "" : whereSet);
+
+        System.out.println(sb.toString());
+        return sb.toString();
+    }
+
+    public Bean getData() {
+        return data;
+    }
+
+    public void setData(Bean data) {
+        this.data = data;
+    }
+
+    public QuerySet table(String tableName) {
+        table = tableName;
+        return this;
+    }
+
+    public QuerySet update(String key, String value) {
+        if (updateSet == null) {
+            updateSet = "\nSET ";
+        } else {
+            updateSet += ",";
+        }
+        updateSet += key + "=?";
+
+        if (data == null) {
+            data = new Bean();
+        }
+        data.put(key, value);
+        return this;
+    }
+
+    private QuerySet where(String key, String value, String operand, String type) {
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += key + operand + "? ";
+
+        if (data == null) {
+            data = new Bean();
+        }
+        data.put(key, value);
+        return this;
+    }
+
+    public QuerySet orWhere(String key, String value, String operand) {
+        return where(key, value, operand, "OR");
+    }
+
+    public QuerySet where(String key, String value, String operand) {
+        return where(key, value, operand, "AND");
+    }
+
+    public QuerySet insert(String key, String value) {
+        if (insertSet == null) {
+            insertSet = "";
+            valuesSet = "";
+        } else {
+            insertSet += ",";
+            valuesSet += ",";
+        }
+        insertSet += key;
+        valuesSet += "?";
+
+        if (data == null) {
+            data = new Bean();
+        }
+        data.put(key, value);
+        return this;
+    }
+
+    protected String compileInsert() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO ").append(table);
+        sb.append("(").append(insertSet).append(")");
+        sb.append(" VALUES ");
+        sb.append("(").append(valuesSet).append(")");
+        System.out.println(sb.toString());
+        return sb.toString();
     }
 }

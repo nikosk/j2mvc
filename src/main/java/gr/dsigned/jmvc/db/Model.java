@@ -28,36 +28,22 @@ import java.util.LinkedHashMap;
  */
 public class Model {
 
-    public enum operands {
+    public enum Operands {
 
-        GREATER_THAN {
-
-            @Override
-            public String toString() {
-                return ">";
-            }
-        },
-        LESS_THAN {
-
-            @Override
-            public String toString() {
-                return "<";
-            }
-        },
-        GREATER_THAN_OR_EQUAL {
-
-            @Override
-            public String toString() {
-                return ">=";
-            }
-        },
-        LESS_THAN_OR_EQUAL {
-
-            @Override
-            public String toString() {
-                return ">=";
-            }
-        },
+        EQUAL ("="),
+        GREATER_THAN (">"),
+        LESS_THAN ("<"),
+        GREATER_THAN_OR_EQUAL (">="),
+        LESS_THAN_OR_EQUAL (">=");
+        
+        private final String value;
+        Operands(String value) {
+            this.value = value;
+        }
+        @Override
+        public String toString() {
+            return value;
+        }
     }
     public String tableName = "";
     public DB db;
@@ -126,35 +112,21 @@ public class Model {
     }
 
     /**
-     * Stores the data currently stored in the model.
-     * @param table The table name to use when storing.
-     * @throws SQLException 
-     * @todo Is the table name really needed ?
-     */
-    public void store(String table) throws SQLException {
-        String genID = "";
-        ResultSet rs = db.insertRow(table, data);
-        while (rs.next()) {
-            genID = rs.getString(1);
-        }
-        load(table, genID);
-    }
-
-    /**
      * Store the current Model object to the db.
+     * @throws SQLException 
      * @TODO Check for required fields and fail if such a field is missing.
      */
     public void store() throws SQLException {
-        String genID = "";
-        ResultSet rs = db.insertRow(tableName, data);
-        try {
-            while (rs.next()) {
-                genID = rs.getString(1);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        this.load(genID);
+//        String genID = "";
+//        ResultSet rs = db.insertRow(tableName, data);
+//        try {
+//            while (rs.next()) {
+//                genID = rs.getString(1);
+//            }
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//        }
+//        this.load(genID);
     }
 
     /***************************************************************************
