@@ -44,7 +44,7 @@ public class DB {
         conn.close();
     }
 
-    public ResultSet executePreparedStatement(String sql, Bean values) throws SQLException {
+    public ResultSet executeUpdate(String sql, Bean values) throws SQLException {
         PreparedStatement pstmt = getConn().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
@@ -62,21 +62,77 @@ public class DB {
         return pstmt.getGeneratedKeys();
     }
 
-    public ResultSet executePreparedStatement(String sql) throws SQLException {
-        return executePreparedStatement(sql, null);
+    public ResultSet executeUpdate(String sql) throws SQLException {
+        return executeUpdate(sql, null);
     }
 
     /**
      * Executes the given query and returns the result as a ArrayList<LinkedHashMap>
      * @param sql The SQL query to execute.
+     * @param values 
      * @return ArrayList of LinkedHashMap<String,String> Each ArrayList entry is a row.
      * @throws SQLException 
      */
-    public ArrayList<Bean> executeQuery(String sql) throws SQLException {
+    public Bean executeQueryForObject(String sql, Bean values) throws SQLException {
+        Bean result = null;
+        PreparedStatement pstmt = getConn().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        if (values != null) {
+            int parameterIndex = 1;
+            for (String s : values.keySet()) {
+                if (values.get(s) == null || values.get(s).equalsIgnoreCase("null")) {
+                    pstmt.setNull(parameterIndex, Types.NULL);
+                } else {
+                    pstmt.setObject(parameterIndex, values.get(s));
+                }
+                parameterIndex++;
+            }
+        }        
+        ResultSet rs = pstmt.executeQuery();
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        String columnName = ""; // this string is used in the loop so we create it now once instead of every cycle.
+        if (rs.next()) {
+            result = new Bean();
+            for (int i = 1; i <= columnCount; i++) {
+                String val = rs.getString(i);
+                if (val == null) {
+                    val = "";
+                }
+                columnName = rsmd.getColumnName(i);
+                if (result.containsKey(columnName)) {
+                    result.put(rsmd.getTableName(i) + "." + columnName, val);
+                } else {
+                    result.put(columnName, val);
+                }
+            }
+        }
+        closeConn();
+        return result;
+    }
+    
+    /**
+     * Executes the given query and returns the result as a ArrayList<LinkedHashMap>
+     * @param sql The SQL query to execute.
+     * @param values 
+     * @return ArrayList of LinkedHashMap<String,String> Each ArrayList entry is a row.
+     * @throws SQLException 
+     */
+    public ArrayList<Bean> executeQueryForList(String sql, Bean values) throws SQLException {
         ArrayList<Bean> result = new ArrayList<Bean>();
         int resultIndex = 0;
         PreparedStatement pstmt = getConn().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-        ResultSet rs = pstmt.executeQuery(sql);
+        if (values != null) {
+            int parameterIndex = 1;
+            for (String s : values.keySet()) {
+                if (values.get(s) == null || values.get(s).equalsIgnoreCase("null")) {
+                    pstmt.setNull(parameterIndex, Types.NULL);
+                } else {
+                    pstmt.setObject(parameterIndex, values.get(s));
+                }
+                parameterIndex++;
+            }
+        }         
+        ResultSet rs = pstmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
         String columnName = ""; // this string is used in the loop so we create it now once instead of every cycle.
@@ -132,8 +188,28 @@ public class DB {
      * @return ArrayList<LinkedHashMap> of results
      * @throws SQLException 
      */
-    public ArrayList<Bean> get(QuerySet qs) throws SQLException {
-        return executeQuery(qs.compileSelect());
+    public ArrayList<Bean> getList(QuerySet qs) throws SQLException {
+        return executeQueryForList(qs.compileSelect(), qs.getData());
+    }
+
+    /**
+     * Execute query set
+     * @param qs 
+     * @return Bean
+     * @throws SQLException 
+     */
+    public Bean getObject(QuerySet qs) throws SQLException {
+        return executeQueryForObject(qs.compileSelect(), qs.getData());
+    }
+
+    /**
+     * Execute an update query set
+     * @param qs 
+     * @return ArrayList<LinkedHashMap> of results
+     * @throws SQLException 
+     */
+    public ResultSet update(QuerySet qs) throws SQLException {
+        return executeUpdate(qs.compileUpdate(), qs.getData());
     }
 
     /**
@@ -143,9 +219,9 @@ public class DB {
      * @throws java.sql.SQLException
      */
     public int count(QuerySet qs) throws SQLException {
-        ArrayList<Bean> a = executeQuery(qs.compileCount());
+        Bean a = executeQueryForObject(qs.compileCount(), qs.getData());
         if (a.size() > 0) {
-            return Integer.parseInt(a.get(0).get("count"));
+            return Integer.parseInt(a.get("count"));
         } else {
             throw new SQLException("Failed while counting");
         }
@@ -153,25 +229,12 @@ public class DB {
 
     /**
      * Inserts a row in the given table. 
-     * @param table The table name to insert.
-     * @param values LinkedHashMap of key => value strings
+     * @param qs the queryset with the sql template and the data to insert
      * @return returns the id of the record that got created
      * @throws SQLException 
      */
-    public ResultSet insertRow(String table, Bean values) throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ").append(table).append("(");
-        for (String s : values.keySet()) {
-            sb.append(s).append(",");
-        }
-        sb.deleteCharAt(sb.length() - 1); //remove last ','
-        sb.append(") VALUES (");
-        for (int i = 0; i < values.size(); i++) {
-            sb.append("?,");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append(")");
-        return executePreparedStatement(sb.toString(), values);
+    public ResultSet insert(QuerySet qs) throws SQLException {
+        return executeUpdate(qs.compileInsert(), qs.getData());
     }
 
     /**
@@ -182,7 +245,7 @@ public class DB {
      */
     public ArrayList<Bean> query(String table) throws SQLException {
         String sql = "SELECT * FROM " + table;
-        return executeQuery(sql);
+        return executeQueryForList(sql, null);
     }
 
     /**
@@ -194,7 +257,7 @@ public class DB {
      */
     public ArrayList<Bean> query(String table, String cols) throws SQLException {
         String sql = "SELECT " + cols + " FROM " + table;
-        return executeQuery(sql);
+        return executeQueryForList(sql, null);
     }
 
     /**
@@ -220,7 +283,7 @@ public class DB {
             sb.append(" AND ");
         }
         sb.delete(sb.length() - 5, sb.length()); //delete last " AND "
-        return executeQuery(sb.toString());
+        return executeQueryForList(sb.toString(), null);
     }
 
     /**
@@ -232,7 +295,7 @@ public class DB {
     public void dropTable(String table) throws SQLException {
         if (tableExists(table)) {
             String sql = "DROP TABLE " + table;
-            executePreparedStatement(sql);
+            executeUpdate(sql);
         }
     }
 
@@ -248,7 +311,7 @@ public class DB {
         sb.append("CREATE TABLE ").append(table).append(" (id int(10) unsigned NOT NULL auto_increment,");
         sb.append(" PRIMARY KEY (id))").append(" ENGINE=InnoDB ").append(" DEFAULT CHARSET=utf8 ");
         System.out.println(sb.toString());
-        executePreparedStatement(sb.toString());
+        executeUpdate(sb.toString());
     }
 
     /**
@@ -260,7 +323,7 @@ public class DB {
     public void delete(String table, String id) throws SQLException {
         if (!id.isEmpty()) {
             String sql = "DELETE FROM " + table + " WHERE id=" + id;
-            executePreparedStatement(sql);
+            executeUpdate(sql);
         }
     }
 

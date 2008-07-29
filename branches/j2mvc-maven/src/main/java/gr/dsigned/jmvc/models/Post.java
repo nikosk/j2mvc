@@ -35,14 +35,14 @@ public class Post extends gr.dsigned.jmvc.db.Model {
         qs.from("posts");
         qs.orderBy("pub_date", "DESC");
         qs.limit(numberToFetch);
-        return db.get(qs);
+        return db.getList(qs);
     }
 
     public ArrayList<Bean> getPostsInInterval(Date from, Date to) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("posts");
         qs.orderBy("pub_date", "DESC");
-        return db.get(qs);
+        return db.getList(qs);
     }
 }
 

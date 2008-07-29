@@ -21,25 +21,31 @@ public class Site extends Model {
         QuerySet qs = new QuerySet();
         qs.from("sites");
         qs.orderBy("label", "DESC");
-        return db.get(qs);
+        return db.getList(qs);
     }
 
     public void insertSite(String label) throws Exception {
-        this.data.put("label", label);
-        this.data.put("status", "1");
-        this.store();
+        QuerySet qs = new QuerySet();
+        qs.table(tableName);
+        qs.insert("label", label);
+        qs.insert("status", "1");
+        db.insert(qs);
     }
 
     public void updateSite(String label) throws Exception {
-        this.data.put("label", label);
-        this.store();
+        QuerySet qs = new QuerySet();
+        qs.table(tableName);
+        qs.update("label", label);
+        db.update(qs);        
     }
 
     public void insertTest(String id) throws SQLException {
-        this.data.put("id", id);
-        this.data.put("label", id);
-        this.data.put("status", id);
-        this.store();
+        QuerySet qs = new QuerySet();
+        qs.table(tableName);
+        qs.insert("id", id);
+        qs.insert("label", id);
+        qs.insert("status", "1");
+        db.insert(qs);                
     }
 
     public void deleteTest(String id) throws SQLException {

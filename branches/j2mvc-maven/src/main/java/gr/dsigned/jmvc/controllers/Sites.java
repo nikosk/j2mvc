@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.db.Bean;
+import gr.dsigned.jmvc.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Renderer;
 import gr.dsigned.jmvc.libraries.PageData;

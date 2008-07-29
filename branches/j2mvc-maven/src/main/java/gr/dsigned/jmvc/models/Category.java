@@ -35,6 +35,6 @@ public class Category extends Model {
     public ArrayList<Bean> getCategories() throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from(this.tableName);
-        return db.get(qs);
+        return db.getList(qs);
     }
 }
