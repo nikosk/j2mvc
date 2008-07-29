@@ -15,8 +15,12 @@
 package gr.dsigned.jmvc.controllers;
 
 import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.ValidationRules;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Renderer;
+import gr.dsigned.jmvc.libraries.Form;
+import gr.dsigned.jmvc.libraries.Form.HtmlControl;
+import gr.dsigned.jmvc.libraries.Form.ValidationType;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.models.Issue;
 import gr.dsigned.jmvc.models.Site;
@@ -45,7 +49,43 @@ public class Sites extends Controller {
         }
         data.put("label", "");        
         data.put("content", lr.runMethod("renderLists", sites, issues));
-        $.loadView("list", data);
+        $.loadView("list", data);    
+    }
+    
+    public void show_form() throws Exception {
+        
+        String paramValue1 = $.input.post("first_name");
+        String paramValue2 = $.input.post("last_name");
+        String paramValue3 = $.input.post("email");
+        
+        Form f = $.loadLibrary("Form");
+               
+        f.addField("first_name", HtmlControl.INPUT_TEXT, ValidationType.TEXT, paramValue1 , new ValidationRules(true,1,10) );
+        f.addField("last_name", HtmlControl.INPUT_TEXT,ValidationType.TEXT_ALLOW_EMPTY, paramValue2, new ValidationRules(false,0,10));
+        f.addField("email", HtmlControl.INPUT_TEXT,ValidationType.EMAIL, paramValue3, new ValidationRules(true,1,30));
+        
+        
+      // f.addField("first_name", HtmlControl.INPUT_TEXT, "required|max=30|min=20|");
+        PageData data = new PageData();
+         
+        boolean firstTime = false;
+        String param = $.input.segment(2);
+        if(param!=null){
+            if(param.equals("firstHit")){
+                firstTime = true;
+            }
+        }
+        
+        if(!firstTime){
+            f.validateFields();
+        }
+        
+        if(firstTime || f.errors.size() > 0 ) {     
+            data.put("form", f.renderForm());
+            $.loadView("testing_forms", data);   
+        }else{
+            $.response.sendRedirect($.input.post("redirect_to"));
+        }        
     }
 
     public void add_site() throws Exception {
@@ -62,7 +102,7 @@ public class Sites extends Controller {
             $.response.sendRedirect($.input.post("redirect_to"));
         }
     }
-
+    
     public void delete_site() throws Exception {
         String id = $.input.segment(2);
         Site site = $.loadModel("Site"); // Load model
