@@ -14,7 +14,7 @@
             <div id="hd"><h1>To do list</h1></div>
             <div id="bd">
                 <div class="yui-g">	 
-                    <form action="/sites/add_site/" method="post">
+                    <form action="<%action%>" method="post">
                         <input type="text" size="10" name="label" value="<%label%>"></input>
                         <input type="hidden" value="<%redirect_to%>" name="redirect_to"></input>
                         <button type="submit" value="Go" name="go">Go</button>

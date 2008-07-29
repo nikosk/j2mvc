@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.renderers;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.db.Bean;
 import gr.dsigned.jmvc.framework.Renderer;
 
 import java.util.ArrayList;
