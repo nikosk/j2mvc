@@ -22,30 +22,20 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class DB {
+public abstract class DB {
 
-    protected Connection conn;
-
-    public Connection getConn() throws SQLException {
-        return conn;
-    }
-
-    public void closeConn() throws SQLException {
-        conn.close();
-    }
+    public abstract Connection getConn() throws SQLException;
+    public abstract void closeConn(Connection conn) throws SQLException;
 
     public ResultSet executeUpdate(String sql, Bean values) throws SQLException {
-        PreparedStatement pstmt = getConn().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        Connection conn = getConn();
+        PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
             for (String s : values.keySet()) {
@@ -58,7 +48,7 @@ public class DB {
             }
         }
         pstmt.executeUpdate();
-        closeConn();
+        closeConn(conn);
         return pstmt.getGeneratedKeys();
     }
 
@@ -75,7 +65,8 @@ public class DB {
      */
     public Bean executeQueryForObject(String sql, Bean values) throws SQLException {
         Bean result = null;
-        PreparedStatement pstmt = getConn().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        Connection conn = getConn();
+        PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
             for (String s : values.keySet()) {
@@ -86,7 +77,7 @@ public class DB {
                 }
                 parameterIndex++;
             }
-        }        
+        }
         ResultSet rs = pstmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -106,10 +97,10 @@ public class DB {
                 }
             }
         }
-        closeConn();
+        closeConn(conn);
         return result;
     }
-    
+
     /**
      * Executes the given query and returns the result as a ArrayList<LinkedHashMap>
      * @param sql The SQL query to execute.
@@ -120,7 +111,8 @@ public class DB {
     public ArrayList<Bean> executeQueryForList(String sql, Bean values) throws SQLException {
         ArrayList<Bean> result = new ArrayList<Bean>();
         int resultIndex = 0;
-        PreparedStatement pstmt = getConn().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        Connection conn = getConn();
+        PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
             for (String s : values.keySet()) {
@@ -131,7 +123,7 @@ public class DB {
                 }
                 parameterIndex++;
             }
-        }         
+        }
         ResultSet rs = pstmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -153,7 +145,7 @@ public class DB {
             result.add(row);
             resultIndex++;
         }
-        closeConn();
+        closeConn(conn);
         return result;
     }
 
@@ -164,21 +156,22 @@ public class DB {
      * @throws SQLException 
      */
     public boolean tableExists(String table) throws SQLException {
+        Connection conn = getConn();
         try {
-            DatabaseMetaData dbm = getConn().getMetaData();
+            DatabaseMetaData dbm = conn.getMetaData();
             ResultSet tables = dbm.getTables(null, null, table, null);
             if (tables.next()) {
-                closeConn();
+                closeConn(conn);
                 return true;
             } else {
-                closeConn();
+                closeConn(conn);
                 return false;
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
         } finally {
-            closeConn();
+            closeConn(conn);
         }
     }
 
@@ -236,7 +229,7 @@ public class DB {
     public Bean insert(QuerySet qs) throws SQLException {
         ResultSet rs = executeUpdate(qs.compileInsert(), qs.getData());
         if (rs.next()) {
-            qs.getData().put("id",rs.getString(1));
+            qs.getData().put("id", rs.getString(1));
         }
         return qs.getData();
     }
@@ -292,9 +285,9 @@ public class DB {
      * @throws SQLException
      */
     public Bean tableDef(String table) throws SQLException {
+        Connection conn = getConn();
         try {
-
-            DatabaseMetaData dbm = getConn().getMetaData(); // Get database meta data  
+            DatabaseMetaData dbm = conn.getMetaData(); // Get database meta data  
             ResultSet pk = dbm.getPrimaryKeys(null, null, table); // get list of primary keys
             String primaryKeyColumnName = ""; // store the name of the column that is the pk for later reference            
             while (pk.next()) {
@@ -336,66 +329,15 @@ public class DB {
                     attr += "|key:true";
                 }
                 definition.put(columns.getString("COLUMN_NAME"), attr);
-                closeConn();
+                closeConn(conn);
                 return definition;
             }
         /// @todo close resultsets
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            closeConn();
+            closeConn(conn);
         }
         return null;
-    }
-
-    /***************************************************************************
-     *     Utility private methods
-     ***************************************************************************/
-    /**
-     * Given a string it tries to find if the string
-     * contains a valid SQL logic operator
-     * @param str An SQL String
-     * @return true or false
-     */
-    private static boolean hasOperator(String str) {
-        Pattern p = Pattern.compile("[<>=!]|(?i)is null|(?i)is not null");
-        Matcher m = p.matcher(str);
-        boolean b = m.find();
-        return b;
-    }
-
-    private static String escape(String str) {
-        if (str == null) {
-            str = "null";
-        }
-        if (!isNumeric(str) && !str.equals("null") && !isDate(str) && !str.isEmpty()) {
-            str = "'" + str + "'";
-        }
-        return str;
-    }
-
-    private static boolean isNumeric(String str) {
-        if (str == null) {
-            return false;
-        }
-        try {
-            Integer.parseInt(str);
-            return true;
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-    }
-
-    private static boolean isDate(String str) {
-        SimpleDateFormat d = new SimpleDateFormat("yyyy-mm-dd");
-        if (str == null) {
-            return false;
-        }
-        try {
-            d.parse(str);
-            return true;
-        } catch (ParseException ex) {
-            return false;
-        }
     }
 }
