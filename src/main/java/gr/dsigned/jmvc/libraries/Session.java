@@ -17,6 +17,7 @@ package gr.dsigned.jmvc.libraries;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.framework.Library;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,23 +29,51 @@ import javax.servlet.http.HttpSession;
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Session extends Library {
-	HttpServletRequest request;
-	HttpSession session;
-	
-	public Session(HttpServletRequest req){
-		this.session = req.getSession();
-		this.session.setMaxInactiveInterval(Settings.SESSION_EXPIRY);
-	}
-	
-	public String data(String paramName){
-		return (session.getAttribute(paramName) == null) ? "" :session.getAttribute(paramName).toString();
-	}
-	public void set(String key, String value){
-		session.setAttribute(key, value);
-	}
-	public void setData(HashMap<String,String> data){
-		for(String key : data.keySet()){
-			this.session.setAttribute(key, data.get(key));
-		}
-	}
+
+    HttpServletRequest request;
+    HttpSession session;
+    public HashMap<String, String> permHM = new HashMap<String, String>();
+    public HashMap<String, String> tempHM = new HashMap<String, String>();
+
+    public Session(HttpServletRequest req) {
+        session = req.getSession(false);
+        if (session != null) {
+            Enumeration enames = session.getAttributeNames();
+            while (enames.hasMoreElements()) {
+                String name = (String) enames.nextElement();
+                String value = "" + session.getAttribute(name);
+                if (name.substring(0, 1).equals("t")) {
+                    tempHM.put(name, value);
+                    session.removeAttribute(name);
+                }
+                else {
+                    permHM.put(name, value);
+                }
+            }
+        }
+    }
+
+    public String data(String paramName) {
+        if (tempHM.containsKey(paramName)) {
+            return tempHM.get(paramName);
+        }
+        else {
+            return permHM.get(paramName);
+        }
+    }
+
+    public void set(String key, String value) {
+        session.setAttribute(key, value);
+        tempHM.put(key, value) ;
+    }
+
+    public void setTemp(String key, String value) {
+        session.setAttribute("t_" + key, value);
+    }
+
+    public void setData(HashMap<String, String> data) {
+        for (String key : data.keySet()) {
+            this.session.setAttribute(key, data.get(key));
+        }
+    }
 }
