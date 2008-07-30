@@ -4,7 +4,7 @@
  */
 package gr.dsigned.jmvc.models;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Jmvc;
 import java.util.ArrayList;
 import junit.framework.*;

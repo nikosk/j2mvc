@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.models.Article;
 import gr.dsigned.jmvc.renderers.BlogRenderer;

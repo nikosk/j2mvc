@@ -5,7 +5,7 @@
 
 package gr.dsigned.jmvc.libraries;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Library;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
