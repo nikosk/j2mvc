@@ -27,17 +27,13 @@ import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
  */
 public class MysqlDB extends DB {
 
-    private static MysqlDB instance = null;
-    MiniConnectionPoolManager poolMgr;
-    //private String			url			= buildURL();
+    private static final MysqlDB INSTANCE = new MysqlDB();
+    private static MiniConnectionPoolManager poolMgr;
+
     /**
      * Creates a new instance of MysqlDB
      */
-    private MysqlDB() throws Exception {
-        init();
-    }
-
-    private void init() throws Exception {
+    private MysqlDB() {
         MysqlConnectionPoolDataSource ds = new MysqlConnectionPoolDataSource();
         ds.setDatabaseName(Settings.DB_NAME);
         ds.setServerName(Settings.DB_URL);
@@ -49,19 +45,17 @@ public class MysqlDB extends DB {
         poolMgr = new MiniConnectionPoolManager(ds, 20);
     }
 
+    public static MysqlDB getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
     public Connection getConn() throws SQLException {
-        conn = poolMgr.getConnection();
-        return conn;
+        return poolMgr.getConnection();
     }
 
-    public void closeConn() throws SQLException {
+    @Override
+    public void closeConn(Connection conn) throws SQLException {
         conn.close();
-    }
-
-    public static MysqlDB getInstance() throws Exception {
-        if (instance == null) {
-            instance = new MysqlDB();
-        }
-        return instance;
     }
 }

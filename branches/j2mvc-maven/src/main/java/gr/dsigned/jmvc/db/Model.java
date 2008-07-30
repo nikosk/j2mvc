@@ -61,7 +61,7 @@ public class Model {
     private void init() throws Exception {
         if (!Settings.DATABASE_TYPE.equalsIgnoreCase("none")) {
             if (Settings.DATABASE_TYPE.equalsIgnoreCase("mysql")) {
-                db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
+                db = MysqlDB.getInstance();
             }
         }
     }
