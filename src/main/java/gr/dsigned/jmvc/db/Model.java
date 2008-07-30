@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.db;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.Settings;
 import java.sql.SQLException;
 

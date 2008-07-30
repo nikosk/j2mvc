@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package gr.dsigned.jmvc;
+package gr.dsigned.jmvc.types;
 
 import java.util.LinkedHashMap;
 

@@ -14,17 +14,15 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.Bean;
+import static gr.dsigned.jmvc.forms.Field.Rule.*;
+import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Controller;
-import gr.dsigned.jmvc.framework.Renderer;
-import gr.dsigned.jmvc.libraries.NewForms;
-import gr.dsigned.jmvc.libraries.NewForms.FormElems;
+import gr.dsigned.jmvc.forms.NewForms;
+import gr.dsigned.jmvc.forms.fields.CharField;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.models.Issue;
 import gr.dsigned.jmvc.models.Site;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import static gr.dsigned.jmvc.types.operators.*;
 
 /**
  *
@@ -36,32 +34,22 @@ public class Forms extends Controller {
     }
 
     public void index() throws Exception {
-        PageData data = new PageData();
-        Site site = $.loadModel("Site"); // Load model
-        Issue issue = $.loadModel("Issue");
-        Renderer lr = $.loadRenderer("ListRenderer");
-        LinkedHashMap<String, ArrayList<Bean>> issues = new LinkedHashMap<String, ArrayList<Bean>>();
-        ArrayList<Bean> sites = site.getSites();
-        for (Bean s : sites) {
-            issues.put(s.get("label"), issue.getIssuesBySiteId(s.get("id")));
-        }
-        data.put("label", "");
-        data.put("content", lr.runMethod("renderLists", sites, issues));
-        $.loadView("list", data);
+       $.response.sendRedirect("/forms/show_form");
     }
 
     public void show_form() throws Exception {
+        NewForms f = new NewForms();
 
-        String paramValue1 = $.input.post("first_name");
-        String paramValue2 = $.input.post("last_name");
-        String paramValue3 = $.input.post("email");
-
-        NewForms f = $.loadLibrary("NewForms");
-
-        f.addField("label", FormElems.INPUT_TEXT, "required", "max_length:255");
-        f.addField("email", FormElems.HIDDEN, "required");
-        f.addField("domain", FormElems.TEXTAREA);
-        f.addField("redirect_to", FormElems.HIDDEN, "numeric");
+//        f.addField("label", FormElems.INPUT_TEXT, "required", "max_length:255");
+//        f.addField("email", FormElems.HIDDEN, "required");
+//        f.addField("domain", FormElems.TEXTAREA);
+//        f.addField("redirect_to", FormElems.HIDDEN, "numeric");
+        
+        f.setFields( 
+                new CharField("label",$.input.post("label"),o(REQUIRED,"true")),
+                new CharField("email",$.input.post("email"),o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
+                new CharField("textbox", "" , o(EMAIL,"true"))
+        );
 
         PageData data = new PageData();
         data.put("form", f.build());

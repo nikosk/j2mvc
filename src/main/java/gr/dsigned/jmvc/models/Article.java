@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.models;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.types.Bean;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;

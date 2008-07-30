@@ -1,6 +1,6 @@
 package gr.dsigned.jmvc.models;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
 import java.sql.SQLException;

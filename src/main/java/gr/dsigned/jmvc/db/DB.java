@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.db;
 
-import gr.dsigned.jmvc.Bean;
+import gr.dsigned.jmvc.types.Bean;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
