@@ -69,9 +69,6 @@ public class Model {
     /**********************************************************************************
      * General DB methods
      **********************************************************************************/
-    /***************************************************************************
-     * ORM Methods
-     ***************************************************************************/
     /**
      * Retrieves a bean from the db
      * @todo Do something in case we didn't find any data to load
@@ -85,10 +82,19 @@ public class Model {
         qs.where("id", id, Operands.EQUAL.toString());
         return db.getObject(qs);
     }
-
-    /***************************************************************************
-     *  QuerySets
-     ***************************************************************************/
+    
+    /**
+     * Inserts a bean into the db
+     * @param bean The bean to insert
+     * @return 
+     * @throws SQLException
+     */
+    public Bean insert(Bean bean) throws SQLException {
+        QuerySet qs = new QuerySet();
+        qs.table(tableName);
+        qs.insert(bean);
+        return db.insert(qs);
+    }
 
     public void delete(String id) throws SQLException {
         db.delete(tableName, id);
