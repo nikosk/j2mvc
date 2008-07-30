@@ -235,6 +235,13 @@ public class QuerySet {
         return this;
     }
 
+    public QuerySet insert(Bean bean) {
+        for (String key : bean.keySet()) {
+            insert(key, bean.get(key));
+        }
+        return this;
+    }
+
     protected String compileInsert() {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ").append(table);
