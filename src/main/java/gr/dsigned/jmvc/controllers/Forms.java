@@ -18,6 +18,7 @@ import static gr.dsigned.jmvc.forms.Field.Rule.*;
 import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.forms.NewForms;
+import gr.dsigned.jmvc.forms.fields.ButtonField;
 import gr.dsigned.jmvc.forms.fields.CharField;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.models.Issue;
@@ -38,21 +39,21 @@ public class Forms extends Controller {
     }
 
     public void show_form() throws Exception {
+        PageData data = new PageData();
         NewForms f = new NewForms();
-
-//        f.addField("label", FormElems.INPUT_TEXT, "required", "max_length:255");
-//        f.addField("email", FormElems.HIDDEN, "required");
-//        f.addField("domain", FormElems.TEXTAREA);
-//        f.addField("redirect_to", FormElems.HIDDEN, "numeric");
-        
         f.setFields( 
                 new CharField("label",$.input.post("label"),o(REQUIRED,"true")),
-                new CharField("email",$.input.post("email"),o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
-                new CharField("textbox", "" , o(EMAIL,"true"))
+                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
+                new ButtonField("textbox", "" , o(EMAIL,"true"))
         );
-
-        PageData data = new PageData();
-        data.put("form", f.build());
+        if($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()){
+            data.put("form", "success");
+        } else {
+            String form = "<form action='/forms/show_form' method='post'>";
+            form += f.build();
+            form += "</form>";
+            data.put("form", form);
+        }        
         $.loadView("testing_forms", data);
     }
 

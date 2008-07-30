@@ -1,5 +1,5 @@
 /*
- *  CharField.java
+ *  ButtonField.java
  * 
  *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
  * 
@@ -15,22 +15,24 @@
 package gr.dsigned.jmvc.forms.fields;
 
 import gr.dsigned.jmvc.forms.Field;
+import gr.dsigned.jmvc.forms.Field.Rule;
 import gr.dsigned.jmvc.types.Tuple2;
 
 /**
- *
- * @author Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  
+ * @author Nikosk <nikosk@dsigned.gr>
  */
-public class CharField extends Field {
+public class ButtonField extends Field {
 
-    String template = "<input type='text' name='%1$s' id='%1$s' value='%2$s'/>%n";
+    String template = "<input type='submit'>";
 
-    public CharField(String fieldName, String value, Tuple2<Rule, String>... rules) {
+    public ButtonField(String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(fieldName, value, rules);
     }
 
     @Override
     public String renderField() {
-        return String.format("<label for='id_%1$s'>%1$s</label><input type='text' name='%1$s' id='%2$s' value='%3$s'/><div class='error'>%4$s </div>%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        //return String.format("<label for='id_%1$s'>%1$s</label><input type='text' name='%1$s' id='%2$s' value='%3$s'/>%4$s %n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return template;
     }
 }
