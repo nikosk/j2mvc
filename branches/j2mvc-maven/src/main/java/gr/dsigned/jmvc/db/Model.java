@@ -49,16 +49,16 @@ public class Model {
     /**
      * Creates a new instance of Model
      */
-    public Model() throws Exception {
+    public Model() {
         init();
     }
 
-    public Model(String name) throws Exception {
+    public Model(String name) {
         this.tableName = name;
         init();
     }
 
-    private void init() throws Exception {
+    private void init() {
         if (!Settings.DATABASE_TYPE.equalsIgnoreCase("none")) {
             if (Settings.DATABASE_TYPE.equalsIgnoreCase("mysql")) {
                 db = MysqlDB.getInstance();
