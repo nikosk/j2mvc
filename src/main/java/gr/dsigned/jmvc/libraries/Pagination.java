@@ -14,7 +14,9 @@
  */
 package gr.dsigned.jmvc.libraries;
 
+import gr.dsigned.jmvc.Adapter;
 import gr.dsigned.jmvc.framework.Library;
+import org.apache.log4j.Logger;
 
 /**
  * 16 Μαρ 2008, gr.dsigned.jmvc.libraries
@@ -22,139 +24,140 @@ import gr.dsigned.jmvc.framework.Library;
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Pagination extends Library {
-  
-        public enum PagingType{
-            SEARCH, ITEM;
-        }
 
-        public String  baseUrl             = "";
-    public int     totalRows         = 0;
-    public int     curPage             = 0;
-        public int     noItemsPerQuery   = 0;
-       
-        //DEFAULT VALUES
-        private int perPage     = 15;
-        private int leftRight = 5;
+    private static final Logger logger = Logger.getLogger(Pagination.class);
 
-        private String separationChar = "&nbsp;&nbsp;";
-        private String classStartArrowOn = "";
-        private String classStartArrowOff = "";
-        private String classEndArrowOn = "";
-        private String classEndArrowOff = "";
-        private String classBackArrowOn = "";
-        private String classBackArrowOff = "";
-        private String classFwdArrowOn = "";
-        private String classFwdArrowOff = "";
-        private String imgStartArrowOn = "First  &iota;&laquo;";
-        private String imgStartArrowOff = "First &iota;&laquo;";
-        private String imgEndArrowOn = "&raquo;&iota; Last";
-        private String imgEndArrowOff = "&raquo;&iota; Last";
-        private String imgBackArrowOn = "Prev &laquo;";
-        private String imgBackArrowOff = "Prev &laquo;";
-        private String imgFwdArrowOn = "&raquo; Next";
-        private String imgFwdArrowOff = "&raquo; Next";
-              
+    public enum PagingType {
+
+        SEARCH, ITEM;
+    }
+    public String baseUrl = "";
+    public int totalRows = 0;
+    public int curPage = 0;
+    public int noItemsPerQuery = 0;    //DEFAULT VALUES
+    private int perPage = 15;
+    private int leftRight = 5;
+    private String separationChar = "&nbsp;&nbsp;";
+    private String classStartArrowOn = "";
+    private String classStartArrowOff = "";
+    private String classEndArrowOn = "";
+    private String classEndArrowOff = "";
+    private String classBackArrowOn = "";
+    private String classBackArrowOff = "";
+    private String classFwdArrowOn = "";
+    private String classFwdArrowOff = "";
+    private String imgStartArrowOn = "First  &iota;&laquo;";
+    private String imgStartArrowOff = "First &iota;&laquo;";
+    private String imgEndArrowOn = "&raquo;&iota; Last";
+    private String imgEndArrowOff = "&raquo;&iota; Last";
+    private String imgBackArrowOn = "Prev &laquo;";
+    private String imgBackArrowOff = "Prev &laquo;";
+    private String imgFwdArrowOn = "&raquo; Next";
+    private String imgFwdArrowOff = "&raquo; Next";
+
     public String createLinks(int currentPage) {
         String out = "";
         if (totalRows < perPage || perPage == 0) {
             return "";
         }
         int pageCount = Math.round(totalRows / perPage);
-        if(pageCount == 0){
+        if (pageCount == 0) {
             return "";
-        }       
-        if(!baseUrl.endsWith("/")) baseUrl += "/";
+        }
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
         for (int i = 0; i <= pageCount; i++) {
-            if(i != currentPage){
-                if(i != 0){
-                    out += "<a href='" + baseUrl + i + "' >" + (i+1) + "</a> | ";
+            if (i != currentPage) {
+                if (i != 0) {
+                    out += "<a href='" + baseUrl + i + "' >" + (i + 1) + "</a> | ";
                 } else {
-                    out += "<a href='" + baseUrl + "' >" + (i+1) + "</a> | ";
+                    out += "<a href='" + baseUrl + "' >" + (i + 1) + "</a> | ";
                 }
             } else {
-                out += "<b>"+(i+1)+"</b> | ";
+                out += "<b>" + (i + 1) + "</b> | ";
             }
         }
         return out;
     }
 
-        public String createPagingLinks(int currentPage){
-            return this.createPagingLinks(currentPage, PagingType.SEARCH);
-        }
-       
-        /**
-         * Method that creates pagination links of the given pagination type
-         * @param currentPage
-         * @return (string) html links of pagination
-         */
-        public String createPagingLinks(int currentPage, PagingType type) {
-           
-            StringBuilder sb = new StringBuilder();
-            int pageCount = Math.round(totalRows / perPage);
-            System.out.println("PAGE COUNT: "+pageCount);
-           
-            if (totalRows >0 ) {
-               
-                if (!baseUrl.endsWith("/")) {
-                    baseUrl += "/";
-                }
+    public String createPagingLinks(int currentPage) {
+        return this.createPagingLinks(currentPage, PagingType.SEARCH);
+    }
 
-                if (type == PagingType.ITEM) {
+    /**
+     * Method that creates pagination links of the given pagination type
+     * @param currentPage
+     * @return (string) html links of pagination
+     */
+    public String createPagingLinks(int currentPage, PagingType type) {
 
-                    int diff = 0;
-                    if (noItemsPerQuery < perPage) {
-                        diff = perPage - noItemsPerQuery;
-                    }
-                   
-                    sb.append("<span>").append((currentPage * perPage) + 1).append(" - ").append(((currentPage + 1) * perPage) - diff).append(" of ").append(totalRows).append(" </span>");
+        StringBuilder sb = new StringBuilder();
+        int pageCount = Math.round(totalRows / perPage);
+        logger.debug("PAGE COUNT: " + pageCount);
 
-                    if (currentPage != 0 && totalRows!=perPage ) {
-                        sb.append(" <a class='").append(classStartArrowOn).append("' href='").append(baseUrl).append("").append("' >").append(imgStartArrowOn).append("</a>");
-                        sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseUrl).append((currentPage - 1)==0?"":(currentPage - 1) ).append("' >").append(imgBackArrowOn).append("</a>");
-                    } else {
-                        sb.append(" <span>").append(imgStartArrowOff).append("</span> ");
-                        sb.append(" <span>").append(imgBackArrowOff).append("</span> ");
-                    }
+        if (totalRows > 0) {
 
-                    if (currentPage < pageCount && totalRows!=perPage) {
-                        sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
-                        sb.append(" <a class='").append(classEndArrowOn).append("' href='").append(baseUrl).append(pageCount).append("' >").append(imgEndArrowOn).append("</a>");
-                    } else {
-                        sb.append(" <span>").append(imgFwdArrowOff).append("</span> ");
-                        sb.append(" <span>").append(imgEndArrowOff).append("</span> ");
-                    }
-                } else if (type == PagingType.SEARCH ) {
-                    //PREV LINK IF NEEDED
-                    //&& totalRows!=perPage
-                    if(totalRows > perPage){
-                        if (currentPage != 0 ) {
-                            sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseUrl).append( (currentPage - 1)==0?"":currentPage - 1 ).append("' >").append(imgBackArrowOn).append("</a>");
-                        }
-
-                        //PAGES NUMBER LINKS
-                        for (int i = currentPage - leftRight; i <= currentPage + leftRight; i++) {
-                            if (i < 0 || i > pageCount) {
-                                continue;
-                            } else {
-                                if (i != currentPage) {
-                                    sb.append(" <a href='").append(baseUrl).append((i==0)?"":i).append("'>").append((i + 1)).append("</a>").append(separationChar);
-                                } else {//CURRENT PAGE NO LINK
-                                    sb.append(" <b>").append(i + 1).append("</b>").append(separationChar);
-                                }
-                            }
-                        }
-
-                        //NEXT LINK IF NEEDED
-                        if (currentPage < pageCount) {
-                            sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
-                        }
-                    }
-                }
-            }else{
-                return "";
+            if (!baseUrl.endsWith("/")) {
+                baseUrl += "/";
             }
 
-            return sb.toString();
+            if (type == PagingType.ITEM) {
+
+                int diff = 0;
+                if (noItemsPerQuery < perPage) {
+                    diff = perPage - noItemsPerQuery;
+                }
+
+                sb.append("<span>").append((currentPage * perPage) + 1).append(" - ").append(((currentPage + 1) * perPage) - diff).append(" of ").append(totalRows).append(" </span>");
+
+                if (currentPage != 0 && totalRows != perPage) {
+                    sb.append(" <a class='").append(classStartArrowOn).append("' href='").append(baseUrl).append("").append("' >").append(imgStartArrowOn).append("</a>");
+                    sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseUrl).append((currentPage - 1) == 0 ? "" : (currentPage - 1)).append("' >").append(imgBackArrowOn).append("</a>");
+                } else {
+                    sb.append(" <span>").append(imgStartArrowOff).append("</span> ");
+                    sb.append(" <span>").append(imgBackArrowOff).append("</span> ");
+                }
+
+                if (currentPage < pageCount && totalRows != perPage) {
+                    sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
+                    sb.append(" <a class='").append(classEndArrowOn).append("' href='").append(baseUrl).append(pageCount).append("' >").append(imgEndArrowOn).append("</a>");
+                } else {
+                    sb.append(" <span>").append(imgFwdArrowOff).append("</span> ");
+                    sb.append(" <span>").append(imgEndArrowOff).append("</span> ");
+                }
+            } else if (type == PagingType.SEARCH) {
+                //PREV LINK IF NEEDED
+                //&& totalRows!=perPage
+                if (totalRows > perPage) {
+                    if (currentPage != 0) {
+                        sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseUrl).append((currentPage - 1) == 0 ? "" : currentPage - 1).append("' >").append(imgBackArrowOn).append("</a>");
+                    }
+
+                    //PAGES NUMBER LINKS
+                    for (int i = currentPage - leftRight; i <= currentPage + leftRight; i++) {
+                        if (i < 0 || i > pageCount) {
+                            continue;
+                        } else {
+                            if (i != currentPage) {
+                                sb.append(" <a href='").append(baseUrl).append((i == 0) ? "" : i).append("'>").append((i + 1)).append("</a>").append(separationChar);
+                            } else {//CURRENT PAGE NO LINK
+                                sb.append(" <b>").append(i + 1).append("</b>").append(separationChar);
+                            }
+                        }
+                    }
+
+                    //NEXT LINK IF NEEDED
+                    if (currentPage < pageCount) {
+                        sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
+                    }
+                }
+            }
+        } else {
+            return "";
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -163,7 +166,7 @@ public class Pagination extends Library {
     public String getBaseUrl() {
         return baseUrl;
     }
-   
+
     /**
      * Sets the base Url
      * @param baseUrl
@@ -171,7 +174,7 @@ public class Pagination extends Library {
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
     }
-           
+
     /**
      * @return the totalRows representing the total records
      */
@@ -186,34 +189,34 @@ public class Pagination extends Library {
     public void setTotalRows(int totalRows) {
         this.totalRows = totalRows;
     }
-   
+
     /**
      * @return the current page
      */
-    public int getCurrentPage(){
+    public int getCurrentPage() {
         return curPage;
     }
-   
+
     /**
      * Sets the current Page number
      * @param curPage
      */
-    public void setCurrentPage(int curPage){
+    public void setCurrentPage(int curPage) {
         this.curPage = curPage;
     }
-   
+
     /**
      * @return the number of records retruned per query with specific limit offset
      */
-    public int getNoItemsPerQuery(){
-        return  noItemsPerQuery;
+    public int getNoItemsPerQuery() {
+        return noItemsPerQuery;
     }
-   
+
     /**
      * Sets the number of records per query with specific limit offset
      * @param noItemsPerQuery
      */
-    public void setNoItemsPerQuery(int noItemsPerQuery){
+    public void setNoItemsPerQuery(int noItemsPerQuery) {
         this.noItemsPerQuery = noItemsPerQuery;
     }
 
@@ -231,7 +234,7 @@ public class Pagination extends Library {
     public void setPerPage(int perPage) {
         this.perPage = perPage;
     }
-   
+
     /**
      * @return the number of page values that will be next-left and
      * next-right to the current page value in SEARCH PAGING TYPE
@@ -239,7 +242,7 @@ public class Pagination extends Library {
     public int getLeftRight() {
         return leftRight;
     }
-   
+
     /**
      * Sets the number of page values that will be next-left and
      * next-right to the current page value in SEARCH PAGING TYPE
@@ -255,7 +258,7 @@ public class Pagination extends Library {
     public String getSeparationChar() {
         return separationChar;
     }
-   
+
     /**
      * Sets the separation character between page numbers in SEARCH PAGING TYPE
      * @param separationChar
@@ -391,5 +394,4 @@ public class Pagination extends Library {
     public void setImgFwdArrowOff(String imgFwdArrowOff) {
         this.imgFwdArrowOff = imgFwdArrowOff;
     }
-   
 }

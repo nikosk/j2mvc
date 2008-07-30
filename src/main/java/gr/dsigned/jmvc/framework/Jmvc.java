@@ -32,13 +32,15 @@ import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Jmvc
 {
-
+    private static final Logger logger = Logger.getLogger(Jmvc.class);
+    
     private static Jmvc instance;
     public HttpServletRequest request;
     public ServletContext context;
@@ -216,8 +218,7 @@ public class Jmvc
         }
         catch (Exception exc)
         {
-            System.out.println(e.toString());
-            exc.printStackTrace();
+            logger.error(exc.getMessage());
         }
     }
 
