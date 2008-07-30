@@ -24,7 +24,7 @@ import gr.dsigned.jmvc.Bean;
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class QuerySet {
-
+    
     private String selectSet;
     private boolean distinctSet;
     private String fromSet;
@@ -137,7 +137,6 @@ public class QuerySet {
         sb.append(orderBySet == null ? "" : orderBySet);
         sb.append(limitSet == null ? "" : limitSet);
 
-        System.out.println(sb.toString());
         return sb.toString();
     }
 
@@ -151,7 +150,6 @@ public class QuerySet {
         sb.append(orderBySet == null ? "" : orderBySet);
         sb.append(limitSet == null ? "" : limitSet);
 
-        System.out.println(sb.toString());
         return sb.toString();
     }
 
@@ -162,7 +160,6 @@ public class QuerySet {
         sb.append(updateSet);
         sb.append(whereSet == null ? "" : whereSet);
 
-        System.out.println(sb.toString());
         return sb.toString();
     }
 
@@ -248,7 +245,7 @@ public class QuerySet {
         sb.append("(").append(insertSet).append(")");
         sb.append(" VALUES ");
         sb.append("(").append(valuesSet).append(")");
-        System.out.println(sb.toString());
+
         return sb.toString();
     }
 }

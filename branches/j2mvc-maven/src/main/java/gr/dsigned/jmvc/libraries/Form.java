@@ -10,6 +10,7 @@ import gr.dsigned.jmvc.ValidationRules;
 import gr.dsigned.jmvc.framework.Library;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -17,6 +18,8 @@ import java.util.LinkedHashMap;
  */
 public class Form extends Library {
    
+    private static final Logger logger = Logger.getLogger(Form.class);    
+    
     private String id;
     private String name;
     private String action;
@@ -59,7 +62,7 @@ public class Form extends Library {
                     Validation.parseEmail(data.get(field), field, fieldsRules.get(field).getMinLength(), fieldsRules.get(field).getMaxLength(), errors);
                 break;
                 default:
-                    System.out.println("I don't know");
+                    logger.error("I don't know");
                 break;
             }
         }

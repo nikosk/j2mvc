@@ -23,17 +23,21 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public abstract class DB {
+    
+    private static final Logger logger = Logger.getLogger(DB.class);
 
     public abstract Connection getConn() throws SQLException;
     public abstract void closeConn(Connection conn) throws SQLException;
 
     public ResultSet executeUpdate(String sql, Bean values) throws SQLException {
+        logger.debug("executeUpdate:: sql: " + sql + " values: " + values);
         Connection conn = getConn();
         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
@@ -64,6 +68,8 @@ public abstract class DB {
      * @throws SQLException 
      */
     public Bean executeQueryForObject(String sql, Bean values) throws SQLException {
+        logger.debug("executeQueryForObject:: sql: " + sql + " values: " + values);
+        
         Bean result = null;
         Connection conn = getConn();
         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -109,6 +115,7 @@ public abstract class DB {
      * @throws SQLException 
      */
     public ArrayList<Bean> executeQueryForList(String sql, Bean values) throws SQLException {
+        logger.debug("executeQueryForList:: sql: " + sql + " values: " + values);
         ArrayList<Bean> result = new ArrayList<Bean>();
         int resultIndex = 0;
         Connection conn = getConn();
@@ -258,7 +265,7 @@ public abstract class DB {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE ").append(table).append(" (id int(10) unsigned NOT NULL auto_increment,");
         sb.append(" PRIMARY KEY (id))").append(" ENGINE=InnoDB ").append(" DEFAULT CHARSET=utf8 ");
-        System.out.println(sb.toString());
+        logger.debug(sb.toString());
         executeUpdate(sb.toString());
     }
 
