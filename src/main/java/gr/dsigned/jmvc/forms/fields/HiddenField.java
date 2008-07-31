@@ -1,5 +1,5 @@
 /*
- *  ButtonField.java
+ *  HiddenField.java
  * 
  *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
  * 
@@ -12,33 +12,32 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
+
 package gr.dsigned.jmvc.forms.fields;
 
-import gr.dsigned.jmvc.forms.fields.Field;
-import gr.dsigned.jmvc.forms.fields.Field.Rule;
 import gr.dsigned.jmvc.types.Tuple2;
 
 /**
- *  
- * @author Nikosk <nikosk@dsigned.gr>
+ *
+ * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
-public class ButtonField extends Field {
-
+public class HiddenField extends Field{
     String template = "<input type='submit'>";
 
-    public ButtonField(String fieldName, String value, Tuple2<Rule, String>... rules) {
+    public HiddenField(String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(fieldName, value, rules);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input type='submit' name='%1$s' id='id_%2$s' />%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return String.format("<input type='hidden' name='%1$s' id='id_%2$s' />%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        //return template;
     }
+
 
     @Override
     public String renderLabel() {
-        return "";
+        return "";// this field has no label
     }
-    
-    
+
 }

@@ -54,7 +54,8 @@ public class Forms extends Controller {
             form += f.build();
             form += "</form>";
             data.put("form", form);
-        }        
+        }
+        
         $.loadView("testing_forms", data);
     }
 
