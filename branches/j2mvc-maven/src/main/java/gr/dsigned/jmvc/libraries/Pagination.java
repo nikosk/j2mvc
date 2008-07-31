@@ -14,9 +14,8 @@
  */
 package gr.dsigned.jmvc.libraries;
 
-import gr.dsigned.jmvc.Adapter;
+import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Library;
-import org.apache.log4j.Logger;
 
 /**
  * 16 Μαρ 2008, gr.dsigned.jmvc.libraries
@@ -24,8 +23,6 @@ import org.apache.log4j.Logger;
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Pagination extends Library {
-
-    private static final Logger logger = Logger.getLogger(Pagination.class);
 
     public enum PagingType {
 
@@ -94,7 +91,7 @@ public class Pagination extends Library {
 
         StringBuilder sb = new StringBuilder();
         int pageCount = Math.round(totalRows / perPage);
-        logger.debug("PAGE COUNT: " + pageCount);
+        Jmvc.logDebug("[Pagination:createPagingLinks] " + "PAGE COUNT: " + pageCount);
 
         if (totalRows > 0) {
 

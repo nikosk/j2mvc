@@ -20,14 +20,12 @@ import gr.dsigned.jmvc.framework.Utils;
 import gr.dsigned.jmvc.libraries.Input;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
 
 /**
  * 
@@ -39,7 +37,6 @@ public class Adapter extends HttpServlet {
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(Adapter.class);
 
     /**
      * This is the entry point of your application. Given the URI of the request
@@ -65,11 +62,11 @@ public class Adapter extends HttpServlet {
                 m.invoke(o, new Object[0]);
             } else {
                 Exception e = new Exception("Method not found");
-                logger.error(e.getMessage());
+                Jmvc.logError("[Adapter] " + e.getMessage());
                 Jmvc.loadErrorPage(e, response, this.getServletContext());  // This should return 404
             }
         } catch (Exception e) {
-            logger.error(e);
+            Jmvc.logError("[Adapter] " + e.toString());
             Jmvc.loadErrorPage(e, response, this.getServletContext());
         } 
     }
