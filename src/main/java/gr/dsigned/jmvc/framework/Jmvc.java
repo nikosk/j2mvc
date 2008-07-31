@@ -40,7 +40,10 @@ import org.apache.log4j.Logger;
  */
 public class Jmvc {
 
-    private static final Logger logger = Logger.getLogger(Jmvc.class);
+    private static final Logger infoLogger = Logger.getLogger("Info");
+    private static final Logger debugLogger = Logger.getLogger("Debug");
+    private static final Logger errorLogger = Logger.getLogger("Error");
+    
     public HttpServletRequest request;
     public ServletContext context;
     public LinkedHashMap<String, String> parsedTemplates = new LinkedHashMap<String, String>();
@@ -189,7 +192,7 @@ public class Jmvc {
             out.println(template);
             out.flush();
         } catch (Exception exc) {
-            logger.error(exc.getMessage());
+            logError("[Jmvc:loadErrorPage] " + exc.getMessage());
         }
     }
 
@@ -289,4 +292,17 @@ public class Jmvc {
         T m = c.newInstance();
         return m;
     }
+    
+    public static void logInfo(String msg) {
+        infoLogger.info(msg);
+    }
+    
+    public static void logDebug(String msg) {
+        debugLogger.debug(msg);        
+    }
+    
+    public static void logError(String msg) {
+        errorLogger.error(msg);
+    }
+    
 }

@@ -10,6 +10,7 @@ package gr.dsigned.jmvc.db;
 // This program is distributed in the hope that it will be useful, but WITHOUT
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+import gr.dsigned.jmvc.framework.Jmvc;
 import java.util.concurrent.Semaphore;
 import java.util.Stack;
 import java.sql.Connection;
@@ -19,7 +20,6 @@ import javax.sql.ConnectionPoolDataSource;
 import javax.sql.ConnectionEvent;
 import javax.sql.ConnectionEventListener;
 import javax.sql.PooledConnection;
-import org.apache.log4j.Logger;
 
 /**
  * A simple standalone JDBC connection pool manager.
@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
  */
 public class MiniConnectionPoolManager {
 
-    private static final Logger logger = Logger.getLogger(MiniConnectionPoolManager.class);
     private ConnectionPoolDataSource dataSource;
     private int maxConnections;
     private int timeout;
@@ -201,7 +200,7 @@ public class MiniConnectionPoolManager {
         try {
             pconn.close();
         } catch (SQLException e) {
-            logger.error("Error while closing database connection: " + e.toString());
+            Jmvc.logError("[MiniConnectionPoolManager:closeConnectionNoEx] " + "Error while closing database connection: " + e.toString());
         }
     }
 
