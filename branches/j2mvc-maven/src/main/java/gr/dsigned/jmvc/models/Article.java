@@ -38,7 +38,7 @@ public class Article extends Model {
         qs.from("articles");
         qs.join("categories", "categories.id = articles.category_id", "left");
         qs.where("categories.name","basket", Operands.EQUAL.toString());
-        qs.orderBy("published", "DESC");
+        qs.orderBy(OrderBy.DESC, "published");
         qs.limit(numberToFetch);
         return db.getList(qs);
     }
@@ -46,26 +46,26 @@ public class Article extends Model {
     public ArrayList<Bean> getPostsInInterval(Date from, Date to) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.orderBy("published", "DESC");
+        qs.orderBy(OrderBy.DESC, "published");
         return db.getList(qs);
     }
 
     public ArrayList<Bean> getArticlesByCat(String cat, int limit, int offset) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.orderBy("published", "DESC");
-        qs.limit(offset, limit);
         qs.join("categories", "Articles.category_id = Categories.id", "left");
         qs.where("Categories.name", cat, Operands.EQUAL.toString());
+        qs.orderBy(OrderBy.DESC, "published");
+        qs.limit(offset, limit);
         return db.getList(qs);
     }
 
     public int countArticlesByCat(String cat) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.orderBy("published", "DESC");
         qs.join("categories", "Articles.category_id = Categories.id", "left");
         qs.where("Categories.name", cat, Operands.EQUAL.toString());
+        qs.orderBy(OrderBy.DESC, "published");
         return db.count(qs);
     }
 }

@@ -33,7 +33,7 @@ public class Post extends gr.dsigned.jmvc.db.Model {
     public ArrayList<Bean> getLatestPosts(int numberToFetch) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("posts");
-        qs.orderBy("pub_date", "DESC");
+        qs.orderBy(OrderBy.DESC, "pub_date");
         qs.limit(numberToFetch);
         return db.getList(qs);
     }
@@ -41,7 +41,7 @@ public class Post extends gr.dsigned.jmvc.db.Model {
     public ArrayList<Bean> getPostsInInterval(Date from, Date to) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("posts");
-        qs.orderBy("pub_date", "DESC");
+        qs.orderBy(OrderBy.DESC, "pub_date");
         return db.getList(qs);
     }
 }

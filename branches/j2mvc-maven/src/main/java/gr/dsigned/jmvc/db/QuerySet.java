@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.db;
 
+import gr.dsigned.jmvc.db.Model.OrderBy;
 import gr.dsigned.jmvc.types.Bean;
 
 /**
@@ -24,7 +25,7 @@ import gr.dsigned.jmvc.types.Bean;
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class QuerySet {
-    
+
     private String selectSet;
     private boolean distinctSet;
     private String fromSet;
@@ -97,14 +98,31 @@ public class QuerySet {
         return this;
     }
 
-    public QuerySet orderBy(String field, String direction) {
-        orderBySet = "\nORDER BY " + field + " " + direction;
+    public QuerySet orderBy(OrderBy orderType, String... fields) {
+        if (data == null) {
+            data = new Bean();
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nORDER BY ");
+        int i = 0;
+        for (String field : fields) {
+            sb.append("?,");
+            data.put("field-" + i, field);
+        }
+        sb.deleteCharAt(sb.length() - 1);
+
+        if (orderType == OrderBy.ASC) {
+            sb.append(" ASC ");
+        } else {
+            sb.append(" DESC ");
+        }
+        orderBySet = sb.toString();
         return this;
     }
 
     /**
      * Build the LIMIT part
-     * @param start 
+     * @param limit 
      * @return
      */
     public QuerySet limit(int limit) {
@@ -118,8 +136,8 @@ public class QuerySet {
      * @param offset
      * @return
      */
-    public QuerySet limit(int limit, int offset) {
-        limitSet = "\nLIMIT " + limit + ", " + offset;
+    public QuerySet limit(int offset, int limit) {
+        limitSet = "\nLIMIT " + offset + ", " + limit;
         return this;
     }
 

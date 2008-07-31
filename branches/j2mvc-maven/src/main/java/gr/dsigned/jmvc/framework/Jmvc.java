@@ -175,6 +175,7 @@ public class Jmvc
                 template = template.replaceAll("<% ?" + key + " ?%>", data.get(key));
             }
         }
+        response.setCharacterEncoding(Settings.DEFAULT_ENCODING);
         PrintWriter out = response.getWriter();
         out.println(template);
         out.flush();
