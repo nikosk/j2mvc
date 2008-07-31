@@ -16,8 +16,8 @@ import junit.framework.*;
 public class TestIssues extends TestCase {
 
     public void testCrudIssue() throws Exception {
-        Jmvc framework = Jmvc.getInstance();
-        Issue issueModel = framework.loadModel("Issue");
+        
+        Issue issueModel = Jmvc.loadModel("Issue");
 
         ArrayList<Bean> initIssues = issueModel.getIssuesBySiteId("1");
         Bean issue = issueModel.insertIssue("1", "testIssue", "testIssue desc");

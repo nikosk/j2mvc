@@ -103,7 +103,7 @@ public class Admin extends Controller {
         }
         data.put("data", output);
         // Build our menu of categories
-       // data.put("menu", renderer.buildMenu("admin", "show_articles", cat.getCategories()));
+        data.put("menu", renderer.buildMenu("admin", "show_articles", cat.getCategories()));
         data.put("item_links", p.createPagingLinks(offset,Pagination.PagingType.ITEM));
         data.put("search_links", p.createPagingLinks(offset,Pagination.PagingType.SEARCH));
         data.put("styles", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/admin_styles.css\" >\r\n");

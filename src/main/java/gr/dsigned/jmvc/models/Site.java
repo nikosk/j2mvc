@@ -20,7 +20,7 @@ public class Site extends Model {
     public ArrayList<Bean> getSites() throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from(tableName);
-        qs.orderBy("label", "DESC");
+        qs.orderBy(OrderBy.DESC, "label");
         return db.getList(qs);
     }
 

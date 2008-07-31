@@ -41,6 +41,9 @@ public class Model {
             return value;
         }
     }
+    
+    public enum OrderBy { ASC, DESC };
+    
     public String tableName = "";
     public DB db;
     public Bean data = new Bean();

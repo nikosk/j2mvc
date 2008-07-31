@@ -55,6 +55,7 @@ public class Adapter extends HttpServlet {
     @SuppressWarnings("unchecked")
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
         try {
+            request.setCharacterEncoding(Settings.DEFAULT_ENCODING);
             String path = request.getRequestURI();
             Class<Controller> c = (Class<Controller>) Class.forName("gr.dsigned.jmvc.controllers." + Utils.capitalize(Input.getController(path).get("controller")));
             gr.dsigned.jmvc.framework.Controller o = c.newInstance();
@@ -68,7 +69,7 @@ public class Adapter extends HttpServlet {
                 Jmvc.loadErrorPage(e, response, this.getServletContext());  // This should return 404
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e);
             Jmvc.loadErrorPage(e, response, this.getServletContext());
         } 
     }

@@ -23,7 +23,7 @@ public class Issue extends Model {
         QuerySet qs = new QuerySet();
         qs.from("issues");
         qs.where("site_id",siteId, Operands.EQUAL.toString());
-        qs.orderBy("id", "ASC");
+        qs.orderBy(OrderBy.DESC, "id");
         return db.getList(qs);
     }
 
