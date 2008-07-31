@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import static gr.dsigned.jmvc.forms.Field.Rule.*;
+import static gr.dsigned.jmvc.forms.fields.Field.Rule.*;
 import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.forms.NewForms;
@@ -42,9 +42,10 @@ public class Forms extends Controller {
         PageData data = new PageData();
         NewForms f = new NewForms();
         f.setFields( 
-                new CharField("label",$.input.post("label"),o(REQUIRED,"true")),
-                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
-                new ButtonField("textbox", "" , o(EMAIL,"true"))
+                new CharField("username",$.input.post("username"),o(REQUIRED,"")),
+                new CharField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
+                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
+                new ButtonField("submit_button", "")
         );
         if($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()){
             data.put("form", "success");

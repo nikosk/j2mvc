@@ -12,7 +12,7 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package gr.dsigned.jmvc.forms;
+package gr.dsigned.jmvc.forms.fields;
 
 import gr.dsigned.jmvc.types.Tuple2;
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 public class Field {
 
     public enum Rule {
-
         REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, ALPHANUM
     }
     protected String fieldName;
@@ -43,7 +42,7 @@ public class Field {
             this.rules.add(t);
         }
     }
-    
+
     public Field(String fieldName, Tuple2<Rule, String>... rules) {
         this.fieldName = fieldName;
         this.value = "";
@@ -51,7 +50,9 @@ public class Field {
             this.rules.add(t);
         }
     }
+
     public boolean validates() {
+        validates = true;
         for (Tuple2<Rule, String> r : rules) {
             switch (r._1) {
                 case REQUIRED:
@@ -75,8 +76,8 @@ public class Field {
                 case EMAIL:
                     Pattern p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
                     Matcher m = p.matcher(value);
-                    if (m.matches()) {
-                        errors.add(fieldName + " is not a valid domain.");
+                    if (!m.matches()) {
+                        errors.add(fieldName + " is not a valid email address.");
                         validates = false;
                     }
                     break;
@@ -85,15 +86,27 @@ public class Field {
         return validates;
     }
 
+    public String renderErrors() {
+        if (errors.size() != 0) {
+            return String.format("<div class='error'> %1$s </div>", getErrors());
+        } else {
+            return "";
+        }
+    }
+
     public String getErrors() {
         String out = "";
         for (String s : errors) {
-            out += "<span>" + s + "</span>";
+            out += "<span>" + s + " </span>";
         }
         return out;
     }
 
-    public  String renderField(){
+    public String renderLabel() {
+        return String.format("<label for='id_%1$s'>%1$s</label>", getFieldName());
+    }
+
+    public String renderField() {
         return "";
     }
 
@@ -128,8 +141,7 @@ public class Field {
     public void setValue(String value) {
         this.value = value;
     }
-    
-    
+
     /**
      * enum type that returns a field html tag with hooks to
      * pass parameters. Params : 1. name: will be used as id

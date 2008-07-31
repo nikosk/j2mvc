@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.forms;
 
+import gr.dsigned.jmvc.forms.fields.Field;
 import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Library;
 import java.util.ArrayList;
@@ -28,13 +29,26 @@ public class NewForms extends Library {
     private Bean errors = new Bean();
 
     public String build() {
-        String out = "";
-        for (Field f : this.fields) {
-            out += f.renderField();
-        }
-        return out;
+        return buildAsTable();
     }
 
+    private String buildAsTable(){
+        StringBuilder sb = new StringBuilder("<table>");
+        for(Field f : fields){
+            sb.append("<tr>");
+            sb.append("<td>");
+            sb.append(f.renderLabel());
+            sb.append("</td>");
+            sb.append("<td>");
+            sb.append(f.renderField());
+            sb.append(f.renderErrors());
+            sb.append("</td>");
+            sb.append("</tr>");
+        }
+        sb.append("</table>");
+        return sb.toString();
+    }
+    
     public void setFields(Field... fields) {
         for (Field f : fields) {
             this.fields.add(f);
