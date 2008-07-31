@@ -42,8 +42,9 @@ public class PageData extends LinkedHashMap<String, String> {
         put("styles-yui-grids", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/grids.css\">");
         put("styles-yui-fonts", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/fonts.css\">");
         put("styles-typography", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/typography.css\">");
+        put("styles-forms", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/forms.css\">");
         /* mootools */
-        put("mootools", "<script type=\"text/javascript\" src=\"/js/mootools-release-1.11.js\"></script>");
-        put("mootools-no-comp", "<script type=\"text/javascript\" src=\"/js/mootools-release-1.11-no-comp.js\"></script>");
+        put("mootools", "<script type=\"text/javascript\" src=\"/js/mootools-1.2-core-yc.js\"></script>");
+        put("mootools-more", "<script type=\"text/javascript\" src=\"/js/mootools-1.2-more.js\"></script>");
     }
 }

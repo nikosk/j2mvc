@@ -14,7 +14,6 @@
  */
 package gr.dsigned.jmvc.forms.fields;
 
-import gr.dsigned.jmvc.forms.Field;
 import gr.dsigned.jmvc.types.Tuple2;
 
 /**
@@ -31,6 +30,8 @@ public class CharField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<label for='id_%1$s'>%1$s</label><input type='text' name='%1$s' id='%2$s' value='%3$s'/><div class='error'>%4$s </div>%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return String.format("<input class='text' type='text' name='%1$s' id='%2$s' value='%3$s'/>%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
     }
+    
+    
 }

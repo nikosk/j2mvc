@@ -14,8 +14,8 @@
  */
 package gr.dsigned.jmvc.forms.fields;
 
-import gr.dsigned.jmvc.forms.Field;
-import gr.dsigned.jmvc.forms.Field.Rule;
+import gr.dsigned.jmvc.forms.fields.Field;
+import gr.dsigned.jmvc.forms.fields.Field.Rule;
 import gr.dsigned.jmvc.types.Tuple2;
 
 /**
@@ -32,7 +32,7 @@ public class ButtonField extends Field {
 
     @Override
     public String renderField() {
-        //return String.format("<label for='id_%1$s'>%1$s</label><input type='text' name='%1$s' id='%2$s' value='%3$s'/>%4$s %n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
-        return template;
+        return String.format("<input type='submit' name='%1$s' id='id_%2$s' />%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        //return template;
     }
 }
