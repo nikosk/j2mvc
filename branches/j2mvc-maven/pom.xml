@@ -46,6 +46,13 @@
                     <include>log4j.properties</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/java/gr/dsigned/jmvc</directory>
+                <includes>
+                    <include>settings.properties</include>
+                </includes>
+                <targetPath>gr/dsigned/jmvc</targetPath>
+            </resource>
         </resources>
         <plugins>
             <plugin>

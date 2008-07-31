@@ -1,30 +1,18 @@
 package gr.dsigned.jmvc;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URI;
+import java.util.Properties;
+
 /**
  *
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class Settings {
-
-    public static String ROOT_URL = "http:local/";  // http://domain/
-    public static String REAL_PATH = "AUTO"; // AUTO to autodetect
-    public static String SUB_DIR = ""; // Set this if you deployed Jmvc in a subdirectory.
-    public static String DEFAULT_ENCODING = "utf-8"; // Sets default encoding
-    public static int	 SESSION_EXPIRY = 7200; // Time in seconds until a session becomes inactive
-    public static String DEFAULT_CONTROLLER = "Sites"; // the controller to handle initial requests
-    public static String VIEW_PATH = ""; // Where to find templates, leave empty for www-root/views
-    public static String IMG_PATH = "";  // Where to find images, leave empty for www-root/images
-    public static String JS_PATH = "";  // Where to find scripts, leave empty for www-root/js
-    /************************************** DB Settings ****************************************/
-    public static String DATABASE_TYPE = "mysql";    // mysql only for now.
-    public static String DB_URL = "localhost"; 
-    public static int DB_PORT = 3306;  // default (3306).
-    public static String DB_NAME = "todolist"; //Name of the database 
-
-    public static String DB_USER = "root";
-    public static String DB_PASS = "";
-    
-    /************************************** Auto load classes Settings ****************************************/
+public class Settings  {
+   
+    public static long fileTimeStamp = 0;
+    public static long c = 0;
     
     public enum AutoLoad{
     	SESSION(true);
@@ -37,5 +25,41 @@ public class Settings {
     	public boolean loadIt(){
     		return this.load;
     	}
+    }  
+  
+    public static Properties propertiesCached = null;
+    
+    public static String get(String property) {
+        c++;
+        String value = "";
+        System.out.println("Counter: " + c + " TimeStamp:" + fileTimeStamp);
+        try {
+            File file = new File(new URI(Settings.class.getResource("settings.properties").toString()));
+            System.out.println("Last modified before check:"+file.lastModified());
+            if (file.lastModified() > fileTimeStamp) {
+
+                fileTimeStamp = file.lastModified();
+                Properties properties = new Properties();
+                properties.load(new FileInputStream(file));
+
+                System.out.println("Reading from settings.properties file.....");
+                System.out.println(properties);
+                
+                value = properties.getProperty(property);
+                propertiesCached = properties;
+            } else {
+                System.out.println("File is cached!");
+                value = propertiesCached.getProperty(property);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return value;
+    }
+    
+    public static Long getTime()throws Exception {
+        File file = new File(new URI(Settings.class.getResource("settings.properties").toString()));
+        return file.lastModified();
     }
 }

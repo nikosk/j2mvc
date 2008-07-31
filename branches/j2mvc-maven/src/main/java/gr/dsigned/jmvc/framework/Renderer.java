@@ -27,8 +27,8 @@ import java.util.LinkedHashMap;
 public class Renderer {
 
     public static String anchor(String segments, String title, String attributes) {
-        String href = Settings.ROOT_URL;
-        href = (!Settings.SUB_DIR.isEmpty()) ? Settings.SUB_DIR + "/" : "";
+        String href = Settings.get("ROOT_URL");
+        href = (!Settings.get("SUB_DIR").isEmpty()) ? Settings.get("SUB_DIR") + "/" : "";
         href = (segments.startsWith("/") && segments.length() < 2) ? "" : segments;
         if (attributes == null || attributes.isEmpty()) {
             return String.format("<a href='%1$s' title='%2$s'>%2$s</a>", href, title);
@@ -39,8 +39,8 @@ public class Renderer {
 
     public static String anchor(String segments, String title, HashMap<String, String> attributes) {
         segments = (segments.startsWith("/") && segments.length() > 2) ? segments.substring(1) : segments;
-        String href = Settings.ROOT_URL;
-        href = (!Settings.SUB_DIR.isEmpty()) ? Settings.SUB_DIR + "/" : "";
+        String href = Settings.get("ROOT_URL");
+        href = (!Settings.get("SUB_DIR").isEmpty()) ? Settings.get("SUB_DIR") + "/" : "";
         href = (segments.startsWith("/") && segments.length() < 2) ? "" : segments;
         if (attributes == null) {
             return String.format("<a href='%1$s' title='%2$s'>%2$s</a>", href, title);
@@ -54,7 +54,7 @@ public class Renderer {
     }
 
     public static String root_url() {
-        return Settings.ROOT_URL;
+        return Settings.get("ROOT_URL");
     }
     /**
      * Allows dynamically calling methods on extending classes.

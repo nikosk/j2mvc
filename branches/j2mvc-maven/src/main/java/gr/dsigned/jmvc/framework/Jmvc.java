@@ -62,9 +62,11 @@ public class Jmvc {
 
     private void init() throws Exception {
         input = new Input();
-        if (!Settings.DATABASE_TYPE.equalsIgnoreCase("none")) {
-            if (Settings.DATABASE_TYPE.equalsIgnoreCase("mysql")) {
-                db = MysqlDB.getInstance();
+        if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none"))
+        {
+            if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql"))
+            {
+                db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
             }
         }
     }
@@ -155,7 +157,7 @@ public class Jmvc {
                 template = template.replaceAll("<% ?" + key + " ?%>", data.get(key));
             }
         }
-        response.setCharacterEncoding(Settings.DEFAULT_ENCODING);
+        response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         PrintWriter out = response.getWriter();
         out.println(template);
         out.flush();

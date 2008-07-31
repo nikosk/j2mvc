@@ -118,7 +118,7 @@ public class Input extends Library {
 		ArrayList<String> pathParts = new ArrayList<String>(Arrays.asList(path.split("/")));
 		pathParts.remove("");
 		if (pathParts.size() == 0) {
-			params.put("controller", Settings.DEFAULT_CONTROLLER);
+			params.put("controller", Settings.get("DEFAULT_CONTROLLER"));
 			params.put("method", "index");
 		} else {
 			if (pathParts.size() == 1) {

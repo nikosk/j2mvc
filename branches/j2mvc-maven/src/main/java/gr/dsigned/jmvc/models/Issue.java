@@ -8,6 +8,7 @@ import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
 import java.util.ArrayList;
+import static gr.dsigned.jmvc.db.Model.Operands;
 
 /**
  *

@@ -62,8 +62,8 @@ public class Model {
     }
 
     private void init() {
-        if (!Settings.DATABASE_TYPE.equalsIgnoreCase("none")) {
-            if (Settings.DATABASE_TYPE.equalsIgnoreCase("mysql")) {
+        if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none")) {
+            if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql")) {
                 db = MysqlDB.getInstance();
             }
         }
