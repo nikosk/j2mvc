@@ -37,12 +37,13 @@ public class Session extends Library {
 
     public Session(HttpServletRequest req) {
         session = req.getSession(false);
+        this.request = req;
         if (session != null) {
             Enumeration enames = session.getAttributeNames();
             while (enames.hasMoreElements()) {
                 String name = (String) enames.nextElement();
                 String value = "" + session.getAttribute(name);
-                if (name.substring(0, 1).equals("t")) {
+                if (name.substring(0, 2).equals("t_")) {
                     tempHM.put(name, value);
                     session.removeAttribute(name);
                 }
@@ -54,21 +55,27 @@ public class Session extends Library {
     }
 
     public String data(String paramName) {
-        if (tempHM.containsKey(paramName)) {
-            return tempHM.get(paramName);
+        String out = "";
+        if (tempHM.containsKey("t_"+paramName)) {
+            out = tempHM.get("t_" + paramName);
         }
         else {
-            return permHM.get(paramName);
+            out =  permHM.get(paramName);
         }
+        return (out == null) ? "" : out ;
     }
 
     public void set(String key, String value) {
+        if(this.session == null){
+            session = this.request.getSession(true);
+        }
         session.setAttribute(key, value);
-        tempHM.put(key, value) ;
+        permHM.put(key, value) ;
     }
 
     public void setTemp(String key, String value) {
         session.setAttribute("t_" + key, value);
+         tempHM.put(key, value) ;
     }
 
     public void setData(HashMap<String, String> data) {
