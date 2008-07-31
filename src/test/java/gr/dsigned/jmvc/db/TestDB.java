@@ -27,7 +27,7 @@ public class TestDB extends TestCase {
     }
 
     public void testCreateDropTable() throws Exception {
-        Jmvc framework = Jmvc.getInstance();
+        Jmvc framework = new Jmvc();
         
         if (!framework.db.tableExists("tttt")) {
             framework.db.create("tttt");

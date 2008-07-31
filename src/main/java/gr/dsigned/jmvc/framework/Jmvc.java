@@ -17,6 +17,7 @@ package gr.dsigned.jmvc.framework;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.db.DB;
 import gr.dsigned.jmvc.db.Model;
+import gr.dsigned.jmvc.db.MysqlDB;
 import gr.dsigned.jmvc.libraries.Input;
 import gr.dsigned.jmvc.libraries.Session;
 
@@ -37,14 +38,12 @@ import org.apache.log4j.Logger;
 /**
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class Jmvc
-{
+public class Jmvc {
+
     private static final Logger logger = Logger.getLogger(Jmvc.class);
-    
-    private static Jmvc instance;
     public HttpServletRequest request;
     public ServletContext context;
-    public LinkedHashMap<String,String> parsedTemplates = new LinkedHashMap<String,String>();
+    public LinkedHashMap<String, String> parsedTemplates = new LinkedHashMap<String, String>();
     public HttpServletResponse response;
     /*
      * These are the default auto-loaded libraries To load
@@ -54,24 +53,15 @@ public class Jmvc
     public Input input;
     public Session session;
 
-    private Jmvc() throws Exception
-    {
+    public Jmvc() throws Exception {
         init();
     }
 
-    public static Jmvc getInstance() throws Exception
-    {
-        return (instance == null) ? new Jmvc() : instance;
-    }
-
-    private void init() throws Exception
-    {
+    private void init() throws Exception {
         input = new Input();
-        if (!Settings.DATABASE_TYPE.equalsIgnoreCase("none"))
-        {
-            if (Settings.DATABASE_TYPE.equalsIgnoreCase("mysql"))
-            {
-                db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
+        if (!Settings.DATABASE_TYPE.equalsIgnoreCase("none")) {
+            if (Settings.DATABASE_TYPE.equalsIgnoreCase("mysql")) {
+                db = MysqlDB.getInstance();
             }
         }
     }
@@ -84,19 +74,16 @@ public class Jmvc
      * @param req
      * (passed from the adapter)
      */
-    public void setRequest(HttpServletRequest req)
-    {
-        this.request = req;
-        this.input = new Input(req);
-        if (Settings.AutoLoad.SESSION.loadIt())
-        {
+    public void setRequest(HttpServletRequest req) {
+        request = req;
+        input = new Input(req);
+        if (Settings.AutoLoad.SESSION.loadIt()) {
             session = new Session(req);
         }
     }
 
-    public HttpServletRequest getRequest()
-    {
-        return this.request;
+    public HttpServletRequest getRequest() {
+        return request;
     }
 
     /**
@@ -105,9 +92,8 @@ public class Jmvc
      * @param cont
      *            (the context, passed from the adapter)
      */
-    public void setContext(ServletContext cont)
-    {
-        this.context = cont;
+    public void setContext(ServletContext cont) {
+        context = cont;
     }
 
     /**
@@ -116,9 +102,8 @@ public class Jmvc
      * @param resp
      *            (passed from the adapter)
      */
-    public void setResponse(HttpServletResponse resp)
-    {
-        this.response = resp;
+    public void setResponse(HttpServletResponse resp) {
+        response = resp;
     }
 
     /**
@@ -130,14 +115,12 @@ public class Jmvc
      * @param resp
      * @param cont
      */
-    public void setEnv(HttpServletRequest req, HttpServletResponse resp, ServletContext cont)
-    {
-        this.request = req;
-        this.response = resp;
-        this.context = cont;
-        this.input = new Input(req);
-        if (Settings.AutoLoad.SESSION.loadIt())
-        {
+    public void setEnv(HttpServletRequest req, HttpServletResponse resp, ServletContext cont) {
+        request = req;
+        response = resp;
+        context = cont;
+        input = new Input(req);
+        if (Settings.AutoLoad.SESSION.loadIt()) {
             session = new Session(req);
         }
     }
@@ -155,23 +138,17 @@ public class Jmvc
      *            of the tag to be replaced and the value
      *            the replacement.
      */
-    public void loadView(String view_name, LinkedHashMap<String, String> data) throws IOException
-    {
+    public void loadView(String view_name, LinkedHashMap<String, String> data) throws IOException {
         String template = "";
-        if (parsedTemplates.containsKey(view_name))
-        {
+        if (parsedTemplates.containsKey(view_name)) {
             template = parsedTemplates.get(view_name);
-        }
-        else
-        {
+        } else {
             template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
             template = Parser.parse(template);
             parsedTemplates.put(view_name, template);
         }
-        if (data != null)
-        {
-            for (String key : data.keySet())
-            {
+        if (data != null) {
+            for (String key : data.keySet()) {
                 template = template.replaceAll("<% ?" + key + " ?%>", data.get(key));
             }
         }
@@ -181,10 +158,8 @@ public class Jmvc
         out.flush();
     }
 
-    public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont)
-    {
-        try
-        {
+    public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont) {
+        try {
             String template = "";
             template = Jmvc.readWithStringBuilder(cont.getRealPath("/") + "error_pages" + File.separator + "404.html");
             PrintWriter out = response.getWriter();
@@ -194,21 +169,18 @@ public class Jmvc
             StackTraceElement traceElements[] = e.getStackTrace();
             html += "<h2>Stacktrace: </h2>";
             html += "<pre>";
-            for (StackTraceElement elem : traceElements)
-            {
+            for (StackTraceElement elem : traceElements) {
                 html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
             }
             html += "</pre>";
             Throwable c = e.getCause();
-            if (c != null)
-            {
+            if (c != null) {
                 String cause = e.getCause().toString();
                 html += "<h2>Exception caused by: </h2>";
                 html += "<pre>" + cause + "</pre>";
                 html += "<pre>";
                 StackTraceElement[] causeTraceElements = e.getCause().getStackTrace();
-                for (StackTraceElement elem : causeTraceElements)
-                {
+                for (StackTraceElement elem : causeTraceElements) {
                     html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
                 }
                 html += "</pre>";
@@ -216,26 +188,19 @@ public class Jmvc
             template = template.replace("<% error %>", html);
             out.println(template);
             out.flush();
-        }
-        catch (Exception exc)
-        {
+        } catch (Exception exc) {
             logger.error(exc.getMessage());
         }
     }
 
     @SuppressWarnings("unused")
-    private static LinkedHashMap<String, String> getParamsMap(String path)
-    {
+    private static LinkedHashMap<String, String> getParamsMap(String path) {
         LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
         ArrayList<String> uriParts = new ArrayList<String>(Arrays.asList(path.split("/")));
-        for (int i = 0; i < uriParts.size(); i++)
-        {
-            if (i + 1 < uriParts.size())
-            {
+        for (int i = 0; i < uriParts.size(); i++) {
+            if (i + 1 < uriParts.size()) {
                 params.put(uriParts.get(i), uriParts.get(i + 1));
-            }
-            else
-            {
+            } else {
                 params.put(uriParts.get(i), "");
             }
         }
@@ -243,8 +208,7 @@ public class Jmvc
     }
 
     @SuppressWarnings("unused")
-    private static ArrayList<String> getParamsArray(String path)
-    {
+    private static ArrayList<String> getParamsArray(String path) {
         ArrayList<String> params = new ArrayList<String>(Arrays.asList(path.split("/")));
         return params;
     }
@@ -258,14 +222,12 @@ public class Jmvc
      * @return Returns the contents of the file.
      * @throws java.io.IOException
      */
-    static String readWithStringBuilder(String fileName) throws IOException
-    {
+    static String readWithStringBuilder(String fileName) throws IOException {
         FileReader fr = new FileReader(fileName); // ~3MB
         BufferedReader br = new BufferedReader(fr);
         String line;
         StringBuilder result = new StringBuilder();
-        while ((line = br.readLine()) != null)
-        {
+        while ((line = br.readLine()) != null) {
             result.append(line + "\n");
         }
         br.close();
@@ -276,14 +238,17 @@ public class Jmvc
     /**
      * Loads the model with the name passed in.
      * 
+     * @param <T> 
      * @param modelName
      *            The name of the model you need to load
      * @return the model
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
      */
     @SuppressWarnings("unchecked")
     public static <T extends Model> T loadModel(String modelName) throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException
-    {
+            IllegalAccessException {
         Class<T> c = (Class<T>) Class.forName("gr.dsigned.jmvc.models." + modelName);
         T m = c.newInstance();
         return m;
@@ -292,17 +257,16 @@ public class Jmvc
     /**
      * Loads the Renderer with the name passed in.
      * 
-     * @param rendererName
-     *            The name of the Renderer you need to load
+     * @param <T> 
+     * @param rendererName The name of the Renderer you need to load
      * @return the Renderer
      * @throws ClassNotFoundException
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
     @SuppressWarnings("unchecked")
-    public <T extends Renderer> T loadRenderer(String rendererName) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException
-    {
+    public static <T extends Renderer> T loadRenderer(String rendererName) throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException {
         Class<T> c = (Class<T>) Class.forName("gr.dsigned.jmvc.renderers." + rendererName);
         T m = c.newInstance();
         return m;
@@ -311,17 +275,16 @@ public class Jmvc
     /**
      * Loads the requested library.
      * 
-     * @param libraryName
-     *            The name of the library
+     * @param <T> 
+     * @param libraryName The name of the library
      * @return The library object you named.
      * @throws ClassNotFoundException
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
     @SuppressWarnings("unchecked")
-    public <T extends Library> T loadLibrary(String libraryName) throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException
-    {
+    public static <T extends Library> T loadLibrary(String libraryName) throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException {
         Class<T> c = (Class<T>) Class.forName("gr.dsigned.jmvc.libraries." + libraryName);
         T m = c.newInstance();
         return m;
