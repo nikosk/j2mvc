@@ -34,7 +34,7 @@ public class PageData extends LinkedHashMap<String, String> {
         put("title", "My title");
         put("keywords", "jmvc, framework, java, mvc");
         put("description", "Java mvc framework inspired by Code Igniter,Ruby on Rails and Django");
-        put("charset", Settings.DEFAULT_ENCODING);
+        put("charset", Settings.get("DEFAULT_ENCODING"));
         /* Styles */
         put("styles-yui-all", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/reset.css\" >\r\n" + "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/grids.css\">" + "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/fonts.css\">");
         put("styles-yui-all-min", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/reset-fonts-grids.css\">");

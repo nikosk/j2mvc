@@ -33,15 +33,15 @@ public class MysqlDB extends DB {
     /**
      * Creates a new instance of MysqlDB
      */
-    private MysqlDB() {
+    private MysqlDB(){
         MysqlConnectionPoolDataSource ds = new MysqlConnectionPoolDataSource();
-        ds.setDatabaseName(Settings.DB_NAME);
-        ds.setServerName(Settings.DB_URL);
-        ds.setPort(Settings.DB_PORT);
-        ds.setUser(Settings.DB_USER);
-        ds.setPassword(Settings.DB_PASS);
+        ds.setDatabaseName(Settings.get("DB_NAME"));
+        ds.setServerName(Settings.get("DB_URL"));
+        ds.setPort(Integer.valueOf(Settings.get("DB_PORT")) );
+        ds.setUser(Settings.get("DB_USER"));
+        ds.setPassword(Settings.get("DB_PASS"));
         ds.setAutoReconnect(true);
-        ds.setCharacterEncoding(Settings.DEFAULT_ENCODING);
+        ds.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         poolMgr = new MiniConnectionPoolManager(ds, 20);
     }
 

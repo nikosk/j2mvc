@@ -106,11 +106,21 @@ public class Form extends Library {
 
     
     public enum HtmlControl{
-        INPUT_TEXT("<input type='text' name='%1$s' id='%1$s' value='%2$s'/>"),
-        INPUT_PASSWORD("<input type='password' name='%1$s' id='%1$s' value='%2$s'/>"),
-        INPUT_HIDDEN(""),
+        // Input standar attributes id, class, title, style, dir, lang, xml:lang
+        INPUT_TEXT           ("<input id='%1$s' name='%1$s' value='%2$s' type='text' size='%3$s' maxlength='%4$s' />"),
+        INPUT_TEXT_RDONLY    ("<input id='%1$s' name='%1$s' value='%2$s' type='text' size='%3$s' readonly/>"),
+        INPUT_HIDDEN         ("<input id='%1$s' name='%1$s' value='%2$s' type='hidden'/>"),
+        INPUT_PASSWORD       ("<input id='%1$s' name='%1$s' value='%2$s' type='password'/>"),
+        INPUT_RADIO          ("<input id='%1$s' name='%1$s' value='%2$s' type='radio'/>"),
+        INPUT_RADIO_CHKED    ("<input id='%1$s' name='%1$s' value='%2$s' type='radio' checked/>"),
+        INPUT_CHECKBOX       ("<input id='%1$s' name='%1$s' value='%2$s' type='checkbox'/>"),
+        INPUT_CHECKBOX_CHKED ("<input id='%1$s' name='%1$s' value='%2$s' type='checkbox' checked/>"),
+        INPUT_IMAGE          ("<input id='%1$s' name='%1$s' value='%2$s' type='image' align='%3$s' alt='%4$s'/>"),
+        INPUT_SUBMIT         ("<input id='%1$s' name='%1$s' value='%2$s' type='submit'/>"),
+        INPUT_RESET          ("<input id='%1$s' name='%1$s' value='%2$s' type='reset'/>"),
+        INPUT_BUTTON         ("<input id='%1$s' name='%1$s' value='%2$s' type='button'/>"), 
+        INPUT_FILE           ("<input id='%1$s' name='%1$s'              type='file'/>"),
         TEXTAREA(""),
-        CHECKBOX(""),
         OPTION_SELECT("");
         
         private final String html;

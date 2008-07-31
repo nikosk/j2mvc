@@ -52,7 +52,7 @@ public class Adapter extends HttpServlet {
     @SuppressWarnings("unchecked")
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
         try {
-            request.setCharacterEncoding(Settings.DEFAULT_ENCODING);
+            request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING") );
             String path = request.getRequestURI();
             Class<Controller> c = (Class<Controller>) Class.forName("gr.dsigned.jmvc.controllers." + Utils.capitalize(Input.getController(path).get("controller")));
             gr.dsigned.jmvc.framework.Controller o = c.newInstance();
