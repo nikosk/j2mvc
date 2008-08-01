@@ -22,7 +22,7 @@ import gr.dsigned.jmvc.types.Tuple2;
  */
 public class CharField extends Field {
 
-    String template = "<input type='text' name='%1$s' id='%1$s' value='%2$s'/>%n";
+    String template = "<input type='text' name='%1$s' id='%2$s' value='%3$s'/>%n";
 
     public CharField(String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(fieldName, value, rules);
