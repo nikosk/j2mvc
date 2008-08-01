@@ -47,7 +47,7 @@
                 </includes>
             </resource>
             <resource>
-                <directory>src/main/java/gr/dsigned/jmvc</directory>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>settings.properties</include>
                 </includes>
