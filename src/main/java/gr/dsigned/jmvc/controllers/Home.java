@@ -14,7 +14,6 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.models.Article;
@@ -42,7 +41,6 @@ public class Home extends Controller {
         }
         data.put("head", output); // Include the output for parsing 
         //data.put("menu", renderer.getMenu());
-        System.out.println("The time issssssssss:"+Settings.getTime());
         $.loadView("blog_frontpage", data);
     }
 }
