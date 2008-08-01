@@ -57,6 +57,7 @@ public class NewForms extends Library {
     public boolean isValid(){
         boolean valid = true;
         for(Field f : fields){
+            String val = f.getValue() ;
             if(!f.validates()){
                 valid = false;
             }

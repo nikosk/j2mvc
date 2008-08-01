@@ -19,7 +19,13 @@ import gr.dsigned.jmvc.types.Bean;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.forms.NewForms;
 import gr.dsigned.jmvc.forms.fields.ButtonField;
+import gr.dsigned.jmvc.forms.fields.SubmitButtonField;
 import gr.dsigned.jmvc.forms.fields.CharField;
+import gr.dsigned.jmvc.forms.fields.Checkbox;
+import gr.dsigned.jmvc.forms.fields.HiddenField;
+import gr.dsigned.jmvc.forms.fields.PasswordField;
+import gr.dsigned.jmvc.forms.fields.RadioButton;
+import gr.dsigned.jmvc.forms.fields.ResetButtonField;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.models.Issue;
 import gr.dsigned.jmvc.models.Site;
@@ -42,12 +48,18 @@ public class Forms extends Controller {
         PageData data = new PageData();
         NewForms f = new NewForms();
         f.setFields( 
-                new CharField("username",$.input.post("username"),o(REQUIRED,"")),
-                new CharField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
+                new CharField("username",$.input.post("username")),
+                new PasswordField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
                 new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
-                new ButtonField("submit_button", "")
+                new RadioButton("Mr", "gender",$.input.post("gender"),"checked",o(REQUIRED,"true") ),
+                new RadioButton("Mrs","gender",$.input.post("gender"),"" ),
+                new Checkbox("Terms & Conditions","terms",$.input.post("terms"),"",o(REQUIRED,"true")),
+                new SubmitButtonField("submit_button", ""),
+                new ButtonField("button", "sth"),
+                new ResetButtonField("reset_button", "")
         );
         if($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()){
+            
             data.put("form", "success");
         } else {
             String form = "<form action='/forms/show_form' method='post'>";

@@ -18,6 +18,7 @@ import gr.dsigned.jmvc.types.Tuple2;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.text.AbstractDocument.LeafElement;
 
 /**
  *
@@ -31,6 +32,10 @@ public class Field {
     protected String fieldName;
     protected String labelName;
     protected String value;
+    private String checked;
+    protected String selected;
+    private String disabled;
+    private String readonly;
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
     protected ArrayList<String> errors = new ArrayList<String>();
@@ -38,6 +43,16 @@ public class Field {
     public Field(String fieldName, String value, Tuple2<Rule, String>... rules) {
         this.fieldName = fieldName;
         this.value = value;
+        for (Tuple2<Rule, String> t : rules) {
+            this.rules.add(t);
+        }
+    }
+
+    public Field(String labelName, String fieldName, String value, String checked, Tuple2<Rule, String>... rules) {
+        this.labelName = labelName;
+        this.fieldName = fieldName;
+        this.value = value;
+        this.checked = checked;
         for (Tuple2<Rule, String> t : rules) {
             this.rules.add(t);
         }
@@ -53,23 +68,30 @@ public class Field {
 
     public boolean validates() {
         validates = true;
+        
         for (Tuple2<Rule, String> r : rules) {
+            String label = "" ;
+            if(getLabelName()!=null && getLabelName().length()!=0){
+                label = getLabelName();
+            }else{    
+                label = getFieldName();
+            }
             switch (r._1) {
                 case REQUIRED:
                     if (this.value.isEmpty()) {
-                        errors.add(fieldName + " is required.");
+                        errors.add(label + " is required.");
                         validates = false;
                     }
                     break;
                 case MAX_LENGTH:
                     if (this.value.length() < r._2.length()) {
-                        errors.add(fieldName + " too long.");
+                        errors.add(label + " too long.");
                         validates = false;
                     }
                     break;
                 case MIN_LENGTH:
                     if (this.value.length() < r._2.length()) {
-                        errors.add(fieldName + " too short.");
+                        errors.add(label + " too short.");
                         validates = false;
                     }
                     break;
@@ -77,7 +99,7 @@ public class Field {
                     Pattern p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
                     Matcher m = p.matcher(value);
                     if (!m.matches()) {
-                        errors.add(fieldName + " is not a valid email address.");
+                        errors.add(label + " is not a valid email address.");
                         validates = false;
                     }
                     break;
@@ -103,7 +125,13 @@ public class Field {
     }
 
     public String renderLabel() {
+        String lab = getLabelName() ;
+        String id_name = getFieldName() ;
+        if(getLabelName()!=null && getLabelName().length()!=0){
+            return String.format("<label for='id_%1$s'>%1$s</label>", getLabelName());
+        }else{    
         return String.format("<label for='id_%1$s'>%1$s</label>", getFieldName());
+        }
     }
 
     public String renderField() {
@@ -141,7 +169,38 @@ public class Field {
     public void setValue(String value) {
         this.value = value;
     }
+    
+    public String getSelected() {
+        return selected;
+    }
 
+    public void setSelected(String selected) {
+        this.selected = selected;
+    }
+
+    public String getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(String disabled) {
+        this.disabled = disabled;
+    }
+
+    public String getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(String readonly) {
+        this.readonly = readonly;
+    }
+
+    public String getChecked() {
+        return checked;
+    }
+
+    public void setChecked(String checked) {
+        this.checked = checked;
+    }
     /**
      * enum type that returns a field html tag with hooks to
      * pass parameters. Params : 1. name: will be used as id
