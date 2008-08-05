@@ -18,7 +18,7 @@ import gr.dsigned.jmvc.types.Tuple2;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.text.AbstractDocument.LeafElement;
+
 
 /**
  *
@@ -34,14 +34,30 @@ public class Field {
     protected String value;
     private String checked;
     protected String selected;
-    private String disabled;
-    private String readonly;
+    protected String disabled;
+    protected String readonly;
+    private String defaultText;
+    private String cols;
+    private String rows;
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
     protected ArrayList<String> errors = new ArrayList<String>();
+    protected ArrayList<DropdownOption> options = new ArrayList<DropdownOption>();
+
 
     public Field(String fieldName, String value, Tuple2<Rule, String>... rules) {
         this.fieldName = fieldName;
+        this.value = value;
+        for (Tuple2<Rule, String> t : rules) {
+            this.rules.add(t);
+        }
+    }
+    
+    public Field(String fieldName, String rows, String cols, String disabled, String value, Tuple2<Rule, String>... rules) {
+        this.fieldName = fieldName;
+        this.rows = rows;
+        this.cols = cols;
+        this.disabled = disabled;
         this.value = value;
         for (Tuple2<Rule, String> t : rules) {
             this.rules.add(t);
@@ -125,8 +141,8 @@ public class Field {
     }
 
     public String renderLabel() {
-        String lab = getLabelName() ;
-        String id_name = getFieldName() ;
+//        String lab = getLabelName() ;
+//        String id_name = getFieldName() ;
         if(getLabelName()!=null && getLabelName().length()!=0){
             return String.format("<label for='id_%1$s'>%1$s</label>", getLabelName());
         }else{    
@@ -200,6 +216,30 @@ public class Field {
 
     public void setChecked(String checked) {
         this.checked = checked;
+    }
+    
+        public String getDefaultText() {
+        return defaultText;
+    }
+
+    public void setDefaultText(String defaultText) {
+        this.defaultText = defaultText;
+    }
+
+    public String getCols() {
+        return cols;
+    }
+
+    public void setCols(String cols) {
+        this.cols = cols;
+    }
+
+    public String getRows() {
+        return rows;
+    }
+
+    public void setRows(String rows) {
+        this.rows = rows;
     }
     /**
      * enum type that returns a field html tag with hooks to
