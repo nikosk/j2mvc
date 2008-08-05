@@ -22,13 +22,18 @@ import gr.dsigned.jmvc.forms.fields.ButtonField;
 import gr.dsigned.jmvc.forms.fields.SubmitButtonField;
 import gr.dsigned.jmvc.forms.fields.CharField;
 import gr.dsigned.jmvc.forms.fields.Checkbox;
-import gr.dsigned.jmvc.forms.fields.HiddenField;
+import gr.dsigned.jmvc.forms.fields.DropdownMenu;
+import gr.dsigned.jmvc.forms.fields.DropdownOption;
+import gr.dsigned.jmvc.forms.fields.FileField;
 import gr.dsigned.jmvc.forms.fields.PasswordField;
 import gr.dsigned.jmvc.forms.fields.RadioButton;
 import gr.dsigned.jmvc.forms.fields.ResetButtonField;
+import gr.dsigned.jmvc.forms.fields.TextareaField;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.models.Issue;
 import gr.dsigned.jmvc.models.Site;
+import java.awt.TextArea;
+import java.util.ArrayList;
 import static gr.dsigned.jmvc.types.operators.*;
 
 /**
@@ -47,22 +52,30 @@ public class Forms extends Controller {
     public void show_form() throws Exception {
         PageData data = new PageData();
         NewForms f = new NewForms();
+        DropdownMenu dd ;
         f.setFields( 
-                new CharField("username",$.input.post("username")),
+                new CharField("title",$.input.post("title")),
                 new PasswordField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
                 new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
-                new RadioButton("Mr", "gender",$.input.post("gender"),"checked",o(REQUIRED,"true") ),
-                new RadioButton("Mrs","gender",$.input.post("gender"),"" ),
-                new Checkbox("Terms & Conditions","terms",$.input.post("terms"),"",o(REQUIRED,"true")),
-                new SubmitButtonField("submit_button", ""),
-                new ButtonField("button", "sth"),
-                new ResetButtonField("reset_button", "")
+                //new FileField("image",$.input.post("image"),o(REQUIRED,"true")),
+                new RadioButton("Mr", "gender","1",$.input.post("gender"),"checked",o(REQUIRED,"true") ),
+                new RadioButton("Mrs","gender","2",$.input.post("gender"),"" ),
+                new TextareaField("sth", "5", "20",$.input.post("sth"),o(REQUIRED,"true") ),
+                new Checkbox("Terms & Conditions","terms","1",$.input.post("terms"),"",o(REQUIRED,"true")),
+                dd = new DropdownMenu("category",$.input.post("category"),o(REQUIRED,"true")),
+                new SubmitButtonField("submit_button", "")
+                //new ButtonField("button", "sth"),
+                //new ResetButtonField("reset_button", "")
         );
+        dd.addOption(new DropdownOption("sths", "sths" ,"")) ;
+        dd.addOption(new DropdownOption("sthelse", "sthelse" , "selected"));
+        dd.addOption(new DropdownOption("ok", "ok" , ""));
+                
         if($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()){
             
             data.put("form", "success");
         } else {
-            String form = "<form action='/forms/show_form' method='post'>";
+            String form = "<form  action='/forms/show_form' method='post'>";
             form += f.build();
             form += "</form>";
             data.put("form", form);
