@@ -26,25 +26,33 @@ import java.util.regex.Pattern;
  */
 public class Field {
 
+
     public enum Rule {
         REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, ALPHANUM
     }
     protected String fieldName;
     protected String labelName;
     protected String value;
-    private String checked;
+    protected String inputValue;
+    protected String checked;
     protected String selected;
-    protected String disabled;
-    protected String readonly;
-    private String defaultText;
-    private String cols;
-    private String rows;
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
     protected ArrayList<String> errors = new ArrayList<String>();
     protected ArrayList<DropdownOption> options = new ArrayList<DropdownOption>();
 
-
+    /*
+     * Used by:
+     * 
+     * textarea
+     * submitButton
+     * resetButton
+     * passwordField
+     * charField
+     * buttonField
+     * fileField
+     * hiddenField
+     */
     public Field(String fieldName, String value, Tuple2<Rule, String>... rules) {
         this.fieldName = fieldName;
         this.value = value;
@@ -53,20 +61,32 @@ public class Field {
         }
     }
     
-    public Field(String fieldName, String rows, String cols, String disabled, String value, Tuple2<Rule, String>... rules) {
+    /*
+     * Used by:
+     * 
+     * 
+     */
+    
+    public Field(String labelName, String fieldName, String value, String checked, Tuple2<Rule, String>... rules) {
+        this.labelName = labelName;
         this.fieldName = fieldName;
-        this.rows = rows;
-        this.cols = cols;
-        this.disabled = disabled;
         this.value = value;
+        this.checked = checked;
         for (Tuple2<Rule, String> t : rules) {
             this.rules.add(t);
         }
     }
-
-    public Field(String labelName, String fieldName, String value, String checked, Tuple2<Rule, String>... rules) {
+    
+    /*
+     * Used by:
+     * 
+     * Checkbox
+     * radioButton
+     */
+    public Field(String labelName, String fieldName, String inputValue, String value, String checked, Tuple2<Rule, String>... rules) {
         this.labelName = labelName;
         this.fieldName = fieldName;
+        this.inputValue = inputValue;
         this.value = value;
         this.checked = checked;
         for (Tuple2<Rule, String> t : rules) {
@@ -141,8 +161,6 @@ public class Field {
     }
 
     public String renderLabel() {
-//        String lab = getLabelName() ;
-//        String id_name = getFieldName() ;
         if(getLabelName()!=null && getLabelName().length()!=0){
             return String.format("<label for='id_%1$s'>%1$s</label>", getLabelName());
         }else{    
@@ -194,22 +212,6 @@ public class Field {
         this.selected = selected;
     }
 
-    public String getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(String disabled) {
-        this.disabled = disabled;
-    }
-
-    public String getReadonly() {
-        return readonly;
-    }
-
-    public void setReadonly(String readonly) {
-        this.readonly = readonly;
-    }
-
     public String getChecked() {
         return checked;
     }
@@ -217,29 +219,13 @@ public class Field {
     public void setChecked(String checked) {
         this.checked = checked;
     }
-    
-        public String getDefaultText() {
-        return defaultText;
+
+    public String getInputValue() {
+        return inputValue;
     }
 
-    public void setDefaultText(String defaultText) {
-        this.defaultText = defaultText;
-    }
-
-    public String getCols() {
-        return cols;
-    }
-
-    public void setCols(String cols) {
-        this.cols = cols;
-    }
-
-    public String getRows() {
-        return rows;
-    }
-
-    public void setRows(String rows) {
-        this.rows = rows;
+    public void setInputValue(String inputValue) {
+        this.inputValue = inputValue;
     }
     /**
      * enum type that returns a field html tag with hooks to
