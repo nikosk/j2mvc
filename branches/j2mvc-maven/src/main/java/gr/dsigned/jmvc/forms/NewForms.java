@@ -51,13 +51,12 @@ public class NewForms extends Library {
     
     public void setFields(Field... fields) {
         for (Field f : fields) {
-            this.fields.add(f);
+            this.fields.add(f); 
         }
     }
     public boolean isValid(){
         boolean valid = true;
         for(Field f : fields){
-            String val = f.getValue() ;
             if(!f.validates()){
                 valid = false;
             }
