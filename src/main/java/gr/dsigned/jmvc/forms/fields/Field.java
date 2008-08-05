@@ -52,26 +52,11 @@ public class Field {
      * buttonField
      * fileField
      * hiddenField
+     * dropdownMenu
      */
     public Field(String fieldName, String value, Tuple2<Rule, String>... rules) {
         this.fieldName = fieldName;
         this.value = value;
-        for (Tuple2<Rule, String> t : rules) {
-            this.rules.add(t);
-        }
-    }
-    
-    /*
-     * Used by:
-     * 
-     * 
-     */
-    
-    public Field(String labelName, String fieldName, String value, String checked, Tuple2<Rule, String>... rules) {
-        this.labelName = labelName;
-        this.fieldName = fieldName;
-        this.value = value;
-        this.checked = checked;
         for (Tuple2<Rule, String> t : rules) {
             this.rules.add(t);
         }
@@ -89,14 +74,6 @@ public class Field {
         this.inputValue = inputValue;
         this.value = value;
         this.checked = checked;
-        for (Tuple2<Rule, String> t : rules) {
-            this.rules.add(t);
-        }
-    }
-
-    public Field(String fieldName, Tuple2<Rule, String>... rules) {
-        this.fieldName = fieldName;
-        this.value = "";
         for (Tuple2<Rule, String> t : rules) {
             this.rules.add(t);
         }
