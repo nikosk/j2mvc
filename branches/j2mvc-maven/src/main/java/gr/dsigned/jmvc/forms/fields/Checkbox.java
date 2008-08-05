@@ -21,7 +21,7 @@ public class Checkbox extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<input type='checkbox' name='%1$s' id='%2$s' value='%1$s' %3$s />%n", getFieldName(), "id_" + getFieldName(), getChecked(), getErrors());
+        return String.format("<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s />%n", getFieldName(), "id_" + getFieldName(), getValue(), getChecked(), getErrors());
     }
 
 }
