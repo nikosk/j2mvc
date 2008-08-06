@@ -68,9 +68,8 @@ public class BlogRenderer extends Renderer {
      * @throws Exception In case something goes wrong the exception bubbles up and is displayed on an error page.
      */
     public String renderArticleTitles(LinkedHashMap<String, String> rawPost) throws Exception {
-        String sth =rawPost.get("id");
         String out = "<div class='blog_post'>" + "\n";
-        out += "<a href='/admin/edit_article/" + rawPost.get("id") + "'>" + rawPost.get("title") + "</a>" + "\n";
+        out += "<a href='/articles/edit_form/" + rawPost.get("id") + "'>" + rawPost.get("title") + "</a>" + "\n";
         out += (showAuthor) ? "<span class='pub_date'>" + rawPost.get("published") + "</span>" + "\n" : "";
         out += "</div>" + "\n";
         return out;
