@@ -77,7 +77,7 @@ public class Articles  extends Controller {
         // paginate them.
         }
         Pagination p = new Pagination();
-        p.setBaseUrl( "/admin/show_articles/" + category);
+        p.setBaseUrl( "/articles/show_articles/" + category);
         p.setTotalRows(article.countArticlesByCat(category));
         // Now we are ready to get some data (limit to 10
         // articles with offset page number * 10)
@@ -100,7 +100,7 @@ public class Articles  extends Controller {
         data.put("styles", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/admin_styles.css\" >\r\n");
         $.loadView("admin/control_panel_article", data);
      } else {
-     $.response.sendRedirect("/admin");
+     $.response.sendRedirect("/articles");
      }
     }
    public void show_form() throws Exception {
@@ -139,6 +139,47 @@ public class Articles  extends Controller {
             form += f.build();
             form += "</form>";
             data.put("title", "Create Article");
+            data.put("form", form);
+           $.loadView("testing_forms", data);
+        }
+    }
+   
+   public void edit_form() throws Exception {
+        PageData data = new PageData();
+        NewForms f = new NewForms();
+        DropdownMenu dd ;
+        
+        String id = $.input.segment(2);
+        Article art = $.loadModel("Article");
+        ArrayList<Bean> articleAL = art.getArticleById(id) ;
+        Category cat = $.loadModel("Category");
+        ArrayList<Bean> beans = cat.getCategories() ;
+        f.setFields( 
+                dd = new DropdownMenu("category",articleAL.get(0).get("category_id"),o(REQUIRED,"true")),
+                new CharField("title",articleAL.get(0).get("title")),
+                new CharField("real_title",articleAL.get(0).get("real_title")),
+                new CharField("sub_title",articleAL.get(0).get("sub_title")),
+                new CharField("lead_in",articleAL.get(0).get("lead_in")),
+                new TextareaField("content", "5", "20",articleAL.get(0).get("content"),o(REQUIRED,"true"),o(MAX_LENGTH,"20000"), o(MIN_LENGTH,"100") ),
+                new SubmitButtonField("submit_button", "")
+        );
+        for(Bean b : beans){
+            if(b.get("id").equalsIgnoreCase(id)){
+                dd.addOption(new DropdownOption(b.get("display_name"), b.get("id") ,"selected")) ;
+            }else{
+                dd.addOption(new DropdownOption(b.get("display_name"), b.get("id") ,"")) ;
+            }
+        }    
+                
+        if($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()){
+            art.insertArticle($.input.post("category"), $.input.post("title"), $.input.post("real_title"), $.input.post("sub_title"), $.input.post("lead_in"), $.input.post("content"));
+            ArrayList<Bean> cats = cat.getCategoryById($.input.post("category")) ;
+            $.response.sendRedirect("/articles/edit_article/"+id);
+        } else {
+            String form = "<form  action='/articles/edit_form' method='post'>";
+            form += f.build();
+            form += "</form>";
+            data.put("title", "Edit Article");
             data.put("form", form);
            $.loadView("testing_forms", data);
         }
