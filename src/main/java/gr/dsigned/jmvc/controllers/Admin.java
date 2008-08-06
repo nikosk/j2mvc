@@ -37,7 +37,9 @@ public class Admin extends Controller {
     }
 
     public void index() throws Exception {
-        $.loadView("admin/index", null);
+        PageData data = new PageData();
+        data.put("post_data", "");
+        $.loadView("admin/index", data);
     }
 
     public void login() throws Exception {
