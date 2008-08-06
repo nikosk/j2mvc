@@ -54,15 +54,18 @@ public class Forms extends Controller {
         NewForms f = new NewForms();
         DropdownMenu dd ;
         f.setFields( 
-                new CharField("title",$.input.post("title")),
-                new PasswordField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
-                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
-                //new FileField("image",$.input.post("image"),o(REQUIRED,"true")),
-                new RadioButton("Mr", "gender","1",$.input.post("gender"),"checked",o(REQUIRED,"true") ),
-                new RadioButton("Mrs","gender","2",$.input.post("gender"),"" ),
-                new TextareaField("sth", "5", "20",$.input.post("sth"),o(REQUIRED,"true") ),
-                new Checkbox("Terms & Conditions","terms","1",$.input.post("terms"),"",o(REQUIRED,"true")),
                 dd = new DropdownMenu("category",$.input.post("category"),o(REQUIRED,"true")),
+                new CharField("title",$.input.post("title")),
+                new CharField("real_title",$.input.post("real_title")),
+                new CharField("sub_title",$.input.post("sub_title")),
+                new CharField("lead_in",$.input.post("lead_in")),
+                new TextareaField("content", "5", "20",$.input.post("content"),o(REQUIRED,"true"),o(MAX_LENGTH,"20000"), o(MIN_LENGTH,"100") ),
+//                new PasswordField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
+//                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
+//                new FileField("image",$.input.post("image"),o(REQUIRED,"true")),
+//                new RadioButton("Mr", "gender","1",$.input.post("gender"),"checked",o(REQUIRED,"true") ),
+//                new RadioButton("Mrs","gender","2",$.input.post("gender"),"" ),
+//                new Checkbox("Terms & Conditions","terms","1",$.input.post("terms"),"",o(REQUIRED,"true")),
                 new SubmitButtonField("submit_button", "")
                 //new ButtonField("button", "sth"),
                 //new ResetButtonField("reset_button", "")
@@ -79,6 +82,7 @@ public class Forms extends Controller {
             form += f.build();
             form += "</form>";
             data.put("form", form);
+            data.put("title", "Form Testing");
         }
         
         $.loadView("testing_forms", data);
