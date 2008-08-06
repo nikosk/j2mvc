@@ -37,4 +37,11 @@ public class Category extends Model {
         qs.from(this.tableName);
         return db.getList(qs);
     }
+    
+    public ArrayList<Bean> getCategoryById(String id) throws SQLException {
+        QuerySet qs = new QuerySet();
+        qs.from(this.tableName);
+        qs.where("id", id, Operands.EQUAL.toString());
+        return db.getList(qs);
+    }
 }
