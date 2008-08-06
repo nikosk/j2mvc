@@ -43,7 +43,7 @@ public class DropdownMenu extends Field {
     {
         String out = "" ;
         for (DropdownOption option: options){
-            out += String.format("<option value='%1$s' %2$s>%1$s</option>%n", option.getFieldName(), option.getSelected(), getErrors()) ;
+            out += String.format("<option value='%2$s' %3$s>%1$s</option>%n", option.getFieldName(), option.getValue(), option.getSelected(), getErrors()) ;
         }
         return out ;
     }
