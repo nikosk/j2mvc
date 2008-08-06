@@ -43,7 +43,7 @@ public class Article extends Model {
         qs.limit(numberToFetch);
         return db.getList(qs);
     }
-
+    
     public ArrayList<Bean> getPostsInInterval(Date from, Date to) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
@@ -70,7 +70,7 @@ public class Article extends Model {
         return db.count(qs);
     }
     
-        public Bean insertArticle(String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
+    public Bean insertArticle(String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
         QuerySet qs = new QuerySet();
         qs.table(tableName);
         qs.insert("title", title);
@@ -82,16 +82,25 @@ public class Article extends Model {
         qs.insert("published", ""+new Timestamp(new java.util.Date().getTime()));
         return db.insert(qs);
     }
+
+    public ArrayList<Bean> getArticleById(String id) throws SQLException {
+        QuerySet qs = new QuerySet();
+        qs.from("articles");
+        qs.where("id",id, Operands.EQUAL.toString());
+        return db.getList(qs);
+    }
     
-//    public void editArticle(String id, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
-//        QuerySet qs = new QuerySet();
-//        qs.table(tableName);
-//        qs.update("title", title);
-//        qs.update("real_title", real_title);
-//        qs.update("sub_title", sub_title);
-//        qs.update("lead_in", lead_in);
-//        qs.update("content", content);
-//        qs.update("category_id", category_id);
-//        db.update(qs);
-//    }
+    public void editArticle(String id, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
+        QuerySet qs = new QuerySet();
+        qs.table(tableName);
+        qs.update("title", title);
+        qs.update("real_title", real_title);
+        qs.update("sub_title", sub_title);
+        qs.update("lead_in", lead_in);
+        qs.update("content", content);
+        qs.update("category_id", category_id);
+        qs.update("updated", ""+new Timestamp(new java.util.Date().getTime()));
+        qs.where("id", id, Operands.EQUAL.toString());
+        db.update(qs);
+    }
 }
