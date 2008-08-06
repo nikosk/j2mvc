@@ -21,6 +21,7 @@ import java.util.Date;
 
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.QuerySet;
+import java.sql.Timestamp;
 
 /**
  * 12 Μαρ 2008, gr.dsigned.jmvc.models 
@@ -58,7 +59,7 @@ public class Article extends Model {
         qs.orderBy(OrderBy.DESC, "published");
         qs.limit(offset, limit);
         return db.getList(qs);
-    }
+    }               
 
     public int countArticlesByCat(String cat) throws SQLException {
         QuerySet qs = new QuerySet();
@@ -68,4 +69,29 @@ public class Article extends Model {
         qs.orderBy(OrderBy.DESC, "published");
         return db.count(qs);
     }
+    
+        public Bean insertArticle(String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
+        QuerySet qs = new QuerySet();
+        qs.table(tableName);
+        qs.insert("title", title);
+        qs.insert("real_title", real_title);
+        qs.insert("sub_title", sub_title);
+        qs.insert("lead_in", lead_in);
+        qs.insert("content", content);
+        qs.insert("category_id", category_id);
+        qs.insert("published", ""+new Timestamp(new java.util.Date().getTime()));
+        return db.insert(qs);
+    }
+    
+//    public void editArticle(String id, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
+//        QuerySet qs = new QuerySet();
+//        qs.table(tableName);
+//        qs.update("title", title);
+//        qs.update("real_title", real_title);
+//        qs.update("sub_title", sub_title);
+//        qs.update("lead_in", lead_in);
+//        qs.update("content", content);
+//        qs.update("category_id", category_id);
+//        db.update(qs);
+//    }
 }
