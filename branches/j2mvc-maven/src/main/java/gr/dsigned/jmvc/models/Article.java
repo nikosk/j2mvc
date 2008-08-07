@@ -70,7 +70,7 @@ public class Article extends Model {
         return db.count(qs);
     }
     
-    public Bean insertArticle(String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
+    public Bean insertArticle(String userId, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
         QuerySet qs = new QuerySet();
         qs.table(tableName);
         qs.insert("title", title);
@@ -80,6 +80,7 @@ public class Article extends Model {
         qs.insert("content", content);
         qs.insert("category_id", category_id);
         qs.insert("published", ""+new Timestamp(new java.util.Date().getTime()));
+        qs.insert("user_id", userId);
         return db.insert(qs);
     }
 
