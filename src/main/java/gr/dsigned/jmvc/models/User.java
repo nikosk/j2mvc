@@ -30,13 +30,13 @@ public class User extends Model {
         this.tableName = "users";
     }
 
-    public boolean auth(String username, String password) throws Exception {
+    public ArrayList<Bean> auth(String username, String password) throws Exception {
         // TODO Fix db to escape values properly
         QuerySet qs = new QuerySet();
         qs.where("username", username, Operands.EQUAL.toString());
         qs.where("password", password, Operands.EQUAL.toString());
         qs.from(this.tableName);
         ArrayList<Bean> al = db.getList(qs);
-        return (al.size() > 0) ? true : false;
+        return (al.size() > 0) ? al : null;
     }
 }
