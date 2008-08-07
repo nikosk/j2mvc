@@ -54,7 +54,7 @@ public class Article extends Model {
     public ArrayList<Bean> getArticlesByCat(String cat, int limit, int offset) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.join("categories", "Articles.category_id = Categories.id", "left");
+        qs.join("categories", "Articles.category_id = Categories.id","inner");
         qs.where("Categories.name", cat, Operands.EQUAL.toString());
         qs.orderBy(OrderBy.DESC, "published");
         qs.limit(offset, limit);
@@ -70,17 +70,16 @@ public class Article extends Model {
         return db.count(qs);
     }
     
-    public Bean insertArticle(String userId, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
+    public String insertArticle(String userId, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
         QuerySet qs = new QuerySet();
-        qs.table(tableName);
-        qs.insert("title", title);
-        qs.insert("real_title", real_title);
-        qs.insert("sub_title", sub_title);
-        qs.insert("lead_in", lead_in);
-        qs.insert("content", content);
-        qs.insert("category_id", category_id);
-        qs.insert("published", ""+new Timestamp(new java.util.Date().getTime()));
-        qs.insert("user_id", userId);
+        qs.set("title", title);
+        qs.set("real_title", real_title);
+        qs.set("sub_title", sub_title);
+        qs.set("lead_in", lead_in);
+        qs.set("content", content);
+        qs.set("category_id", category_id);
+        qs.set("published", ""+new Timestamp(new java.util.Date().getTime()));
+        qs.set("user_id", userId);
         return db.insert(qs);
     }
 
@@ -93,15 +92,15 @@ public class Article extends Model {
     
     public void editArticle(String id, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
         QuerySet qs = new QuerySet();
-        qs.table(tableName);
-        qs.update("title", title);
-        qs.update("real_title", real_title);
-        qs.update("sub_title", sub_title);
-        qs.update("lead_in", lead_in);
-        qs.update("content", content);
-        qs.update("category_id", category_id);
-        qs.update("updated", ""+new Timestamp(new java.util.Date().getTime()));
+        qs.set("title", title);
+        qs.set("real_title", real_title);
+        qs.set("sub_title", sub_title);
+        qs.set("lead_in", lead_in);
+        qs.set("content", content);
+        qs.set("category_id", category_id);
+        qs.set("updated", ""+new Timestamp(new java.util.Date().getTime()));
         qs.where("id", id, Operands.EQUAL.toString());
+        qs.update(tableName);
         db.update(qs);
     }
 }

@@ -92,10 +92,9 @@ public class Model {
      * @return 
      * @throws SQLException
      */
-    public Bean insert(Bean bean) throws SQLException {
+    public String insert(Bean bean) throws SQLException {
         QuerySet qs = new QuerySet();
-        qs.table(tableName);
-        qs.insert(bean);
+        qs.insert(tableName,bean);
         return db.insert(qs);
     }
 

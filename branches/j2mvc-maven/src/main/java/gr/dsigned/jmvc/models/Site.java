@@ -24,18 +24,18 @@ public class Site extends Model {
         return db.getList(qs);
     }
 
-    public Bean insertSite(String label) throws Exception {
+    public String insertSite(String label) throws Exception {
         QuerySet qs = new QuerySet();
-        qs.table(tableName);
-        qs.insert("label", label);
-        qs.insert("status", "1");
+        qs.set("label", label);
+        qs.set("status", "1");
+        qs.insert(tableName);
         return db.insert(qs);
     }
 
     public void updateSite(String label, String id) throws Exception {
         QuerySet qs = new QuerySet();
-        qs.table(tableName);
-        qs.update("label", label);
+        qs.update(tableName);
+        qs.set("label", label);
         qs.where("id", id, Operands.EQUAL.toString());
         db.update(qs);        
     }

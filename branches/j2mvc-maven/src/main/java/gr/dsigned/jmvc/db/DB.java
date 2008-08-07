@@ -34,17 +34,17 @@ public abstract class DB {
     public abstract Connection getConn() throws SQLException;
     public abstract void closeConn(Connection conn) throws SQLException;
 
-    public ResultSet executeUpdate(String sql, Bean values) throws SQLException {
+    public ResultSet executeUpdate(String sql, ArrayList<String> values) throws SQLException {
         Jmvc.logDebug("[DB:executeUpdate] " + " sql: " + sql + " values: " + values);
         Connection conn = getConn();
         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
-            for (String s : values.keySet()) {
-                if (values.get(s) == null || values.get(s).equalsIgnoreCase("null")) {
+            for (String s : values) {
+                if (s == null || s.equalsIgnoreCase("null")) {
                     pstmt.setNull(parameterIndex, Types.NULL);
                 } else {
-                    pstmt.setObject(parameterIndex, values.get(s));
+                    pstmt.setObject(parameterIndex, s);
                 }
                 parameterIndex++;
             }
@@ -65,19 +65,18 @@ public abstract class DB {
      * @return ArrayList of LinkedHashMap<String,String> Each ArrayList entry is a row.
      * @throws SQLException 
      */
-    public Bean executeQueryForObject(String sql, Bean values) throws SQLException {
-        Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
-        
+    public Bean executeQueryForObject(String sql, ArrayList<String> values) throws SQLException {
+        Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);        
         Bean result = null;
         Connection conn = getConn();
         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
-            for (String s : values.keySet()) {
-                if (values.get(s) == null || values.get(s).equalsIgnoreCase("null")) {
+            for (String s : values) {
+                if (s == null || s.equalsIgnoreCase("null")) {
                     pstmt.setNull(parameterIndex, Types.NULL);
                 } else {
-                    pstmt.setObject(parameterIndex, values.get(s));
+                    pstmt.setObject(parameterIndex, s);
                 }
                 parameterIndex++;
             }
@@ -112,7 +111,7 @@ public abstract class DB {
      * @return ArrayList of LinkedHashMap<String,String> Each ArrayList entry is a row.
      * @throws SQLException 
      */
-    public ArrayList<Bean> executeQueryForList(String sql, Bean values) throws SQLException {
+    public ArrayList<Bean> executeQueryForList(String sql, ArrayList<String> values) throws SQLException {
         Jmvc.logDebug("[DB:executeQueryForList] " + "sql: " + sql + " values: " + values);
         ArrayList<Bean> result = new ArrayList<Bean>();
         int resultIndex = 0;
@@ -120,11 +119,11 @@ public abstract class DB {
         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
-            for (String s : values.keySet()) {
-                if (values.get(s) == null || values.get(s).equalsIgnoreCase("null")) {
+            for (String s : values) {
+                if (s == null || s.equalsIgnoreCase("null")) {
                     pstmt.setNull(parameterIndex, Types.NULL);
                 } else {
-                    pstmt.setObject(parameterIndex, values.get(s));
+                    pstmt.setObject(parameterIndex, s);
                 }
                 parameterIndex++;
             }
@@ -231,12 +230,14 @@ public abstract class DB {
      * @return returns the Bean that was inserted with its auto-generated key
      * @throws SQLException 
      */
-    public Bean insert(QuerySet qs) throws SQLException {
+    public String insert(QuerySet qs) throws SQLException {
         ResultSet rs = executeUpdate(qs.compileInsert(), qs.getData());
         if (rs.next()) {
-            qs.getData().put("id", rs.getString(1));
+            return  rs.getString(1);
+        } else {
+            Jmvc.logDebug("DB class: insert method : We just did an insert and return a null id back.");
+            throw new SQLException("No id was returned");            
         }
-        return qs.getData();
     }
 
     /**

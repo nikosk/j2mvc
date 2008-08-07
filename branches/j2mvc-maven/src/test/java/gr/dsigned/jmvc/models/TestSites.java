@@ -36,9 +36,9 @@ public class TestSites extends TestCase
 
         ArrayList<Bean> siteFetched = siteModel.getSites();
         int initialSitesCounter = siteFetched.size();
-        Bean site = siteModel.insertSite("112");
+        String siteId = siteModel.insertSite("112");
         assertEquals(initialSitesCounter + 1, siteModel.getSites().size());
-        siteModel.delete(site.get("id"));
+        siteModel.delete(siteId);
         assertEquals(initialSitesCounter, siteModel.getSites().size());
     }
 
@@ -50,10 +50,10 @@ public class TestSites extends TestCase
         Bean newSite = new Bean();
         newSite.put("label", "Site Label");
         newSite.put("status", "45");
-        newSite = siteModel.insert(newSite);
+        String newSiteID = siteModel.insertSite("Site Label");
         assertEquals(initialSitesCounter + 1, siteModel.getSites().size());
         
-        siteModel.delete(newSite.get("id"));
+        siteModel.delete(newSiteID);
         assertEquals(initialSitesCounter, siteModel.getSites().size());
     }
     
