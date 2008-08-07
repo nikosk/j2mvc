@@ -16,6 +16,7 @@ package gr.dsigned.jmvc.db;
 
 import gr.dsigned.jmvc.db.Model.OrderBy;
 import gr.dsigned.jmvc.types.Bean;
+import java.util.ArrayList;
 
 /**
  * This object permits you to chain 
@@ -27,17 +28,19 @@ import gr.dsigned.jmvc.types.Bean;
 public class QuerySet {
 
     private String selectSet;
-    private boolean distinctSet;
+    private String selectDistinctSet;
     private String fromSet;
     private String joinSet;
     private String whereSet;
     private String orderBySet;
     private String limitSet;
-    private String updateSet;
+    private String setSet;
     private String insertSet;
-    private String valuesSet;
-    private String table;
-    private Bean data;
+    private String updateSet;
+    private ArrayList<String> data = new ArrayList<String>();
+    private ArrayList<String> setData = new ArrayList<String>();
+    private ArrayList<String> whereData = new ArrayList<String>();
+    private ArrayList<String> orderByData = new ArrayList<String>();
 
     /**
      * Build the select statement.
@@ -51,10 +54,10 @@ public class QuerySet {
 
     /**
      * Build the select statement.
-     * @param str The columns you need to select as string array
+     * @param str The columns you need to select as string parameters
      * @return QuerySet
      */
-    public QuerySet select(String[] str) {
+    public QuerySet select(String... str) {
         String cols = "";
         for (int i = 0; i < str.length; i++) {
             cols += str[i];
@@ -67,13 +70,58 @@ public class QuerySet {
     }
 
     /**
-     * Select distinct ?
+     * Select distinct (same as select but builds a distict select)
      * @param bool
      * @return QuerySet
      */
-    public QuerySet distinct(boolean bool) {
-        this.distinctSet = bool;
+    public QuerySet selectDistinct(String str) {
+        selectDistinctSet = str;
         return this;
+    }
+
+    /**
+     * Select distinct (same as select but builds a distict select)
+     * @param bool
+     * @return QuerySet
+     */
+    public QuerySet selectDistinct(String... str) {
+        String cols = "";
+        for (int i = 0; i < str.length; i++) {
+            cols += str[i];
+            if (str.length != i + 1) {
+                cols += ", ";
+            }
+        }
+        selectDistinctSet = cols;
+        return this;
+    }
+
+    /**
+     * Builds the where part of the query. Used internally by the public 
+     * where methods.
+     * @param column the column used by the where 
+     * @param value the value to compare
+     * @param operand the type of the comparison (=,<> etc)
+     * @param type type of where (AND or OR)
+     * @return
+     */
+    private QuerySet where(String column, String value, String operand, String type) {
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += column + operand + "? ";
+        whereData.add(value);
+        return this;
+    }
+
+    public QuerySet orWhere(String key, String value, String operand) {
+        return where(key, value, operand, "OR");
+    }
+
+    public QuerySet where(String key, String value, String operand) {
+        return where(key, value, operand, "AND");
     }
 
     /**
@@ -82,7 +130,7 @@ public class QuerySet {
      * @return QuerySet
      */
     public QuerySet from(String str) {
-        this.fromSet = " FROM " + str;
+        fromSet = " FROM " + str;
         return this;
     }
 
@@ -99,18 +147,14 @@ public class QuerySet {
     }
 
     public QuerySet orderBy(OrderBy orderType, String... fields) {
-        if (data == null) {
-            data = new Bean();
-        }
         StringBuilder sb = new StringBuilder();
         sb.append("\nORDER BY ");
         int i = 0;
         for (String field : fields) {
             sb.append("?,");
-            data.put("field-" + i, field);
+            orderByData.add(field);
         }
         sb.deleteCharAt(sb.length() - 1);
-
         if (orderType == OrderBy.ASC) {
             sb.append(" ASC ");
         } else {
@@ -141,129 +185,104 @@ public class QuerySet {
         return this;
     }
 
+    public QuerySet update(String tableName) {
+        updateSet = "UPDATE " + tableName;
+        return this;
+    }
+
+    public QuerySet update(String tableName, Bean data) {
+        update(tableName);
+        for (String k : data.keySet()) {
+            set(k, data.get(k));
+        }
+        return this;
+    }
+
+    /**
+     * Builds the SET part of an UPDATE or INSERT.
+     * Use multiple set calls to set all the data
+     * then call QuerySet.update(String tableName); to execute.
+     * @param key
+     * @param value
+     * @return
+     */
+    public QuerySet set(String key, String value) {
+        if (setSet == null) {
+            setSet = "\nSET ";
+        } else {
+            setSet += ",";
+        }
+        setSet += key + "=?";
+        setData.add(value);
+        return this;
+    }
+
+    public QuerySet insert(String tableName) {
+        this.insertSet = "INSERT INTO " + tableName;
+        return this;
+    }
+
+    public QuerySet insert(String tableName, Bean bean) {
+        insert(tableName);
+        for (String key : bean.keySet()) {
+            set(key, bean.get(key));
+        }
+        return this;
+    }
+
     /**
      * Builds the query and returns an sql string.
      * @return SQL query
      */
     protected String compileSelect() {
         StringBuilder sb = new StringBuilder();
-        sb.append(distinctSet ? "SELECT DISTINCT " : "SELECT ");
+        sb.append(selectDistinctSet == null ? "SELECT " : "SELECT DISTINCT ");
         sb.append(selectSet == null ? "*" : selectSet);
-        sb.append(fromSet == null ? "FROM" : fromSet);
+        sb.append(fromSet == null ? "" : fromSet);
         sb.append(joinSet == null ? "" : joinSet);
         sb.append(whereSet == null ? "" : whereSet);
         sb.append(orderBySet == null ? "" : orderBySet);
         sb.append(limitSet == null ? "" : limitSet);
-
+        if (whereSet != null) {
+            data.addAll(whereData);
+        }
+        if (orderBySet != null) {
+            data.addAll(orderByData);
+        }
         return sb.toString();
     }
 
     protected String compileCount() {
         StringBuilder sb = new StringBuilder();
-        sb.append(distinctSet ? "SELECT DISTINCT " : "SELECT ");
+        sb.append(selectDistinctSet == null ? "SELECT " : "SELECT DISTINCT ");
         sb.append("count(*) AS count");
         sb.append(fromSet == null ? "FROM" : fromSet);
         sb.append(joinSet == null ? "" : joinSet);
         sb.append(whereSet == null ? "" : whereSet);
-        sb.append(orderBySet == null ? "" : orderBySet);
         sb.append(limitSet == null ? "" : limitSet);
-
+        data.addAll(whereData);
         return sb.toString();
     }
 
     protected String compileUpdate() {
-
         StringBuilder sb = new StringBuilder();
-        sb.append("UPDATE ").append(table);
         sb.append(updateSet);
+        sb.append(setSet);
         sb.append(whereSet == null ? "" : whereSet);
-
+        data.addAll(setData);
+        data.addAll(whereData);
         return sb.toString();
-    }
-
-    public Bean getData() {
-        return data;
-    }
-
-    public void setData(Bean data) {
-        this.data = data;
-    }
-
-    public QuerySet table(String tableName) {
-        table = tableName;
-        return this;
-    }
-
-    public QuerySet update(String key, String value) {
-        if (updateSet == null) {
-            updateSet = "\nSET ";
-        } else {
-            updateSet += ",";
-        }
-        updateSet += key + "=?";
-
-        if (data == null) {
-            data = new Bean();
-        }
-        data.put(key, value);
-        return this;
-    }
-
-    private QuerySet where(String key, String value, String operand, String type) {
-        if (whereSet == null) {
-            whereSet = "\nWHERE ";
-        } else {
-            whereSet += "\n" + type + " ";
-        }
-        whereSet += key + operand + "? ";
-
-        if (data == null) {
-            data = new Bean();
-        }
-        data.put(key, value);
-        return this;
-    }
-
-    public QuerySet orWhere(String key, String value, String operand) {
-        return where(key, value, operand, "OR");
-    }
-
-    public QuerySet where(String key, String value, String operand) {
-        return where(key, value, operand, "AND");
-    }
-
-    public QuerySet insert(String key, String value) {
-        if (insertSet == null) {
-            insertSet = "";
-            valuesSet = "";
-        } else {
-            insertSet += ",";
-            valuesSet += ",";
-        }
-        insertSet += key;
-        valuesSet += "?";
-
-        if (data == null) {
-            data = new Bean();
-        }
-        data.put(key, value);
-        return this;
-    }
-
-    public QuerySet insert(Bean bean) {
-        for (String key : bean.keySet()) {
-            insert(key, bean.get(key));
-        }
-        return this;
     }
 
     protected String compileInsert() {
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ").append(table);
-        sb.append("(").append(insertSet).append(")");
-        sb.append(" VALUES ");
-        sb.append("(").append(valuesSet).append(")");
-
+        sb.append(insertSet);
+        sb.append(setSet);
+        data.addAll(setData);
         return sb.toString();
+    }
+
+    public ArrayList getData() {
+        return data;
     }
 }

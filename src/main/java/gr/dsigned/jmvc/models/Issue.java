@@ -28,21 +28,21 @@ public class Issue extends Model {
         return db.getList(qs);
     }
 
-    public Bean insertIssue(String siteId, String label, String description) throws Exception {
+    public String insertIssue(String siteId, String label, String description) throws Exception {
         QuerySet qs = new QuerySet();
-        qs.table(tableName);
-        qs.insert("site_id", siteId);
-        qs.insert("label", label);
-        qs.insert("description", description);
+        qs.set("site_id", siteId);
+        qs.set("label", label);
+        qs.set("description", description);
+        qs.insert(tableName);
         return db.insert(qs);
     }
     
     public void updateIssue(String id, String label, String description) throws Exception {
         QuerySet qs = new QuerySet();
-        qs.table(tableName);
-        qs.update("label", label);
-        qs.update("description", description);
+        qs.set("label", label);
+        qs.set("description", description);
         qs.where("id", id, Operands.EQUAL.toString());
+        qs.update(tableName);
         db.update(qs);
     }
 }
