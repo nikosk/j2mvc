@@ -46,7 +46,9 @@ public class Admin extends Controller {
         String username = $.input.post("id");
         String pass = $.input.post("pass");
         User user = $.loadModel("User");
-        if (user.auth(username, pass)) {
+        ArrayList<Bean> al = user.auth(username, pass) ;
+        if (al != null) {
+            $.session.set("userId", al.get(0).get("id"));
             $.session.set("loggedin", "true");
             $.response.sendRedirect("show_articles");
         } else {
