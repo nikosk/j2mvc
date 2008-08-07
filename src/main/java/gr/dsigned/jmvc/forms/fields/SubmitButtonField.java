@@ -32,7 +32,7 @@ public class SubmitButtonField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<input type='submit' name='%1$s' id='id_%2$s' />%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return String.format("<input type='submit' name='%1$s' id='%2$s' />%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
     }
 
     @Override
