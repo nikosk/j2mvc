@@ -24,7 +24,7 @@ public class TextareaField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s'></textarea>%n", getFieldName(), "id_" + getFieldName(), getRows(), getCols(), getErrors());
+        return String.format("<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s'>%5$s</textarea>%n", getFieldName(), "id_" + getFieldName(), getRows(), getCols(), getValue(), getErrors());
     }
         
     public String getCols() {
