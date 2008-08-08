@@ -110,13 +110,13 @@ public class Field {
                     }
                     break;
                 case MAX_LENGTH:
-                    if (this.value.length() < r._2.length()) {
+                    if (this.value.length() > Integer.parseInt(r._2)) {
                         errors.add(label + " too long.");
                         validates = false;
                     }
                     break;
                 case MIN_LENGTH:
-                    if (this.value.length() < r._2.length()) {
+                    if (this.value.length() < Integer.parseInt(r._2)) {
                         errors.add(label + " too short.");
                         validates = false;
                     }
@@ -125,9 +125,35 @@ public class Field {
                     Pattern p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
                     Matcher m = p.matcher(value);
                     if (!m.matches()) {
-                        errors.add(label + " is not a valid email address.");
+                        errors.add(label + " is not a valid email.");
                         validates = false;
                     }
+                    break;
+                case DOMAIN:/*
+                    Pattern pat = Pattern.compile("(http):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?");
+                    Matcher match = pat.matcher(this.value);
+                    if (!match.matches()) {
+                        errors.add(label + " is not a valid domain.");
+                        validates = false;
+                    }*/
+                    break;
+                case NUMERIC:
+                    /*if (!matchFound.matches()) {
+                        errors.add(label + " is not a valid domain.");
+                        validates = false;
+                    }*/
+                    break;
+                case ALPHA:
+                    /*if (!matchFound.matches()) {
+                        errors.add(label + " is not a valid domain.");
+                        validates = false;
+                    }*/
+                    break;
+                case ALPHANUM:
+                    /*if (!matchFound.matches()) {
+                        errors.add(label + " is not a valid domain.");
+                        validates = false;
+                    }*/
                     break;
             }
         }
