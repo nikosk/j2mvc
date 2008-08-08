@@ -62,7 +62,6 @@ public class Articles  extends Controller {
         // Our page data
         PageData data = new PageData();
         // Load the models we'll need
-        Article article = $.loadModel("Article");
         Category cat = $.loadModel("Category");
         // Load the renderer we'll need
         BlogRenderer renderer = $.loadRenderer("BlogRenderer");
@@ -90,7 +89,7 @@ public class Articles  extends Controller {
         String output = "";
         int i = (p.getPerPage() * offset) + 1;
         for (Bean lhm : posts) {
-            output += "<b>" + i + "</b>" + renderer.renderArticleTitles(lhm);
+            output += renderer.renderArticleTitlesWithDelete(lhm,i,category);
             i++;
         }
         data.put("category", "-"+category);
@@ -159,7 +158,6 @@ public class Articles  extends Controller {
         NewForms f = new NewForms();
         DropdownMenu dd ;
         
-        Article art = $.loadModel("Article");
         ArrayList<Bean> articleAL = null ;
         Bean bArt = null ;
         
@@ -177,7 +175,7 @@ public class Articles  extends Controller {
             bArt.put("category_id", $.input.post("category"));
             articleAL.add(bArt);
         }else{
-            articleAL = art.getArticleById(id) ;
+            articleAL = article.getArticleById(id) ;
         }
                     
         Category cat = $.loadModel("Category");
@@ -201,7 +199,7 @@ public class Articles  extends Controller {
         }    
                 
         if($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()){
-            art.editArticle(id,$.input.post("category"), $.input.post("title"), $.input.post("real_title"), $.input.post("sub_title"), $.input.post("lead_in"), $.input.post("content"));
+            article.editArticle(id,$.input.post("category"), $.input.post("title"), $.input.post("real_title"), $.input.post("sub_title"), $.input.post("lead_in"), $.input.post("content"));
             ArrayList<Bean> cats = cat.getCategoryById($.input.post("category")) ;
             $.response.sendRedirect("/articles/show_articles/"+cats.get(0).get("name"));
         } else {
@@ -218,19 +216,18 @@ public class Articles  extends Controller {
      }
         
     }
-    public void add_article() throws Exception {
-        
-       /* PageData data = new PageData();
-         site = $.loadModel("Site"); // Load model
-        if ($.input.post("label").isEmpty()) {
-            data.put("label", "");
-            data.put("action", "/sites/add_site/");
-            data.put("redirect_to", "/" + $.input.segment(0));
-            $.loadView("list_form", data);
+    public void delete_article() throws Exception {
+        if ($.session.data("loggedin").equals("true")) {
+            String cat = $.input.segment(2); 
+            String id = $.input.segment(3); 
+            article.deleteArticle(id) ;
+            
+            $.response.sendRedirect("/articles/show_articles/"+cat);
+            
         } else {
-            site.insertSite($.input.post("label"));
-            $.response.sendRedirect($.input.post("redirect_to"));
-        }*/
+            $.request.getSession().invalidate();
+            $.response.sendRedirect("/articles");
+        }     
     }
  
     
