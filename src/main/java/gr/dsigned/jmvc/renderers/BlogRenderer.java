@@ -75,12 +75,20 @@ public class BlogRenderer extends Renderer {
         return out;
     }
 
-    public String renderArticleTitlesWithDelete(LinkedHashMap<String, String> rawPost, int i, String category) throws Exception {
-        String out = "<br/><div class='blog_post'>" ;
-        out += i + "&nbsp;<a href='/articles/edit_form/" + rawPost.get("id") + "'>" + rawPost.get("title") + "</a>" + "\n";
-        out += (showAuthor) ? "<span class='pub_date'>" + rawPost.get("published") + "</span> <a href='/articles/delete_article/"+category+"/"+rawPost.get("id")+"'><img height='10' width='10' style='padding: 0px 10px;' src='/images/icons/famfam/cancel.png'/>&nbsp;</a>" + "\n" : "";
-        out += "</div>" + "\n";
-        return out;
+//    public String renderArticleTitlesWithDelete(LinkedHashMap<String, String> rawPost, int i, String category) throws Exception {
+//        String out = "<br/><div class='blog_post'>" ;
+//        out += i + "&nbsp;<a href='/articles/edit_form/" + rawPost.get("id") + "'>" + rawPost.get("title") + "</a>" + "\n";
+//        out += (showAuthor) ? "<span class='pub_date'>" + rawPost.get("published") + "</span> <a href='/articles/delete_article/"+category+"/"+rawPost.get("id")+"'><img height='10' width='10' style='padding: 0px 10px;' src='/images/icons/famfam/cancel.png'/>&nbsp;</a>" + "\n" : "";
+//        out += "</div>" + "\n";
+//        return out;
+//    }
+     public String renderArticleTitlesWithDelete(LinkedHashMap<String, String> rawPost, int i, String category) throws Exception {
+        StringBuilder sb = new StringBuilder() ;
+        sb.append("<br/><div class='blog_post'>") ;
+        sb.append(i + "&nbsp;<a href='/articles/edit_form/" + rawPost.get("id") + "'>" + rawPost.get("title") + "</a>" + "\n");
+        sb.append((showAuthor) ? "<span class='pub_date'>" + rawPost.get("published") + "</span> <a href='/articles/delete_article/"+category+"/"+rawPost.get("id")+"'><img height='10' width='10' style='padding: 0px 10px;' src='/images/icons/famfam/cancel.png'/>&nbsp;</a>" + "\n" : "");
+        sb.append("</div>" + "\n");
+        return sb.toString();
     }
 
     public String renderMenu(LinkedHashMap<String, String> menuElements) throws Exception {
@@ -92,12 +100,23 @@ public class BlogRenderer extends Renderer {
         return out;
     }
 
+//    public String buildMenu(String controller, String method, ArrayList<Bean> rawCats) throws Exception {
+//        String out = "<ul>";
+//        for (Bean row : rawCats) {
+//            out += "\n" + "<a href='/" + controller + "/" + method + "/" + row.get("name") + "' >" + row.get("display_name") + "</a>";
+//        }
+//        out += "</ul>";
+//        return out;
+//    }
+    
     public String buildMenu(String controller, String method, ArrayList<Bean> rawCats) throws Exception {
-        String out = "<ul>";
+        StringBuilder sb = new StringBuilder() ;
+        sb.append("<ul>") ;
+        //String out = "<ul>";
         for (Bean row : rawCats) {
-            out += "\n" + "<a href='/" + controller + "/" + method + "/" + row.get("name") + "' >" + row.get("display_name") + "</a>";
+            sb.append("\n"+"<a href='/"+ controller+ "/" + method+ "/" + row.get("name")+ "' >"+ row.get("display_name")+ "</a>") ;
         }
-        out += "</ul>";
-        return out;
+        sb.append("</ul>");
+        return sb.toString();
     }
 }
