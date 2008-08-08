@@ -38,8 +38,14 @@ public class Articles  extends Controller {
     
     public void index() throws Exception {
         PageData data = new PageData();
-        data.put("post_data", "");
+        String state = $.input.segment(2);
+        if(state!=null && state.equalsIgnoreCase("notauthorized")){
+            data.put("post_data", "Invalid Username or Password");
+        }else{
+            data.put("post_data", "");
+        }
         $.loadView("admin/index", data);
+                       
     }
     
     public void login() throws Exception {
@@ -52,7 +58,7 @@ public class Articles  extends Controller {
             $.session.set("loggedin", "true");
             $.response.sendRedirect("show_articles/news");
         } else {
-            throw new Exception("Not authorized");
+            $.response.sendRedirect("/articles/index/notauthorized");
         }
     }
     
