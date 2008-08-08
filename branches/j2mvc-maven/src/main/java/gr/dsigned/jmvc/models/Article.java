@@ -80,6 +80,7 @@ public class Article extends Model {
         qs.set("category_id", category_id);
         qs.set("published", ""+new Timestamp(new java.util.Date().getTime()));
         qs.set("user_id", userId);
+        qs.insert(tableName);
         return db.insert(qs);
     }
 

@@ -18,8 +18,8 @@ public class TextareaField extends Field {
 
     String template = "<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s'>%5$s</textarea>%n";
 
-    public TextareaField(String fieldName, String rows, String cols, String value, Tuple2<Rule, String>... rules) {
-        super(fieldName, value, rules);
+    public TextareaField(String labelName, String fieldName, String rows, String cols, String value, Tuple2<Rule, String>... rules) {
+        super(labelName,fieldName, value, rules);
     }
 
     @Override

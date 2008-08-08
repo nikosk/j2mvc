@@ -115,12 +115,12 @@ public class Articles  extends Controller {
         Category cat = $.loadModel("Category");
         ArrayList<Bean> beans = cat.getCategories() ;
         f.setFields( 
-                dd = new DropdownMenu("category",$.input.post("category"),o(REQUIRED,"true")),
-                new CharField("title",$.input.post("title")),
-                new CharField("real_title",$.input.post("real_title")),
-                new CharField("sub_title",$.input.post("sub_title")),
-                new CharField("lead_in",$.input.post("lead_in")),
-                new TextareaField("content", "5", "20",$.input.post("content"),o(REQUIRED,"true"),o(MAX_LENGTH,"20000"), o(MIN_LENGTH,"100") ),
+                dd = new DropdownMenu("Article Category","category",$.input.post("category"),o(REQUIRED,"true")),
+                new CharField("Title", "title",$.input.post("title")),
+                new CharField("Real Title", "real_title",$.input.post("real_title")),
+                new CharField("Sub Title", "sub_title",$.input.post("sub_title")),
+                new CharField("Lead In", "lead_in",$.input.post("lead_in")),
+                new TextareaField("Content", "content", "5", "20",$.input.post("content"),o(REQUIRED,"true"),o(MAX_LENGTH,"20000"), o(MIN_LENGTH,"100") ),
                 new SubmitButtonField("submit_button", "")
         );
         int i = 0 ;
@@ -182,12 +182,12 @@ public class Articles  extends Controller {
         ArrayList<Bean> beans = cat.getCategories() ;
         f.setFields( 
                 new HiddenField("id", id, o(REQUIRED,"true")),
-                dd = new DropdownMenu("category",articleAL.get(0).get("category_id"),o(REQUIRED,"true")),
-                new CharField("title",articleAL.get(0).get("title")),
-                new CharField("real_title",articleAL.get(0).get("real_title")),
-                new CharField("sub_title",articleAL.get(0).get("sub_title")),
-                new CharField("lead_in",articleAL.get(0).get("lead_in")),
-                new TextareaField("content", "5", "20",articleAL.get(0).get("content"),o(REQUIRED,"true"),o(MAX_LENGTH,"20000"), o(MIN_LENGTH,"100") ),
+                dd = new DropdownMenu("Category", "category",articleAL.get(0).get("category_id"),o(REQUIRED,"true")),
+                new CharField("Title", "title",articleAL.get(0).get("title")),
+                new CharField("Real Title", "real_title",articleAL.get(0).get("real_title")),
+                new CharField("Sub Title", "sub_title",articleAL.get(0).get("sub_title")),
+                new CharField("Lead In", "lead_in",articleAL.get(0).get("lead_in")),
+                new TextareaField("Content", "content", "5", "20",articleAL.get(0).get("content"),o(REQUIRED,"true"),o(MAX_LENGTH,"20000"), o(MIN_LENGTH,"100") ),
                 new SubmitButtonField("submit_button", "")
         );
         for(Bean b : beans){

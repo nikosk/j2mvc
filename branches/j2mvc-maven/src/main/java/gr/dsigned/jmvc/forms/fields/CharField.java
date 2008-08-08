@@ -24,8 +24,8 @@ public class CharField extends Field {
 
     String template = "<input type='text' name='%1$s' id='%2$s' value='%3$s'/>%n";
 
-    public CharField(String fieldName, String value, Tuple2<Rule, String>... rules) {
-        super(fieldName, value, rules);
+    public CharField(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
+        super(labelName, fieldName, value, rules);
     }
 
     @Override

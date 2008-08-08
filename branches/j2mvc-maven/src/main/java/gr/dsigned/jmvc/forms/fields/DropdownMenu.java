@@ -17,8 +17,8 @@ public class DropdownMenu extends Field {
     String template = "<select name='%1$s' id='%2$s'>%3$s</select>%n";
     protected ArrayList<DropdownOption> options = new ArrayList<DropdownOption> () ;
 
-    public DropdownMenu(String fieldName, String value, Tuple2<Rule, String>... rules) {
-        super(fieldName, value, rules);
+    public DropdownMenu(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
+        super(labelName, fieldName, value, rules);
     }
 
     @Override
