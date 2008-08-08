@@ -5,7 +5,6 @@
 
 package gr.dsigned.jmvc.controllers;
 
-
 import gr.dsigned.jmvc.forms.NewForms;
 import gr.dsigned.jmvc.forms.fields.CharField;
 import gr.dsigned.jmvc.forms.fields.DropdownMenu;
@@ -20,14 +19,13 @@ import gr.dsigned.jmvc.models.Category;
 import gr.dsigned.jmvc.models.User;
 import gr.dsigned.jmvc.models.Article;
 import gr.dsigned.jmvc.renderers.BlogRenderer;
-import gr.dsigned.jmvc.renderers.ListRenderer;
 import gr.dsigned.jmvc.types.Bean;
 import java.util.ArrayList;
 import static gr.dsigned.jmvc.forms.fields.Field.Rule.*;
 import static gr.dsigned.jmvc.types.operators.*;
 /**
  *
- * @author USER
+ * @author vas
  */
 public class Articles  extends Controller {
     
@@ -92,19 +90,24 @@ public class Articles  extends Controller {
         ArrayList<Bean> posts = article.getArticlesByCat(category, p.getPerPage(), p.getPerPage() * offset);
         p.setNoItemsPerQuery(posts.size());
         // Render db results to html
-        String output = "";
+//String output = "";
+        StringBuilder output = new StringBuilder();
         int i = (p.getPerPage() * offset) + 1;
+        
         for (Bean lhm : posts) {
-            output += renderer.renderArticleTitlesWithDelete(lhm,i,category);
+            output.append(renderer.renderArticleTitlesWithDelete(lhm,i,category)) ;
             i++;
         }
+        
         data.put("category", "-"+category);
         data.put("link_create", "<a href='/articles/show_form'>Create Article</a><br/>");
-        data.put("data", output);
+        data.put("data", output.toString());
         // Build our menu of categories
         data.put("menu", renderer.buildMenu("articles", "show_articles", cat.getCategories()));
-        data.put("item_links", p.createPagingLinks(offset,Pagination.PagingType.ITEM));
-        data.put("search_links", p.createPagingLinks(offset,Pagination.PagingType.SEARCH));
+        data.put("item_links", "");
+        data.put("search_links", "");
+        //data.put("item_links", p.createPagingLinks(offset,Pagination.PagingType.ITEM));
+        //data.put("search_links", p.createPagingLinks(offset,Pagination.PagingType.SEARCH));
         data.put("styles", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/admin_styles.css\" >\r\n");
         $.loadView("admin/control_panel_article", data);
      } else {
@@ -169,7 +172,6 @@ public class Articles  extends Controller {
         
         String id = $.input.segment(2);
         if(id == null || id.length() == 0){
-            String test = $.input.post("category");
             id = $.input.post("id") ;
             bArt = new Bean() ;
             articleAL = new ArrayList<Bean>() ;
