@@ -85,9 +85,11 @@ public class BlogRenderer extends Renderer {
      public String renderArticleTitlesWithDelete(LinkedHashMap<String, String> rawPost, int i, String category) throws Exception {
         StringBuilder sb = new StringBuilder() ;
         sb.append("<br/><div class='blog_post'>") ;
-        sb.append(i + "&nbsp;<a href='/articles/edit_form/" + rawPost.get("id") + "'>" + rawPost.get("title") + "</a>" + "\n");
-        sb.append((showAuthor) ? "<span class='pub_date'>" + rawPost.get("published") + "</span> <a href='/articles/delete_article/"+category+"/"+rawPost.get("id")+"'><img height='10' width='10' style='padding: 0px 10px;' src='/images/icons/famfam/cancel.png'/>&nbsp;</a>" + "\n" : "");
-        sb.append("</div>" + "\n");
+        sb.append(i).append("&nbsp;<a href='/articles/edit_form/").append(rawPost.get("id") ).append("'>").append(rawPost.get("title")).append("</a>\n");
+        if(showAuthor) {
+            sb.append("<span class='pub_date'>").append(rawPost.get("published")).append("</span> <a href='/articles/delete_article/").append(category).append("/").append(rawPost.get("id")).append("'><img height='10' width='10' style='padding: 0px 10px;' src='/images/icons/famfam/cancel.png'/>&nbsp;</a>\n");
+        }
+        sb.append("</div>\n");
         return sb.toString();
     }
 
