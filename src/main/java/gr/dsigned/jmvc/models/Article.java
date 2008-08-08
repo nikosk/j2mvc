@@ -103,4 +103,11 @@ public class Article extends Model {
         qs.update(tableName);
         db.update(qs);
     }
+    
+    public void deleteArticle(String id) throws SQLException {
+        QuerySet qs = new QuerySet();
+        qs.where("id", id, Operands.EQUAL.toString());
+        db.delete(tableName, id);
+    }
+
 }
