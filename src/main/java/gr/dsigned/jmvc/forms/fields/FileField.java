@@ -16,8 +16,8 @@ public class FileField extends Field{
     
     String template = "<input type='file' name='%1$s' id='%2$s' value='%3$s'/>%n";
 
-    public FileField(String fieldName, String value, Tuple2<Rule, String>... rules) {
-        super(fieldName, value, rules);
+    public FileField(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
+        super(labelName, fieldName, value, rules);
     }
 
     @Override

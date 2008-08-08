@@ -44,17 +44,30 @@ public class Field {
     /*
      * Used by:
      * 
-     * textarea
      * submitButton
      * resetButton
-     * passwordField
-     * charField
      * buttonField
-     * fileField
      * hiddenField
-     * dropdownMenu
      */
     public Field(String fieldName, String value, Tuple2<Rule, String>... rules) {
+        this.fieldName = fieldName;
+        this.value = value;
+        for (Tuple2<Rule, String> t : rules) {
+            this.rules.add(t);
+        }
+    }
+    
+    /*
+     * Used by:
+     * 
+     * textarea
+     * passwordField
+     * charField
+     * fileField
+     * dropdownMenu
+     */
+    public Field(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
+        this.labelName = labelName;
         this.fieldName = fieldName;
         this.value = value;
         for (Tuple2<Rule, String> t : rules) {

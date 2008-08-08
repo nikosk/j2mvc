@@ -15,8 +15,8 @@ public class PasswordField extends Field {
 
     String template = "<input type='password' name='%1$s' id='%2$s' value='%3$s'/>%n";
 
-    public PasswordField(String fieldName, String value, Tuple2<Rule, String>... rules) {
-        super(fieldName, value, rules);
+    public PasswordField(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
+        super(labelName, fieldName, value, rules);
     }
 
     @Override
