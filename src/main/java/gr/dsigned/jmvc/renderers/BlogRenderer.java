@@ -82,14 +82,18 @@ public class BlogRenderer extends Renderer {
 //        out += "</div>" + "\n";
 //        return out;
 //    }
-     public String renderArticleTitlesWithDelete(LinkedHashMap<String, String> rawPost, int i, String category) throws Exception {
+     public String renderArticleTitlesWithDelete(ArrayList<Bean> posts, int i, String category) throws Exception {
         StringBuilder sb = new StringBuilder() ;
-        sb.append("<br/><div class='blog_post'>") ;
-        sb.append(i).append("&nbsp;<a href='/articles/edit_form/").append(rawPost.get("id") ).append("'>").append(rawPost.get("title")).append("</a>\n");
-        if(showAuthor) {
-            sb.append("<span class='pub_date'>").append(rawPost.get("published")).append("</span> <a href='/articles/delete_article/").append(category).append("/").append(rawPost.get("id")).append("'><img height='10' width='10' style='padding: 0px 10px;' src='/images/icons/famfam/cancel.png'/>&nbsp;</a>\n");
+        for (Bean lhm : posts) {
+            sb.append("<br/><div class='blog_post'>") ;
+            sb.append(i).append("&nbsp;<a href='/articles/edit_form/").append(lhm.get("id") ).append("'>").append(lhm.get("title")).append("</a>\n");
+            if(showAuthor) {
+                sb.append("<span class='pub_date'>").append(lhm.get("published")).append("</span> <a href='/articles/delete_article/").append(category).append("/").append(lhm.get("id")).append("'><img height='10' width='10' style='padding: 0px 10px;' src='/images/icons/famfam/cancel.png'/>&nbsp;</a>\n");
+            }
+            sb.append("</div>\n");
+            i++ ;
         }
-        sb.append("</div>\n");
+
         return sb.toString();
     }
 
@@ -114,9 +118,8 @@ public class BlogRenderer extends Renderer {
     public String buildMenu(String controller, String method, ArrayList<Bean> rawCats) throws Exception {
         StringBuilder sb = new StringBuilder() ;
         sb.append("<ul>") ;
-        //String out = "<ul>";
         for (Bean row : rawCats) {
-            sb.append("\n"+"<a href='/"+ controller+ "/" + method+ "/" + row.get("name")+ "' >"+ row.get("display_name")+ "</a>") ;
+            sb.append("\n").append("<a href='/").append(controller).append("/").append(method).append("/").append(row.get("name")).append("' >").append(row.get("display_name")).append("</a>");
         }
         sb.append("</ul>");
         return sb.toString();

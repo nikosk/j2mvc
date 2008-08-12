@@ -89,18 +89,11 @@ public class Articles extends Controller {
             // articles with offset page number * 10)
             ArrayList<Bean> posts = article.getArticlesByCat(category, p.getPerPage(), p.getPerPage() * offset);
             p.setNoItemsPerQuery(posts.size());
-            // Render db results to html
-//String output = "";
-            StringBuilder output = new StringBuilder();
             int i = (p.getPerPage() * offset) + 1;
-            for (Bean lhm : posts) {
-                output.append(renderer.renderArticleTitlesWithDelete(lhm, i, category));
-                i++;
-            }
-
+            
             data.put("category", "-" + category);
             data.put("link_create", "<a href='/articles/show_form'>Create Article</a><br/>");
-            data.put("data", output.toString());
+            data.put("data", renderer.renderArticleTitlesWithDelete(posts, i, category));
             // Build our menu of categories
             data.put("menu", renderer.buildMenu("articles", "show_articles", cat.getCategories()));
             data.put("item_links", p.createPagingLinks(offset, Pagination.PagingType.ITEM));
