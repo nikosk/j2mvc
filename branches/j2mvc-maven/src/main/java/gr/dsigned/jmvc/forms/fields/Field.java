@@ -98,7 +98,8 @@ public class Field {
 
     public boolean validates() {
         validates = true;
-        
+        Pattern p = null ;
+        Matcher m = null ;
         for (Tuple2<Rule, String> r : rules) {
             String label = "" ;
             if(getLabelName()!=null && getLabelName().length()!=0){
@@ -126,8 +127,8 @@ public class Field {
                     }
                     break;
                 case EMAIL:
-                    Pattern p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
-                    Matcher m = p.matcher(value);
+                    p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
+                    m = p.matcher(value);
                     if (!m.matches()) {
                         errors.add(label + " is not a valid email.");
                         validates = false;
@@ -135,9 +136,9 @@ public class Field {
                     break;
                 case DOMAIN:
                     String domain = "http://"+ this.value ;
-                    Pattern pat = Pattern.compile("(http):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?");
-                    Matcher match = pat.matcher(domain);
-                    if (!match.matches()) {
+                    p = Pattern.compile("(http):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?");
+                    m = p.matcher(domain);
+                    if (!m.matches()) {
                         errors.add(label + " is not a valid domain.");
                         validates = false;
                     }else{
@@ -169,22 +170,28 @@ public class Field {
                     }
                     break;
                 case NUMERIC:
-                    /*if (!matchFound.matches()) {
-                        errors.add(label + " is not a valid domain.");
+                    p = Pattern.compile("\\d*");
+                    m = p.matcher(this.value);
+                    if (!m.matches()) {
+                        errors.add(label + " does not cosist of numbers.");
                         validates = false;
-                    }*/
+                    }
                     break;
                 case ALPHA:
-                    /*if (!matchFound.matches()) {
-                        errors.add(label + " is not a valid domain.");
+                    p = Pattern.compile("[a-zA-Z]*");
+                    m = p.matcher(this.value);
+                    if (!m.matches()) {
+                        errors.add(label + " does not cosist of numbers.");
                         validates = false;
-                    }*/
+                    }
                     break;
                 case ALPHANUM:
-                    /*if (!matchFound.matches()) {
-                        errors.add(label + " is not a valid domain.");
+                    p = Pattern.compile("\\w*");
+                    m = p.matcher(this.value);
+                    if (!m.matches()) {
+                        errors.add(label + " does not cosist of numbers and letters.");
                         validates = false;
-                    }*/
+                    }
                     break;
             }
         }
