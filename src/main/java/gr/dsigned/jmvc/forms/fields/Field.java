@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
+ * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class Field {
 

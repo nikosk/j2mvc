@@ -39,6 +39,7 @@ import static gr.dsigned.jmvc.types.operators.*;
 /**
  *
  * @author Nikosk <nikosk@dsigned.gr>
+ * @author VChrys <vchrys@gmail.com>
  */
 public class Forms extends Controller {
 
@@ -54,15 +55,15 @@ public class Forms extends Controller {
         NewForms f = new NewForms();
         DropdownMenu dd ;
         f.setFields( 
-                dd = new DropdownMenu("Category","category",$.input.post("category"),o(REQUIRED,"true")),
-                new CharField("Title","title",$.input.post("title")),
-                new CharField("Real Title", "real_title",$.input.post("real_title")),
-                new CharField("Sub Title", "sub_title",$.input.post("sub_title")),
-                new CharField("Lead In","lead_in",$.input.post("lead_in")),
-                new TextareaField("Content","content", "5", "20",$.input.post("content"),o(REQUIRED,"true"),o(MAX_LENGTH,"20000"), o(MIN_LENGTH,"100") ),
+                //dd = new DropdownMenu("Category","category",$.input.post("category"),o(REQUIRED,"true")),
+                //new CharField("Title","title",$.input.post("title")),
+               // new CharField("Real Title", "real_title",$.input.post("real_title")),
+                //new CharField("Sub Title", "sub_title",$.input.post("sub_title")),
+                //new CharField("Lead In","lead_in",$.input.post("lead_in")),
+                new TextareaField("Content","content", "5", "20",$.input.post("content"), /*o(MAX_LENGTH,"4"), o(MIN_LENGTH,"2"), o(REQUIRED,"true")*/o(EMAIL,"123")),
 //                new PasswordField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
 //                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
-                new FileField("Upload Image", "image",$.input.post("image"),o(REQUIRED,"true")),
+                //new FileField("Upload Image", "image",$.input.post("image"),o(REQUIRED,"true")),
 //                new RadioButton("Mr", "gender","1",$.input.post("gender"),"checked",o(REQUIRED,"true") ),
 //                new RadioButton("Mrs","gender","2",$.input.post("gender"),"" ),
 //                new Checkbox("Terms & Conditions","terms","1",$.input.post("terms"),"",o(REQUIRED,"true")),
@@ -70,9 +71,9 @@ public class Forms extends Controller {
                 //new ButtonField("button", "sth"),
                 //new ResetButtonField("reset_button", "")
         );
-        dd.addOption(new DropdownOption("sths", "sths" ,"")) ;
-        dd.addOption(new DropdownOption("sthelse", "sthelse" , "selected"));
-        dd.addOption(new DropdownOption("ok", "ok" , ""));
+       // dd.addOption(new DropdownOption("sths", "sths" ,"")) ;
+      //  dd.addOption(new DropdownOption("sthelse", "sthelse" , "selected"));
+       // dd.addOption(new DropdownOption("ok", "ok" , ""));
                 
         if($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()){
             
