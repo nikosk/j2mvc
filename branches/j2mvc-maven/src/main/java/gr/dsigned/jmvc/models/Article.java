@@ -27,6 +27,7 @@ import java.sql.Timestamp;
  * 12 Μαρ 2008, gr.dsigned.jmvc.models 
  * Article.java
  * @author Nikosk <nikosk@dsigned.gr>
+ * @author Vas Chryssikou <vchrys@gmail.gr>
  */
 public class Article extends Model {
 

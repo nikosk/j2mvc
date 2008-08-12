@@ -25,6 +25,7 @@ import gr.dsigned.jmvc.db.QuerySet;
  * 15 Μαρ 2008, gr.dsigned.jmvc.models 
  * Category.java
  * @author Nikosk <nikosk@dsigned.gr>
+ * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class Category extends Model {
 

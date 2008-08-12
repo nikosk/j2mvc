@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 /**
  *
  * @author Nikosk <nikosk@dsigned.gr>
+ * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class BlogRenderer extends Renderer {
 
