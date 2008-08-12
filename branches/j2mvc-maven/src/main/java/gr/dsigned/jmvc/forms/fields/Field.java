@@ -15,6 +15,9 @@
 package gr.dsigned.jmvc.forms.fields;
 
 import gr.dsigned.jmvc.types.Tuple2;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -130,13 +133,40 @@ public class Field {
                         validates = false;
                     }
                     break;
-                case DOMAIN:/*
+                case DOMAIN:
+                    String domain = "http://"+ this.value ;
                     Pattern pat = Pattern.compile("(http):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?");
-                    Matcher match = pat.matcher(this.value);
+                    Matcher match = pat.matcher(domain);
                     if (!match.matches()) {
                         errors.add(label + " is not a valid domain.");
                         validates = false;
-                    }*/
+                    }else{
+                        URLConnection connection = null;
+                        HttpURLConnection httpConnection = null;
+                        int response = 0;
+
+                        try{
+                            URL url = new URL(domain);
+                            connection = url.openConnection();
+                            connection.setConnectTimeout(5000);
+
+                            if (connection instanceof HttpURLConnection){
+                                httpConnection = (HttpURLConnection) connection;
+                                httpConnection.connect();
+                                response = httpConnection.getResponseCode();
+                            }
+                        }
+                        catch (Exception e){
+                        }finally{
+                            if (httpConnection != null){
+                                httpConnection.disconnect();
+                            }
+                        }
+
+                        if (response != HttpURLConnection.HTTP_OK){
+                            errors.add(label + " is not a valid domain.");
+                        }
+                    }
                     break;
                 case NUMERIC:
                     /*if (!matchFound.matches()) {
