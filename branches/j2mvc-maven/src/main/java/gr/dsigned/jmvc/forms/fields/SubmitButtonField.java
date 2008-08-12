@@ -1,5 +1,5 @@
 /*
- *  ButtonField.java
+ *  SubmitButtonField.java
  * 
  *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
  * 
@@ -21,6 +21,7 @@ import gr.dsigned.jmvc.types.Tuple2;
 /**
  *  
  * @author Nikosk <nikosk@dsigned.gr>
+ * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class SubmitButtonField extends Field {
 

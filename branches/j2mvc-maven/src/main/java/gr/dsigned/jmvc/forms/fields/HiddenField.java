@@ -20,6 +20,7 @@ import gr.dsigned.jmvc.types.Tuple2;
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
+ * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class HiddenField extends Field{
     String template = "<input type='submit'>";
