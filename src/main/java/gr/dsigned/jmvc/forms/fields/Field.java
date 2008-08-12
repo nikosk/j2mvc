@@ -18,6 +18,8 @@ import gr.dsigned.jmvc.types.Tuple2;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +34,7 @@ public class Field {
 
 
     public enum Rule {
-        REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, ALPHANUM
+        REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, ALPHANUM, DATE
     }
     protected String fieldName;
     protected String labelName;
@@ -173,7 +175,7 @@ public class Field {
                     p = Pattern.compile("\\d*");
                     m = p.matcher(this.value);
                     if (!m.matches()) {
-                        errors.add(label + " does not cosist of numbers.");
+                        errors.add(label + " does not consist of numbers.");
                         validates = false;
                     }
                     break;
@@ -181,7 +183,7 @@ public class Field {
                     p = Pattern.compile("[a-zA-Z]*");
                     m = p.matcher(this.value);
                     if (!m.matches()) {
-                        errors.add(label + " does not cosist of numbers.");
+                        errors.add(label + " does not consist of numbers.");
                         validates = false;
                     }
                     break;
@@ -189,8 +191,26 @@ public class Field {
                     p = Pattern.compile("\\w*");
                     m = p.matcher(this.value);
                     if (!m.matches()) {
-                        errors.add(label + " does not cosist of numbers and letters.");
+                        errors.add(label + " does not consist of numbers and letters.");
                         validates = false;
+                    }
+                    break;
+                case DATE:
+                    if (!this.value.isEmpty()) {
+                        SimpleDateFormat dtFormatter = new SimpleDateFormat(r._2);
+                        dtFormatter.setLenient(false);
+                        try
+                        {
+                            dtFormatter.parse(this.value);
+                        }
+                        catch (ParseException ex)
+                        {
+                            validates = false;
+                            errors.add(label + " is not of the correct date format: "+r._2);
+                        }
+                    }else{
+                        validates = false;
+                        errors.add(label + " is not of the correct date format "+r._2);
                     }
                     break;
             }
