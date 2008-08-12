@@ -56,11 +56,11 @@ public class Forms extends Controller {
         DropdownMenu dd ;
         f.setFields( 
                 //dd = new DropdownMenu("Category","category",$.input.post("category"),o(REQUIRED,"true")),
-                //new CharField("Title","title",$.input.post("title")),
+                new CharField("Date","date",$.input.post("date"),o(DATE,"yyyy-MM-dd")),
                // new CharField("Real Title", "real_title",$.input.post("real_title")),
                 //new CharField("Sub Title", "sub_title",$.input.post("sub_title")),
                 //new CharField("Lead In","lead_in",$.input.post("lead_in")),
-                new TextareaField("Content","content", "5", "20",$.input.post("content"), /*o(MAX_LENGTH,"4"), o(MIN_LENGTH,"2"), o(REQUIRED,"true")*/o(EMAIL,"123")),
+                //new TextareaField("Content","content", "5", "20",$.input.post("content"), /*o(MAX_LENGTH,"4"), o(MIN_LENGTH,"2"), o(REQUIRED,"true")*/o(NUMERIC,"123")),
 //                new PasswordField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
 //                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
                 //new FileField("Upload Image", "image",$.input.post("image"),o(REQUIRED,"true")),
