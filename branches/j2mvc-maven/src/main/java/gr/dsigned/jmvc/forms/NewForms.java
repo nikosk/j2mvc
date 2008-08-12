@@ -22,6 +22,7 @@ import java.util.ArrayList;
 /**
  *  
  * @author Nikosk <nikosk@dsigned.gr>
+ * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class NewForms extends Library {
 

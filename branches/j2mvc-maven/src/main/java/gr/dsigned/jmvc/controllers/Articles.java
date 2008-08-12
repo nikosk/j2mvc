@@ -1,7 +1,7 @@
 /*
  *  Articles.java
  * 
- *  Copyright (C) 2008 Vas Chryssikou <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Vas Chryssikou <vchrys@gmail.com>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,7 +35,7 @@ import static gr.dsigned.jmvc.types.operators.*;
 
 /**
  *
- * @author vas
+ * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class Articles extends Controller {
 
