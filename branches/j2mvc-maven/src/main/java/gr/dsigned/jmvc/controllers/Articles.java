@@ -144,7 +144,9 @@ public class Articles extends Controller {
             }
             if ($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()) {
                 Article art = $.loadModel("Article");
-                art.insertArticle($.session.data("userId"), $.input.post("category"), $.input.post("title"), $.input.post("real_title"), $.input.post("sub_title"), $.input.post("lead_in"), $.input.post("content"));
+                Bean bArt = f.addFormValuesToBean() ;
+                bArt.put("userId", $.session.data("userId")) ;
+                art.insertArticle(bArt);
                 ArrayList<Bean> cats = cat.getCategoryById($.input.post("category"));
                 $.response.sendRedirect("/articles/show_articles/" + cats.get(0).get("name"));
             } else {
