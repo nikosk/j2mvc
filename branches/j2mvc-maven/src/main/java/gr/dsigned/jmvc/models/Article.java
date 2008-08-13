@@ -71,16 +71,16 @@ public class Article extends Model {
         return db.count(qs);
     }
     
-    public String insertArticle(String userId, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
+    public String insertArticle(Bean bean) throws Exception {
         QuerySet qs = new QuerySet();
-        qs.set("title", title);
-        qs.set("real_title", real_title);
-        qs.set("sub_title", sub_title);
-        qs.set("lead_in", lead_in);
-        qs.set("content", content);
-        qs.set("category_id", category_id);
+        qs.set("title", bean.get("title"));
+        qs.set("real_title", bean.get("real_title"));
+        qs.set("sub_title", bean.get("sub_title"));
+        qs.set("lead_in", bean.get("lead_in"));
+        qs.set("content", bean.get("content"));
+        qs.set("category_id", bean.get("category_id"));
         qs.set("published", ""+new Timestamp(new java.util.Date().getTime()));
-        qs.set("user_id", userId);
+        qs.set("user_id", bean.get("userId"));
         qs.insert(tableName);
         return db.insert(qs);
     }
