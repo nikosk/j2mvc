@@ -34,7 +34,7 @@ public class Field {
 
 
     public enum Rule {
-        REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, ALPHANUM, DATE
+        REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, ALPHANUM, DATE, ALLOWED_EXTENSION
     }
     protected String fieldName;
     protected String labelName;
@@ -212,6 +212,10 @@ public class Field {
                         validates = false;
                         errors.add(label + " is not of the correct date format "+r._2);
                     }
+                    break;
+                case ALLOWED_EXTENSION:
+                    //String ext = this.value.substring(this.value.indexOf(".")+1) ;
+                    //...    
                     break;
             }
         }
