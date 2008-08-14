@@ -63,7 +63,7 @@ public class Forms extends Controller {
                 //new TextareaField("Content","content", "5", "20",$.input.post("content"), /*o(MAX_LENGTH,"4"), o(MIN_LENGTH,"2"), o(REQUIRED,"true")*/o(NUMERIC,"123")),
 //                new PasswordField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
 //                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
-                //new FileField("Upload Image", "image",$.input.post("image"),o(REQUIRED,"true")),
+                new FileField("Upload Image", "image",$.input.post("image"),o(REQUIRED,"true"),o(ALLOWED_EXTENSION,"jpg|gif")),
 //                new RadioButton("Mr", "gender","1",$.input.post("gender"),"checked",o(REQUIRED,"true") ),
 //                new RadioButton("Mrs","gender","2",$.input.post("gender"),"" ),
 //                new Checkbox("Terms & Conditions","terms","1",$.input.post("terms"),"",o(REQUIRED,"true")),
@@ -76,10 +76,10 @@ public class Forms extends Controller {
        // dd.addOption(new DropdownOption("ok", "ok" , ""));
                 
         if($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()){
-            
+            Bean bArt = f.addFormValuesToBean() ;
             data.put("form", "success");
         } else {
-            String form = "<form  action='/forms/show_form' method='post'>";
+            String form = "<form action='/forms/show_form' method='post'>";
             form += f.build();
             form += "</form>";
             data.put("form", form);
