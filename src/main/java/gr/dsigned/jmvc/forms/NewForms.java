@@ -28,6 +28,7 @@ public class NewForms extends Library {
 
     private ArrayList<Field> fields = new ArrayList<Field>();
     private Bean errors = new Bean();
+    private Bean bean = new Bean();
 
     public String build() {
         return buildAsTable();
@@ -51,10 +52,19 @@ public class NewForms extends Library {
     }
     
     public void setFields(Field... fields) {
-        for (Field f : fields) {
-            this.fields.add(f); 
+        Bean b = this.bean ;
+        if(b.isEmpty()){
+            for (Field f : fields) {
+                this.fields.add(f); 
+            }
+        }else{
+            for (Field f : fields) {
+                f.setValue(b.get(f.getFieldName()));
+                this.fields.add(f);
+            }
         }
     }
+    
     public boolean isValid(){
         boolean valid = true;
         for(Field f : fields){
@@ -71,5 +81,13 @@ public class NewForms extends Library {
             bean.put(f.getFieldName(), f.getValue()) ;
         } 
         return bean;
+    }
+
+    public Bean getBean() {
+        return bean;
+    }
+
+    public void setBean(Bean bean) {
+        this.bean = bean;
     }
 }
