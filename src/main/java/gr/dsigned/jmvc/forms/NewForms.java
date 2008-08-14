@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class NewForms extends Library {
 
     private ArrayList<Field> fields = new ArrayList<Field>();
-    private Bean errors = new Bean();
+    private ArrayList errors = new ArrayList();
     private Bean bean = new Bean();
 
     public String build() {
@@ -37,6 +37,9 @@ public class NewForms extends Library {
     private String buildAsTable(){
         StringBuilder sb = new StringBuilder("<table>");
         for(Field f : fields){
+            if(!errors.isEmpty()){
+                f.addError(errors);
+            }   
             sb.append("<tr>");
             sb.append("<td>");
             sb.append(f.renderLabel());
@@ -89,5 +92,17 @@ public class NewForms extends Library {
 
     public void setBean(Bean bean) {
         this.bean = bean;
+    }
+
+    public ArrayList getErrors() {
+        return errors;
+    }
+
+    public void setErrors(ArrayList errors) {
+        this.errors = errors;
+    }
+    
+    public void addError(String error) {
+        this.errors.add(error);
     }
 }
