@@ -127,11 +127,11 @@ public class Articles extends Controller {
             ArrayList<Bean> beans = cat.getCategories();
             f.setFields(
                     dd = new DropdownMenu("Article Category", "category", $.input.post("category"), o(REQUIRED, "true")),
-                    new CharField("Title", "title", $.input.post("title")),
+                    new CharField("Title", "title", $.input.post("title"),o(REQUIRED, "true")),
                     new CharField("Real Title", "real_title", $.input.post("real_title")),
                     new CharField("Sub Title", "sub_title", $.input.post("sub_title")),
                     new CharField("Lead In", "lead_in", $.input.post("lead_in")),
-                    new TextareaField("Content", "content", "5", "20", $.input.post("content"), o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "100")),
+                    new TextareaField("Content", "content", "5", "20", $.input.post("content"), o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "10")),
                     new SubmitButtonField("submit_button", ""));
             int i = 0;
             for (Bean b : beans) {
@@ -142,6 +142,7 @@ public class Articles extends Controller {
                 }
                 i++;
             }
+            f.addError("Title different error") ;
             if ($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()) {
                 Article art = $.loadModel("Article");
                 Bean bArt = f.addFormValuesToBean() ;
