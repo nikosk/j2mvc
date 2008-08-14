@@ -182,7 +182,7 @@ public class Articles extends Controller {
                 bArt.put("sub_title", $.input.post("sub_title"));
                 bArt.put("lead_in", $.input.post("lead_in"));
                 bArt.put("content", $.input.post("content"));
-                bArt.put("category_id", $.input.post("category"));
+                bArt.put("category", $.input.post("category"));
                 articleAL.add(bArt);
             } else {
                 articleAL = article.getArticleById(id);
@@ -190,14 +190,15 @@ public class Articles extends Controller {
 
             Category cat = $.loadModel("Category");
             ArrayList<Bean> beans = cat.getCategories();
+            f.setBean(articleAL.get(0)) ;
             f.setFields(
                     new HiddenField("id", id, o(REQUIRED, "true")),
-                    dd = new DropdownMenu("Category", "category", articleAL.get(0).get("category_id"), o(REQUIRED, "true")),
-                    new CharField("Title", "title", articleAL.get(0).get("title")),
-                    new CharField("Real Title", "real_title", articleAL.get(0).get("real_title")),
-                    new CharField("Sub Title", "sub_title", articleAL.get(0).get("sub_title")),
-                    new CharField("Lead In", "lead_in", articleAL.get(0).get("lead_in")),
-                    new TextareaField("Content", "content", "5", "20", articleAL.get(0).get("content"), o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "100")),
+                    dd = new DropdownMenu("Category", "category", "", o(REQUIRED, "true")),
+                    new CharField("Title", "title", ""),
+                    new CharField("Real Title", "real_title", ""),
+                    new CharField("Sub Title", "sub_title", ""),
+                    new CharField("Lead In", "lead_in", ""),
+                    new TextareaField("Content", "content", "5", "20", "", o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "100")),
                     new SubmitButtonField("submit_button", ""));
             for (Bean b : beans) {
                 if (b.get("id").equalsIgnoreCase(articleAL.get(0).get("category_id"))) {
