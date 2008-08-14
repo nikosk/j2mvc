@@ -237,6 +237,18 @@ public class Field {
         }
         return out;
     }
+    
+    public void addError(ArrayList<String> errorsFromController) {
+        for(int i=0; i<errorsFromController.size() ;i++){
+            String errorsFromContr = errorsFromController.get(i).substring(0,errorsFromController.get(i).indexOf(" ")) ;
+            for (String s : errors) {
+                if(errorsFromContr.equalsIgnoreCase(s.substring(0,s.indexOf(" ")))){
+                    errors.remove(errors.indexOf(s));
+                    errors.add(errorsFromController.get(i));
+                }
+            }
+        } 
+    }
 
     public String renderLabel() {
         if(getLabelName()!=null && getLabelName().length()!=0){
