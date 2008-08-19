@@ -54,7 +54,7 @@ public class Adapter extends HttpServlet {
         try {
             request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING") );
             String path = request.getRequestURI();
-            Class<Controller> c = (Class<Controller>) Class.forName("gr.dsigned.jmvc.controllers." + Utils.capitalize(Input.getController(path).get("controller")));
+            Class<Controller> c = (Class<Controller>) Class.forName(Settings.get("CONTROLLER_PACKAGE") + "." + Utils.capitalize(Input.getController(path).get("controller")));
             gr.dsigned.jmvc.framework.Controller o = c.newInstance();
             o.$.setEnvironment(request, response, this.getServletContext());
             Method m = c.getMethod(Input.getController(path).get("method"), new Class[0]);
