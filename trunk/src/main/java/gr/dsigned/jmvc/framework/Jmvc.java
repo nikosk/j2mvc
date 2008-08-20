@@ -68,15 +68,16 @@ public class Jmvc {
         }
     }
 
+    /**
+     * Returns the request we are handling currently
+     * @return
+     */
     public HttpServletRequest getRequest() {
         return request;
     }
 
     /**
-     * Convenience method created so you can set the
-     * environment methods all at once
-     * (setResponse,setRequest & setContext)
-     * 
+     * Sets the environment environment
      * @param req
      * @param resp
      * @param cont
