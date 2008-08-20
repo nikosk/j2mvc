@@ -43,7 +43,6 @@ public class Jmvc {
     private static final Logger infoLogger = Logger.getLogger("Info");
     private static final Logger debugLogger = Logger.getLogger("Debug");
     private static final Logger errorLogger = Logger.getLogger("Error");
-    
     public HttpServletRequest request;
     public ServletContext context;
     public LinkedHashMap<String, String> parsedTemplates = new LinkedHashMap<String, String>();
@@ -61,17 +60,13 @@ public class Jmvc {
     }
 
     private void init() throws Exception {
-        input = new Input(null,null);
-        if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none"))
-        {
-            if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql"))
-            {
+        input = new Input(null, null);
+        if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none")) {
+            if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql")) {
                 db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
             }
         }
     }
-
-    
 
     public HttpServletRequest getRequest() {
         return request;
@@ -129,6 +124,12 @@ public class Jmvc {
         out.flush();
     }
 
+    /**
+     * Displays the default error page 
+     * @param e The exception that caused the error
+     * @param response Servlet response to write to
+     * @param cont Servlet context to load the template
+     */
     public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont) {
         try {
             String template = "";
@@ -260,17 +261,16 @@ public class Jmvc {
         T m = c.newInstance();
         return m;
     }
-    
+
     public static void logInfo(String msg) {
         infoLogger.info(msg);
     }
-    
+
     public static void logDebug(String msg) {
-        debugLogger.debug(msg);        
+        debugLogger.debug(msg);
     }
-    
+
     public static void logError(String msg) {
         errorLogger.error(msg);
     }
-    
 }
