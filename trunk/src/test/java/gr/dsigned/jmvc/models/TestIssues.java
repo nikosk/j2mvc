@@ -17,7 +17,7 @@ public class TestIssues extends TestCase {
 
     public void testCrudIssue() throws Exception {
         
-        Issue issueModel = Jmvc.loadModel("Issue");
+        Issue issueModel = Jmvc.loadSystemModel("Issue");
 
         ArrayList<Hmap> initIssues = issueModel.getIssuesBySiteId("1");
         String issueId = issueModel.insertIssue("1", "testIssue", "testIssue desc");
