@@ -209,8 +209,27 @@ public class Jmvc {
     }
 
     /**
-     * Loads the model with the name passed in.
+     * Loads a model from J2mvc.
      * 
+     * @param <T> 
+     * @param modelName
+     *            The name of the model you need to load
+     * @return the model
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Model> T loadSystemModel(String modelName) throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException {
+        Class<T> c = (Class<T>) Class.forName("gr.dsigned.jmvc.models." + modelName);
+        T m = c.newInstance();
+        return m;
+    }
+
+    /**
+     * Loads a model from SYSTEM_PACKAGE (the application package).
+     * See settings.properties for setting the SYSTEM_PACKAGE.
      * @param <T> 
      * @param modelName
      *            The name of the model you need to load
@@ -222,7 +241,7 @@ public class Jmvc {
     @SuppressWarnings("unchecked")
     public static <T extends Model> T loadModel(String modelName) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException {
-        Class<T> c = (Class<T>) Class.forName("gr.dsigned.jmvc.models." + modelName);
+        Class<T> c = (Class<T>) Class.forName(Settings.get("SYSTEM_PACKAGE") + ".models." + modelName);
         T m = c.newInstance();
         return m;
     }

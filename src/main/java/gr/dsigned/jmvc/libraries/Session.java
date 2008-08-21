@@ -74,6 +74,9 @@ public class Session extends Library {
     }
 
     public void setTemp(String key, String value) {
+        if(this.session == null){
+            session = this.request.getSession(true);
+        }
         session.setAttribute("t_" + key, value);
          tempHM.put(key, value) ;
     }
