@@ -32,7 +32,7 @@ public class TestSites extends TestCase
 
     public void testSimpleTest() throws Exception
     {
-        Site siteModel = Jmvc.loadModel("Site");
+        Site siteModel = Jmvc.loadSystemModel("Site");
 
         ArrayList<Hmap> siteFetched = siteModel.getSites();
         int initialSitesCounter = siteFetched.size();
@@ -44,7 +44,7 @@ public class TestSites extends TestCase
 
     public void testBeanInsertion() throws Exception
     {
-        Site siteModel = Jmvc.loadModel("Site");
+        Site siteModel = Jmvc.loadSystemModel("Site");
 
         int initialSitesCounter = siteModel.getSites().size();
         Hmap newSite = new Hmap();
