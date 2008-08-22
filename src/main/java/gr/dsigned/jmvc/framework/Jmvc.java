@@ -17,15 +17,16 @@ package gr.dsigned.jmvc.framework;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.db.DB;
 import gr.dsigned.jmvc.db.Model;
-import gr.dsigned.jmvc.db.MysqlDB;
 import gr.dsigned.jmvc.libraries.Input;
 import gr.dsigned.jmvc.libraries.Session;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -45,7 +46,7 @@ public class Jmvc {
     private static final Logger errorLogger = Logger.getLogger("Error");
     public HttpServletRequest request;
     public ServletContext context;
-    public LinkedHashMap<String, String> parsedTemplates = new LinkedHashMap<String, String>();
+    public static LinkedHashMap<String, String> parsedTemplates = new LinkedHashMap<String, String>();
     public HttpServletResponse response;
     /*
      * These are the default auto-loaded libraries To load
@@ -196,15 +197,15 @@ public class Jmvc {
      * @throws java.io.IOException
      */
     static String readWithStringBuilder(String fileName) throws IOException {
-        FileReader fr = new FileReader(fileName); // ~3MB
-        BufferedReader br = new BufferedReader(fr);
+        Reader in = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
+        BufferedReader br = new BufferedReader(in);
         String line;
         StringBuilder result = new StringBuilder();
         while ((line = br.readLine()) != null) {
-            result.append(line + "\n");
+            result.append(line).append("\n");
         }
         br.close();
-        fr.close();
+        in.close();
         return result.toString();
     }
 
