@@ -15,12 +15,8 @@
 package gr.dsigned.jmvc.controllers;
 
 import gr.dsigned.jmvc.types.Hmap;
-import gr.dsigned.jmvc.ValidationRules;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Renderer;
-import gr.dsigned.jmvc.libraries.Form;
-import gr.dsigned.jmvc.libraries.Form.HtmlControl;
-import gr.dsigned.jmvc.libraries.Form.ValidationType;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.models.Issue;
 import gr.dsigned.jmvc.models.Site;
