@@ -95,6 +95,11 @@ public class DropdownMenu extends Field {
         return (getSelectedDropdownOption().getValue() == null) ? "" : getSelectedDropdownOption().getValue();
     }
 
+    @Override
+    public String getValue() {
+        return getSelectedValue();
+    }
+
     public boolean validates() {
         validates = true;
         for (Tuple2<Rule, String> r : rules) {
