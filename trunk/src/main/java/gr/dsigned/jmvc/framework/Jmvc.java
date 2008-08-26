@@ -248,6 +248,24 @@ public class Jmvc {
     }
 
     /**
+     * Loads the Renderer from J2mvc.
+     * 
+     * @param <T> 
+     * @param rendererName The name of the Renderer you need to load
+     * @return the Renderer
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Renderer> T loadSystemRenderer(String rendererName) throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException {
+        Class<T> c = (Class<T>) Class.forName("gr.dsigned.jmvc.renderers." + rendererName);
+        T m = c.newInstance();
+        return m;
+    }
+
+    /**
      * Loads the Renderer with the name passed in.
      * 
      * @param <T> 
@@ -260,7 +278,7 @@ public class Jmvc {
     @SuppressWarnings("unchecked")
     public static <T extends Renderer> T loadRenderer(String rendererName) throws ClassNotFoundException,
             InstantiationException, IllegalAccessException {
-        Class<T> c = (Class<T>) Class.forName("gr.dsigned.jmvc.renderers." + rendererName);
+        Class<T> c = (Class<T>) Class.forName(Settings.get("SYSTEM_PACKAGE") +".renderers." + rendererName);
         T m = c.newInstance();
         return m;
     }
