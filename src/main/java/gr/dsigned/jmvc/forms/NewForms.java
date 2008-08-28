@@ -29,6 +29,9 @@ public class NewForms extends Library {
     private ArrayList<Field> fields = new ArrayList<Field>();
     private ArrayList errors = new ArrayList();
     private Hmap hmap = new Hmap();
+    
+    public String submitBtn = "";
+    public String resetBtn = "";
 
     public String build() {
         return buildAsTable();
@@ -39,6 +42,9 @@ public class NewForms extends Library {
         for(Field f : fields){
             sb.append("<tr>");
             sb.append("<td>");
+            if(f.isRequired()){
+                sb.append("<span style='color: #FF0000;'>*&nbsp;</span>");
+            }
             sb.append(f.renderLabel());
             sb.append("</td>");
             sb.append("<td>");
@@ -47,10 +53,33 @@ public class NewForms extends Library {
             sb.append("</td>");
             sb.append("</tr>");
         }
+        if(!submitBtn.equals("") || !resetBtn.equals("")){
+            sb.append("<tr>").append("<td>&nbsp;</td><td>").append(submitBtn).append(resetBtn).append("</td>").append("</tr>");
+        }  
         sb.append("</table>");
         return sb.toString();
     }
-    
+
+    public String buildAsUList(){
+        StringBuilder sb = new StringBuilder("<ul>");
+        for(Field f : fields){
+            sb.append("<li>");
+            sb.append(f.renderLabel());
+            sb.append("</li>");
+            sb.append("<li>");
+            sb.append(f.renderField());
+            sb.append(f.renderErrors());
+            sb.append("</li>");
+        }
+        
+        if(!submitBtn.equals("") || !resetBtn.equals("")){
+            sb.append("<li>").append(submitBtn).append(resetBtn).append("</li>");
+        }  
+
+        sb.append("</ul>");
+        return sb.toString();
+    }
+
     public void setFields(Field... fields) {
         Hmap b = this.hmap ;
         if(b.isEmpty()){
@@ -82,6 +111,10 @@ public class NewForms extends Library {
         } 
         return hmap;
     }
+    
+    public ArrayList getFields(){
+        return fields;
+    }
 
     public Hmap getHmap() {
         return hmap;
@@ -102,4 +135,12 @@ public class NewForms extends Library {
     public void addError(String error) {
         this.errors.add(error);
     }
+    
+    public void setSubmitBtn(String submit){
+        this.submitBtn = submit;
+    }
+
+    public void setResetBtn(String reset){
+        this.resetBtn = reset;
+    }    
 }

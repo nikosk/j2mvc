@@ -90,7 +90,6 @@ public class DropdownMenu extends Field {
         }
         return null;
     }
-
     public String getSelectedValue() {
         return (getSelectedDropdownOption().getValue() == null) ? "" : getSelectedDropdownOption().getValue();
     }
