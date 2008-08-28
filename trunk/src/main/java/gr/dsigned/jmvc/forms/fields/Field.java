@@ -102,6 +102,17 @@ public class Field {
         }
     }
 
+    public boolean isRequired(){
+        boolean required = false;
+        for (Tuple2<Rule, String> r : rules) {
+            if(r._1 == Rule.REQUIRED){
+                required = true;
+                break;
+            }
+        }
+        return required;
+    }
+    
     public boolean validates() {
         validates = true;
         Pattern p = null ;
