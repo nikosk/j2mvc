@@ -30,13 +30,17 @@ public class DropdownMenu extends Field {
         super(labelName, fieldName, rules);
     }
 
-    public DropdownMenu(String labelName, String fieldName, Hmap optionValues, Tuple2<Rule, String>... rules) {
+    public DropdownMenu(String labelName, String fieldName, String defaultValue, Hmap optionValues, Tuple2<Rule, String>... rules) {
         super(labelName, fieldName, rules);
+        if(defaultValue!=null && defaultValue.length()!=0)
+        {
+            addOption(new DropdownOption(defaultValue, "0"));
+        }    
         for (String o : optionValues.keySet()) {
             addOption(new DropdownOption(optionValues.get(o), o));
         }
     }
-
+    
     @Override
     public String renderField() {
         return String.format("<select name='%1$s' id='%2$s'>%3$s</select>%n", getFieldName(), "id_" + getFieldName(), renderOptions(), getErrors());
@@ -106,6 +110,12 @@ public class DropdownMenu extends Field {
             switch (r._1) {
                 case REQUIRED:
                     if (this.getSelectedValue().isEmpty()) {
+                        addError(getLabelName() + " is required.");
+                        validates = false;
+                    }
+                    break;
+                case DEFAULT_NOT_ALLOWED:
+                    if (this.getSelectedValue().isEmpty() || this.getSelectedValue().equalsIgnoreCase("0")) {
                         addError(getLabelName() + " is required.");
                         validates = false;
                     }
