@@ -128,7 +128,7 @@ public class Articles extends Controller {
             Category cat = $.loadModel("Category");
             Hmap categories = cat.getCategoryIdNamePair();
             form.setFields(
-                    dd = new DropdownMenu("Article Category", "category", categories, o(REQUIRED, "true")),
+                    dd = new DropdownMenu("Article Category", "category", "", categories, o(REQUIRED, "true")),
                     new CharField("Title", "title", $.input.post("title"), o(REQUIRED, "true")),
                     new CharField("Real Title", "real_title", $.input.post("real_title")),
                     new CharField("Sub Title", "sub_title", $.input.post("sub_title")),
