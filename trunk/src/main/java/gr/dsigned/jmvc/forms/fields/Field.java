@@ -37,7 +37,7 @@ public class Field {
 
     public enum Rule {
         REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, 
-        ALPHANUM, DATE, ALLOWED_EXTENSIONS, MAX_FILE_SIZE
+        ALPHANUM, DATE, ALLOWED_EXTENSIONS, MAX_FILE_SIZE, DEFAULT_NOT_ALLOWED
     }
     protected String fieldName;
     protected String labelName;
