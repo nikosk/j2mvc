@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
  * 09 Μαρ 2008, gr.dsigned.jmvc.libraries 
  * Session.java
  * @author Nikosk <nikosk@dsigned.gr>
+ * @author Vassilki Chryssikou <vchrys@gmail.com>
  */
 public class Session extends Library {
 
@@ -54,6 +55,11 @@ public class Session extends Library {
         }
     }
 
+    /**
+     * Method that gets a paramName and returns its value from the appropriate hashmap
+     * @param paramName
+     * @return (string) value of the parameter given 
+     */
     public String data(String paramName) {
         String out = "";
         if (tempHM.containsKey("t_"+paramName)) {
@@ -65,6 +71,11 @@ public class Session extends Library {
         return (out == null) ? "" : out ;
     }
 
+    /**
+     * Method that sets a permanant attribute to the session and to the appropriate hashmap
+     * @param key
+     * @param value
+     */
     public void set(String key, String value) {
         if(this.session == null){
             session = this.request.getSession(true);
@@ -73,11 +84,20 @@ public class Session extends Library {
         permHM.put(key, value) ;
     }
 
+    /**
+     * Method that sets a temporary attribute to the session and to the appropriate hashmap
+     * @param key
+     * @param value
+     */
     public void setTemp(String key, String value) {
         session.setAttribute("t_" + key, value);
-         tempHM.put(key, value) ;
+        tempHM.put(key, value) ;
     }
 
+    /**
+     * Method that sets all values of a hashmap as attributes to the session
+     * @param data
+     */
     public void setData(HashMap<String, String> data) {
         for (String key : data.keySet()) {
             this.session.setAttribute(key, data.get(key));
