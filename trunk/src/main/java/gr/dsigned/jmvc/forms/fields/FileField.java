@@ -28,7 +28,7 @@ public class FileField extends Field {
     File f = null;
 
     public FileField(String labelName, String fieldName, File uploadFile, Tuple2<Rule, String>... rules) {
-        super(labelName, "file_" + fieldName, "", rules);
+        super(labelName, "file_" + fieldName, ""+uploadFile, rules);
         this.f = uploadFile;
     }
 
@@ -58,6 +58,7 @@ public class FileField extends Field {
                         }
                     }
                     if (!found) {
+                        addError(getLabelName() + " is not of the allowed types " + r._2.replace("|", ", ") + ".");
                         validates = false;
                     }
                     break;
@@ -65,6 +66,7 @@ public class FileField extends Field {
                     long allowedSize = Integer.parseInt(r._2);
                     long fileSize = f.length();
                     if(allowedSize < fileSize){
+                        addError(getLabelName() + " exceeds the max file size: "+r._2+".");
                         validates = false;
                     }
                     break;
