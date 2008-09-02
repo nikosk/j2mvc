@@ -75,7 +75,6 @@ public class DropdownMenu extends Field {
         return sb.toString();
     }
 
-    @Override
     public void setSelected(String selectedValue) {
         for (DropdownOption o : options) {
             if (selectedValue.equals(o.getValue())) {

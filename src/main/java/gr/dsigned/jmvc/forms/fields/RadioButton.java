@@ -22,15 +22,24 @@ import gr.dsigned.jmvc.types.Tuple2;
  */
 public class RadioButton extends Field {
 
+    private boolean checked;
+            
     String template = "<input type='radio' name='%1$s' id='%2$s' value='%3$s' %4$s />%n";
 
     public RadioButton(String labelName, String fieldName, String inputValue, String value, String checked, Tuple2<Rule, String>... rules) {
-        super(labelName, fieldName, inputValue, value, checked, rules);
+        super(labelName, fieldName, inputValue, value, rules);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input type='radio' name='%1$s' id='%2$s' value='%3$s' %4$s />%n", getFieldName(), "id_" + getFieldName(), getInputValue(), getChecked(), getErrors());
+        return String.format("<input type='radio' name='%1$s' id='%2$s' value='%3$s' %4$s />%n", getFieldName(), "id_" + getFieldName(), getInputValue(),  (isChecked()?"checked":""), getErrors());
+    }
+    
+        public boolean isChecked() {
+        return checked;
     }
 
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 }
