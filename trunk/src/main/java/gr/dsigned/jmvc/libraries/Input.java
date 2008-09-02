@@ -74,19 +74,22 @@ public class Input extends Library {
                     String name = item.getFieldName();
                     InputStream stream = item.openStream();
                     if (item.isFormField()) {
-                        System.out.println("Form field " + name + " with value " + Streams.asString(stream) + " detected.");
+                        postParams.put(name, Streams.asString(stream));
                     } else {
-                        File tmpDir = new File(context.getRealPath("/")+ "tmp/");
-                        File tmpFile = new File(context.getRealPath("/") + "tmp/" + item.getName());
-                        tmpDir.mkdirs();
-                        tmpFile.createNewFile();
-                        FileOutputStream fos = new FileOutputStream(tmpFile);
-                        int c;
-                        while ((c = stream.read()) != -1) {
-                            fos.write(c);
+                        if(item.getName()!=null && item.getName().length()!=0){
+                            File tmpDir = new File(context.getRealPath("/")+ "tmp/");
+                            File tmpFile = new File(context.getRealPath("/") + "tmp/" + item.getName());
+                            tmpDir.mkdirs();
+                            tmpFile.createNewFile();
+                            FileOutputStream fos = new FileOutputStream(tmpFile);
+                            int c;
+                            while ((c = stream.read()) != -1) {
+                                fos.write(c);
+                                postParams.put(name, context.getRealPath("/") + "tmp/" + item.getName()) ;
+                            }
+                            fos.close();
+                            stream.close();
                         }
-                        fos.close();
-                        stream.close();
                     }
                 }
             } else {
