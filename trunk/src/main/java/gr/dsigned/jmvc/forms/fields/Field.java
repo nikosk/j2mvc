@@ -17,9 +17,6 @@
 package gr.dsigned.jmvc.forms.fields;
 
 import gr.dsigned.jmvc.types.Tuple2;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +31,14 @@ import java.util.regex.Pattern;
  */
 public class Field {
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
 
     public enum Rule {
         REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, 
@@ -43,10 +48,9 @@ public class Field {
     protected String labelName;
     protected String value;
     protected String inputValue;
-    protected String checked;
-    protected String selected;
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
+    private boolean disabled;
     protected ArrayList<String> errors = new ArrayList<String>();
     protected ArrayList<DropdownOption> options = new ArrayList<DropdownOption>();
 
@@ -91,12 +95,11 @@ public class Field {
      * Checkbox
      * radioButton
      */
-    public Field(String labelName, String fieldName, String inputValue, String value, String checked, Tuple2<Rule, String>... rules) {
+    public Field(String labelName, String fieldName, String inputValue, String value, Tuple2<Rule, String>... rules) {
         this.labelName = labelName;
         this.fieldName = fieldName;
         this.inputValue = inputValue;
         this.value = value;
-        this.checked = checked;
         for (Tuple2<Rule, String> t : rules) {
             this.rules.add(t);
         }
@@ -268,22 +271,6 @@ public class Field {
 
     public void setValue(String value) {
         this.value = value;
-    }
-    
-    public String getSelected() {
-        return selected;
-    }
-
-    public void setSelected(String selected) {
-        this.selected = selected;
-    }
-
-    public String getChecked() {
-        return checked;
-    }
-
-    public void setChecked(String checked) {
-        this.checked = checked;
     }
 
     public String getInputValue() {
