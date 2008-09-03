@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
  * This class will at some point contain methods to sanitize 
  * data coming in and out of the application. 
  * @author Nikosk <nikosk@dsigned.gr>
+ * @author VChrys <vchrys@gmail.com>
  */
 public class Input extends Library {
 
