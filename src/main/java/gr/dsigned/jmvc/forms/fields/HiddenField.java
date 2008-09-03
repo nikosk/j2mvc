@@ -25,6 +25,12 @@ import gr.dsigned.jmvc.types.Tuple2;
 public class HiddenField extends Field{
     String template = "<input type='submit'>";
 
+    /**
+     * 
+     * @param fieldName
+     * @param value
+     * @param rules
+     */
     public HiddenField(String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(fieldName, value, rules);
     }

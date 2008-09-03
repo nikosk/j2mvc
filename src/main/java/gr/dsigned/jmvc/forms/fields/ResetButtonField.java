@@ -25,6 +25,12 @@ public class ResetButtonField extends Field{
     
     String template = "<input type='reset'>";
 
+    /**
+     * 
+     * @param fieldName
+     * @param value
+     * @param rules
+     */
     public ResetButtonField(String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(fieldName, value, rules);
     }

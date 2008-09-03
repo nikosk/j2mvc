@@ -25,16 +25,26 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 public class FileField extends Field {
 
     String template = "<input type='file' name='%1$s' id='%2$s' value='%3$s'/>%n";
+    private boolean disabled;
     File f = null;
 
-    public FileField(String labelName, String fieldName, File uploadFile, Tuple2<Rule, String>... rules) {
+    /**
+     * 
+     * @param labelName
+     * @param fieldName
+     * @param uploadFile
+     * @param disabled
+     * @param rules
+     */
+    public FileField(String labelName, String fieldName, File uploadFile, boolean disabled, Tuple2<Rule, String>... rules) {
         super(labelName, "file_" + fieldName, ""+uploadFile, rules);
         this.f = uploadFile;
+        setDisabled(disabled);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input class='text' type='file' name='%1$s' id='%2$s' value='%3$s'/>%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return String.format("<input class='text' type='file' name='%1$s' id='%2$s' value='%3$s' %4$s />%n", getFieldName(), "id_" + getFieldName(), getValue(), ((isDisabled())? " disabled " : ""), getErrors());
     }
 
     @Override
@@ -73,5 +83,13 @@ public class FileField extends Field {
             }
         }
         return validates;
+    }
+    
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 }

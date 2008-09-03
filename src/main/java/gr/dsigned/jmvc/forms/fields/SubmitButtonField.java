@@ -27,6 +27,12 @@ public class SubmitButtonField extends Field {
 
     String template = "<input type='submit'>";
 
+    /**
+     * 
+     * @param fieldName
+     * @param value
+     * @param rules
+     */
     public SubmitButtonField(String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(fieldName, value, rules);
     }

@@ -22,15 +22,22 @@ import java.util.ArrayList;
  * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class DropdownMenu extends Field {
+    
+    private boolean disabled;
+    private ArrayList<DropdownOption> options = new ArrayList<DropdownOption>();
 
     String template = "<select name='%1$s' id='%2$s'>%3$s</select>%n";
-    protected ArrayList<DropdownOption> options = new ArrayList<DropdownOption>();
-
-    public DropdownMenu(String labelName, String fieldName, Tuple2<Rule, String>... rules) {
-        super(labelName, fieldName, rules);
-    }
-
-    public DropdownMenu(String labelName, String fieldName, String defaultValue, Hmap optionValues, Tuple2<Rule, String>... rules) {
+    
+    /**
+     * 
+     * @param labelName
+     * @param fieldName
+     * @param defaultValue
+     * @param optionValues
+     * @param disabled
+     * @param rules
+     */
+    public DropdownMenu(String labelName, String fieldName, String defaultValue, Hmap optionValues, boolean disabled, Tuple2<Rule, String>... rules) {
         super(labelName, fieldName, rules);
         if(defaultValue!=null && defaultValue.length()!=0)
         {
@@ -39,11 +46,12 @@ public class DropdownMenu extends Field {
         for (String o : optionValues.keySet()) {
             addOption(new DropdownOption(optionValues.get(o), o));
         }
+        setDisabled(disabled);
     }
     
     @Override
     public String renderField() {
-        return String.format("<select name='%1$s' id='%2$s'>%3$s</select>%n", getFieldName(), "id_" + getFieldName(), renderOptions(), getErrors());
+        return String.format("<select name='%1$s' id='%2$s' %4$s>%3$s</select>%n", getFieldName(), "id_" + getFieldName(), renderOptions(), ((isDisabled())? " disabled " : ""), getErrors());
     }
 
     public DropdownOption addOption(DropdownOption option) {
@@ -93,6 +101,7 @@ public class DropdownMenu extends Field {
         }
         return null;
     }
+    
     public String getSelectedValue() {
         return (getSelectedDropdownOption().getValue() == null) ? "" : getSelectedDropdownOption().getValue();
     }
@@ -100,6 +109,14 @@ public class DropdownMenu extends Field {
     @Override
     public String getValue() {
         return getSelectedValue();
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
     public boolean validates() {

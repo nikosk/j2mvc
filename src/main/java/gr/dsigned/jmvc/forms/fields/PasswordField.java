@@ -21,14 +21,45 @@ import gr.dsigned.jmvc.types.Tuple2;
  */
 public class PasswordField extends Field {
 
+    private boolean disabled;
+    private boolean readonly;
+    
     String template = "<input type='password' name='%1$s' id='%2$s' value='%3$s'/>%n";
 
-    public PasswordField(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
+    /**
+     * 
+     * @param labelName
+     * @param fieldName
+     * @param value
+     * @param disabled
+     * @param readonly
+     * @param rules
+     */
+    public PasswordField(String labelName, String fieldName, String value, boolean disabled, boolean readonly, Tuple2<Rule, String>... rules) {
         super(labelName, fieldName, value, rules);
+        setDisabled(disabled);
+        setReadonly(readonly);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input class='text' type='password' name='%1$s' id='%2$s' value='%3$s'/>%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return String.format("<input class='text' type='password' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />%n", getFieldName(), "id_" + getFieldName(), getValue(), ((isDisabled())? " disabled " : ""), ((isReadonly())? " readonly " : ""), getErrors());
     }
+    
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public boolean isReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+    }
+
 }
