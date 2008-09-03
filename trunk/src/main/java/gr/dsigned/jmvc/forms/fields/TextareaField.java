@@ -22,18 +22,33 @@ import gr.dsigned.jmvc.types.Tuple2;
  */
 public class TextareaField extends Field {
     
-    protected String cols;
-    protected String rows;
+    private String cols;
+    private String rows;
+    private boolean disabled;
+    private boolean readonly;
 
     String template = "<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s'>%5$s</textarea>%n";
 
-    public TextareaField(String labelName, String fieldName, String rows, String cols, String value, Tuple2<Rule, String>... rules) {
+    /**
+     * 
+     * @param labelName
+     * @param fieldName
+     * @param rows
+     * @param cols
+     * @param value
+     * @param disabled
+     * @param readonly
+     * @param rules
+     */
+    public TextareaField(String labelName, String fieldName, String rows, String cols, String value, boolean disabled, boolean readonly, Tuple2<Rule, String>... rules) {
         super(labelName,fieldName, value, rules);
+        setDisabled(disabled);
+        setReadonly(readonly);
     }
 
     @Override
     public String renderField() {
-        return String.format("<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s'>%5$s</textarea>%n", getFieldName(), "id_" + getFieldName(), getRows(), getCols(), getValue(), getErrors());
+        return String.format("<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s' %6$s %7$s >%5$s</textarea>%n", getFieldName(), "id_" + getFieldName(), getRows(), getCols(), getValue(), ((isDisabled())? " disabled " : ""), ((isReadonly())? " readonly" : ""), getErrors());
     }
         
     public String getCols() {
@@ -50,5 +65,21 @@ public class TextareaField extends Field {
 
     public void setRows(String rows) {
         this.rows = rows;
+    }
+    
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public boolean isReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
     }
 }

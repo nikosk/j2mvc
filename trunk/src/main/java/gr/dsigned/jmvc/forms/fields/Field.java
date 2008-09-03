@@ -31,15 +31,6 @@ import java.util.regex.Pattern;
  */
 public class Field {
 
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
-
     public enum Rule {
         REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, 
         ALPHANUM, DATE, ALLOWED_EXTENSIONS, MAX_FILE_SIZE, DEFAULT_NOT_ALLOWED
@@ -50,11 +41,10 @@ public class Field {
     protected String inputValue;
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
-    private boolean disabled;
     protected ArrayList<String> errors = new ArrayList<String>();
-    protected ArrayList<DropdownOption> options = new ArrayList<DropdownOption>();
-
+   
     /*
+     * 
      * Used by:
      * 
      * submitButton
@@ -280,6 +270,7 @@ public class Field {
     public void setInputValue(String inputValue) {
         this.inputValue = inputValue;
     }
+    
     /**
      * enum type that returns a field html tag with hooks to
      * pass parameters. Params : 1. name: will be used as id

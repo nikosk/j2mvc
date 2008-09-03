@@ -23,16 +23,25 @@ import gr.dsigned.jmvc.types.Tuple2;
 public class DropdownOption {
     
     String template = "<option value='%1$s'>%2$s</option>%n";
-    protected String optionLabel;
-    protected String value;
-    protected boolean selected;
-    //protected sellected ;
+    private String optionLabel;
+    private String value;
+    private boolean selected;
     
+    /**
+     * @param optionLabel
+     * @param value
+     * @param selected
+     */
     public DropdownOption(String optionLabel, String value, boolean selected) {
         this.optionLabel = optionLabel ;
         this.value = value ;
         this.selected = false ;
     }
+    /**
+     * 
+     * @param optionLabel
+     * @param value
+     */
     public DropdownOption(String optionLabel, String value) {
         this.optionLabel = optionLabel ;
         this.value = value ;

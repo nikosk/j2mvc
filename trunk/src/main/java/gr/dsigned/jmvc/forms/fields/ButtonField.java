@@ -24,6 +24,11 @@ import gr.dsigned.jmvc.types.Tuple2;
 public class ButtonField extends Field{
     String template = "<input type='button'>";
 
+    /**
+     * @param fieldName
+     * @param value
+     * @param rules
+     */
     public ButtonField(String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(fieldName, value, rules);
     }

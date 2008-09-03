@@ -22,18 +22,20 @@ import gr.dsigned.jmvc.types.Tuple2;
  */
 public class Checkbox extends Field {
 
-    protected boolean checked;
+    private boolean checked;
+    private boolean disabled;
     
     String template = "<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s />%n";
 
-    public Checkbox(String labelName, String fieldName, String inputValue, String value, boolean checked, Tuple2<Rule, String>... rules) {
+    public Checkbox(String labelName, String fieldName, String inputValue, String value, boolean checked, boolean disabled, Tuple2<Rule, String>... rules) {
         super(labelName, fieldName, inputValue, value, rules);
-        this.checked = checked ; 
+        setChecked(checked);
+        setDisabled(disabled);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s />%n", getFieldName(), "id_" + getFieldName(), getInputValue(), ((isChecked())? " checked " : ""), getErrors());
+        return String.format("<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />%n", getFieldName(), "id_" + getFieldName(), getInputValue(), ((isChecked())? " checked " : ""), ((isDisabled())? " disabled " : ""), getErrors());
     }
     
     public boolean isChecked() {
@@ -42,6 +44,14 @@ public class Checkbox extends Field {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+    
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
 }
