@@ -17,8 +17,8 @@ package gr.dsigned.jmvc.forms;
 import gr.dsigned.jmvc.forms.fields.Field;
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.framework.Library;
-import java.util.ArrayList;
-
+import java.util.LinkedHashMap;
+import static gr.dsigned.jmvc.framework.Renderer.*;
 /**
  *  
  * @author Nikosk <nikosk@dsigned.gr>
@@ -26,23 +26,29 @@ import java.util.ArrayList;
  */
 public class NewForms extends Library {
 
-    private ArrayList<Field> fields = new ArrayList<Field>();
-    private ArrayList errors = new ArrayList();
-    private Hmap hmap = new Hmap();
-    
-    public String submitBtn = "";
-    public String resetBtn = "";
+    private LinkedHashMap<String, Field> fields = new LinkedHashMap<String, Field>();
 
+    private String action ;
+    private boolean enctype = false;
+    /**
+     * Renders the complete form.
+     * @return Html form
+     */
+    public String renderForm() {
+        return String.format("<form action='%1$s' method='POST' %2$s>%3$s</form>", getAction(), isEnctype(), build());
+    }
+    
     public String build() {
         return buildAsTable();
     }
 
-    private String buildAsTable(){
+    private String buildAsTable() {
         StringBuilder sb = new StringBuilder("<table>");
-        for(Field f : fields){
+        for (String name : fields.keySet()) {
+            Field f = fields.get(name);
             sb.append("<tr>");
             sb.append("<td>");
-            if(f.isRequired()){
+            if (f.isRequired()) {
                 sb.append("<span style='color: #FF0000;'>*&nbsp;</span>");
             }
             sb.append(f.renderLabel());
@@ -52,95 +58,127 @@ public class NewForms extends Library {
             sb.append(f.renderErrors());
             sb.append("</td>");
             sb.append("</tr>");
-        }
-        if(!submitBtn.equals("") || !resetBtn.equals("")){
-            sb.append("<tr>").append("<td>&nbsp;</td><td>").append(submitBtn).append(resetBtn).append("</td>").append("</tr>");
-        }  
+        }        
         sb.append("</table>");
         return sb.toString();
     }
 
-    public String buildAsUList(){
+    public String buildAsUList() {
         StringBuilder sb = new StringBuilder("<ul>");
-        for(Field f : fields){
+        for (String name : fields.keySet()) {
+            Field f = fields.get(name);
             sb.append("<li>");
             sb.append(f.renderLabel());
             sb.append("</li>");
             sb.append("<li>");
             sb.append(f.renderField());
-            sb.append(f.renderErrors());
+            sb.append(div(f.renderErrors()));
             sb.append("</li>");
-        }
-        
-        if(!submitBtn.equals("") || !resetBtn.equals("")){
-            sb.append("<li>").append(submitBtn).append(resetBtn).append("</li>");
-        }  
-
+        }        
         sb.append("</ul>");
         return sb.toString();
     }
 
     public void setFields(Field... fields) {
-        Hmap b = this.hmap ;
-        if(b.isEmpty()){
-            for (Field f : fields) {
-                this.fields.add(f); 
-            }
-        }else{
-            for (Field f : fields) {
-                f.setValue(b.get(f.getFieldName()));
-                this.fields.add(f);
-            }
+        for (Field f : fields) {
+            this.fields.put(f.getFieldName(), f);
         }
     }
     
-    public boolean isValid(){
+    /**
+     * Takes an Hmap<fieldName,value> and sets
+     * the data to the fields in the list
+     * @param data Hmap<fieldName,value>
+     */
+    public void setFormData(Hmap data) {
+        for (String k : data.keySet()) {
+            fields.get(k).setValue(data.get(k));
+        }
+    }
+    
+    /**
+     * Checks to see if the form is valid by iterating the fields.
+     * When you render the form before calling isValid 
+     * no error messages are shown.
+     * @return True if valid
+     */
+    public boolean isValid() {
         boolean valid = true;
-        for(Field f : fields){
-            if(!f.validates()){
+        for (String name : fields.keySet()) {
+            Field f = fields.get(name);
+            if (!f.validates()) {
                 valid = false;
             }
-        } 
+        }
         return valid;
     }
     
-    public Hmap getFormData(){
-        Hmap hmap = new Hmap() ;
-        for(Field f : fields){
-            hmap.put(f.getFieldName(), f.getValue()) ;
-        } 
+    /**
+     * Get the data.
+     * @return Hmap<fieldName,Value>
+     */
+    public Hmap getFormData() {
+        Hmap hmap = new Hmap();
+        for (String name : fields.keySet()) {
+            Field f = fields.get(name);
+            hmap.put(f.getFieldName(), f.getValue());
+        }
         return hmap;
     }
-    
-    public ArrayList getFields(){
+    /**
+     * Map of the fields in this form in case 
+     * you want to process them in the controller.
+     * @return
+     */
+    public LinkedHashMap<String, Field> getFields() {
         return fields;
     }
-
-    public Hmap getHmap() {
+    
+    /**
+     * Returns a Map of --field name, error message--.
+     * Caution: When getErrorMessages is called 
+     * no errors will be rendered when you build the form
+     * until you called isValid again.
+     * @return A list of DIVs with error messages
+     */
+    public Hmap getErrorMessages() {
+        Hmap hmap = new Hmap();
+        for (String name : fields.keySet()) {
+            Field f = fields.get(name);
+            hmap.put(f.getFieldName(), f.renderErrors());
+        }
         return hmap;
     }
-
-    public void setBean(Hmap hmap) {
-        this.hmap = hmap;
-    }
-
-    public ArrayList getErrors() {
-        return errors;
-    }
-
-    public void setErrors(ArrayList errors) {
-        this.errors = errors;
-    }
     
-    public void addError(String error) {
-        this.errors.add(error);
-    }
-    
-    public void setSubmitBtn(String submit){
-        this.submitBtn = submit;
+    /** 
+     * Set a custom error message to a field of the form
+     * @param fieldName
+     * @param errorMessage
+     */
+    public void setErrorMessage(String fieldName, String errorMessage) {
+        Field f = fields.get(fieldName);
+        if(f != null){
+            f.customErrorMsg(errorMessage);
+        }
     }
 
-    public void setResetBtn(String reset){
-        this.resetBtn = reset;
-    }    
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    private String isEnctype() {
+        String out = "" ;
+        if(enctype){
+            out = "enctype='multipart/form-data'" ;
+        }
+        return out;
+    }
+
+    public void setEnctype() {
+        this.enctype = true;
+    }
 }

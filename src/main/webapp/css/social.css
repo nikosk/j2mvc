@@ -1,0 +1,140 @@
+#hd {
+    text-align:left;
+    overflow:hidden;
+    background: #41454A;;
+    line-height:30px;
+    width: 100%;
+}
+
+#hd .hdmenu {
+    background:#41454A none repeat scroll 0%;
+    color:#FFFFFF;
+    float:left;
+    font-family:Verdana,Arial,Helvetica,Sans-serif;
+    font-size:x-small;
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin: 0px;
+}
+
+#hd .hdmenu li {
+    float:left;
+    padding:0px 5px 0px 5px;
+}
+
+#hd .hdmenu li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+#hd .hdmenu li a:hover {
+    text-decoration: underline;
+}
+
+#hd .logout {
+    float: right;
+    color:#fff;
+    font-size: x-small;
+    text-decoration:none;
+    margin-right: 5px;
+}
+
+#hd .logout .user {
+    color:#fff;
+    font-size: x-small;
+    font-weight: bold;
+}
+
+#hd .logout a {
+    color:#fff;
+    font-size: x-small;
+    text-decoration:none;
+    font-weight: bold;
+}
+
+#top {
+    text-align:center;
+    overflow:hidden;
+    background: #d6dff6;
+    line-height:120px;
+    width: 100%;
+}
+
+#bottom {
+    text-align:center;
+    overflow:hidden;
+    background: #b8b89f;
+    line-height:50px;
+    width: 100%;
+}
+
+#mainarea .mainmenu {
+    background:#41454A none repeat scroll 0%;
+    color:#FFFFFF;
+    float:left;
+    font-family:Verdana,Arial,Helvetica,Sans-serif;
+    font-size:x-small;
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin: 0px;    
+}
+
+#mainarea .mainmenu {
+    background:#41454A none repeat scroll 0%;
+    color:#FFFFFF;
+    float:left;
+    font-family:Verdana,Arial,Helvetica,Sans-serif;
+    font-size:x-small;
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin: 0px;    
+}
+
+#mainarea .mainmenu li {
+    float:left;
+    padding:10px;
+}
+
+#mainarea .mainmenu a {
+    color: #fff;
+    text-decoration: none;
+}
+
+#mainarea .mainmenu a:hover {
+    text-decoration: underline;
+}
+
+#mainarea .mainmenu li .highlight {
+    color: #f3f3f3;
+    text-decoration: none;
+    background-color: #000000;
+}
+
+#mainarea .sidemenu {
+    background:#334500 none repeat scroll 0%;
+    color:#FFFFFF;
+    float:left;
+    font-family:Verdana,Arial,Helvetica,Sans-serif;
+    font-size:x-small;
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin: 0px;    
+}
+
+#mainarea .sidemenu li {
+    padding:10px;
+    width: 120px;
+}
+
+#mainarea .sidemenu a {
+    color: #fff;
+    text-decoration: none;
+}
+
+#mainarea .sidemenu a:hover {
+    text-decoration: underline;
+}

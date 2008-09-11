@@ -227,7 +227,7 @@ public abstract class DB {
     /**
      * Inserts a row in the given table. 
      * @param qs the queryset with the sql template and the data to insert
-     * @return returns the Hmap that was inserted with its auto-generated key
+     * @return returns the the auto-generated key as a string
      * @throws SQLException 
      */
     public String insert(QuerySet qs) throws SQLException {

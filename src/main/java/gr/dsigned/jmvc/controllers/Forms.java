@@ -14,19 +14,14 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import static gr.dsigned.jmvc.forms.fields.Field.Rule.*;
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.forms.NewForms;
-import gr.dsigned.jmvc.forms.fields.SubmitButtonField;
-import gr.dsigned.jmvc.forms.fields.CharField;
+import gr.dsigned.jmvc.forms.fields.SubmitButton;
 import gr.dsigned.jmvc.forms.fields.DropdownMenu;
-import gr.dsigned.jmvc.forms.fields.FileField;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.models.Issue;
 import gr.dsigned.jmvc.models.Site;
-import java.io.File;
-import static gr.dsigned.jmvc.types.operators.*;
 
 /**
  *
@@ -55,11 +50,11 @@ public class Forms extends Controller {
                 //new TextareaField("Content","content", "5", "20",$.input.post("content"), /*o(MAX_LENGTH,"4"), o(MIN_LENGTH,"2"), o(REQUIRED,"true")*/o(NUMERIC,"123")),
 //                new PasswordField("password",$.input.post("password"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(MIN_LENGTH,"123")),
 //                new CharField("email",$.input.post("email"),o(REQUIRED,"true") ,o(MAX_LENGTH,"255"), o(EMAIL,"123")),
-                new FileField("Upload Image", "image",new File("/"),false),
+                //new FileField("Upload Image", "image",new File("/"),false),
 //                new RadioButton("Mr", "gender","1",$.input.post("gender"),"checked",o(REQUIRED,"true") ),
 //                new RadioButton("Mrs","gender","2",$.input.post("gender"),"" ),
 //                new Checkbox("Terms & Conditions","terms","1",$.input.post("terms"),"",o(REQUIRED,"true")),
-                new SubmitButtonField("submit_button", "")
+                new SubmitButton("submit_button")
                 //new ButtonField("button", "sth"),
                 //new ResetButtonField("reset_button", "")
         );

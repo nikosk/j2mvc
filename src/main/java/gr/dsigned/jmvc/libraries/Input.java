@@ -17,6 +17,7 @@ package gr.dsigned.jmvc.libraries;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.framework.Library;
 
+import gr.dsigned.jmvc.types.Hmap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -41,8 +42,8 @@ public class Input extends Library {
 
     private HttpServletRequest request;
     private ServletContext context;
-    private LinkedHashMap<String, String> postParams = new LinkedHashMap<String, String>();
-    private LinkedHashMap<String, String> getParams = new LinkedHashMap<String, String>();
+    private Hmap postParams = new Hmap();
+    private Hmap getParams = new Hmap();
 
     public Input(HttpServletRequest req, ServletContext cont) throws Exception {
         this.context = cont;
@@ -145,7 +146,9 @@ public class Input extends Library {
     public String post(String paramName) {
         return (this.postParams.get(paramName) != null) ? this.postParams.get(paramName) : "";
     }
-
+    public Hmap getPostData(){
+        return this.postParams;
+    }
     public File upload(String paramName) {
         return new File("/");
     }

@@ -23,21 +23,37 @@ import gr.dsigned.jmvc.types.Tuple2;
  * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class HiddenField extends Field{
-    String template = "<input type='submit'>";
-
+    private String inputValue ;
+    
+    
     /**
-     * 
+     *Construcrtor for a hidden field that will need the post value of the field
+     *  
      * @param fieldName
-     * @param value
+     * @param inputValue (the value that we assign to the input's value attribute)
+     * @param value (the value we take from the post of the form's field)
      * @param rules
      */
-    public HiddenField(String fieldName, String value, Tuple2<Rule, String>... rules) {
-        super(fieldName, value, rules);
+    public HiddenField(String fieldName, String inputValue, String value, Tuple2<Rule, String>... rules) {
+        super(fieldName,fieldName, value, rules);
+        this.inputValue = inputValue ;
+    }
+    
+    /**
+     * Construcrtor for a hidden field that will not need the post value of the field
+     * 
+     * @param fieldName
+     * @param inputValue (the value that we assign to the input's value attribute)
+     * @param rules
+     */
+    public HiddenField(String fieldName, String inputValue, Tuple2<Rule, String>... rules) {
+        super(fieldName, rules);
+        this.inputValue = inputValue ;
     }
 
     @Override
     public String renderField() {
-        return String.format("<input type='hidden' name='%1$s' id='%2$s' value='%3$s' />%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return String.format("<input type='hidden' name='%1$s' id='%2$s' value='%3$s' />%n", getFieldName(), "id_" + getFieldName(), getInputValue(), getErrors());
         //return template;
     }
 
@@ -45,6 +61,14 @@ public class HiddenField extends Field{
     @Override
     public String renderLabel() {
         return "";// this field has no label
+    }
+
+    public String getInputValue() {
+        return inputValue;
+    }
+
+    public void setInputValue(String inputValue) {
+        this.inputValue = inputValue;
     }
 
 }

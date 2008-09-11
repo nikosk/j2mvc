@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <title>pcms | Dashboard</title>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
+        <%styles-forms%>    
+        <%styles-typography%>    
+        <link rel="stylesheet" type="text/css" href="/css/admin_styles.css"> 
+        <script type="javascript" src="/js/admin/content_manager_utils.js"></script>
+    </head>
+    <body>
+        <div id="pcms_header">
+            <div id="logo"><h1>pcms</h1></div>
+            <div id="header_right_col"><% anchor("/admin/logout" , "logout", "class='logout_link'")%></div>
+        </div>
+        <div id="nav"><%menu%></div>
+        <div id="doc3" class="yui-t3">
+            <div id="hd"></div>
+            <div id="bd">
+                <div id="yui-main">
+                    <div class="yui-b">
+                        <div class="yui-ge">
+                            <div class="yui-u first" id="main_content">
+                                <!-- main content area -->
+                                <div id="content_wrapper">
+                                    <form action="<%site_url('admin/content_structure_manager')%>">                                        
+                                        <div class="message_area"><%message%></div>
+                                        <div class="toolbar">
+                                            <div class="tool">
+                                                <a href="#" id="add_field_b">
+                                                    add field
+                                                    <img alt="add field" src="/images/icons/famfam/add.png">
+                                                </a>
+                                            </div>
+                                            <div id="content_name" style="width:50%">
+                                                <label for="content_name_f">Content Name</label>
+                                                <input id="content_name_f" name="content_name" type="text" />                                                
+                                            </div>                                            
+                                        </div>
+                                        <div class="content" id="form_area">
+                                            
+                                            <input type="hidden" name="json_data"/>
+                                        </div>
+                                        
+                                    </form>
+                                </div>
+                            </div><!-- main content area -->
+                            <div class="yui-u" id="right_sidebar">
+                                <!-- right column area -->  
+                                <div class="side_toolbar">
+                                    <%right_sidebar%>
+                                </div>
+                            </div><!-- right column area ends -->
+                        </div>
+                    </div>
+                </div>
+                <div class="yui-b" id="left_sidebar">
+                    <!-- left column -->
+                    <div class="nav_part">
+                        <h4><%nav_part%></h4>
+                    </div>                     
+                    <div class="side_toolbar">
+                        <%left_toobar%>
+                    </div>
+                </div><!-- left column ends -->                
+            </div>
+            <div id="ft"><small>phiresoft 2008</small></div>
+        </div>
+        <div id="cms_footer">&nbsp;</div>
+    </body>
+</html>
