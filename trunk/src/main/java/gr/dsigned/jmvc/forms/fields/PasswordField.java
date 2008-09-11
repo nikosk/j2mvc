@@ -21,8 +21,8 @@ import gr.dsigned.jmvc.types.Tuple2;
  */
 public class PasswordField extends Field {
 
-    private boolean disabled;
-    private boolean readonly;
+    private boolean disabled = false ;
+    private boolean readonly = false ;
     
     String template = "<input type='password' name='%1$s' id='%2$s' value='%3$s'/>%n";
 
@@ -31,35 +31,43 @@ public class PasswordField extends Field {
      * @param labelName
      * @param fieldName
      * @param value
-     * @param disabled
-     * @param readonly
      * @param rules
      */
-    public PasswordField(String labelName, String fieldName, String value, boolean disabled, boolean readonly, Tuple2<Rule, String>... rules) {
+    public PasswordField(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(labelName, fieldName, value, rules);
-        setDisabled(disabled);
-        setReadonly(readonly);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input class='text' type='password' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />%n", getFieldName(), "id_" + getFieldName(), getValue(), ((isDisabled())? " disabled " : ""), ((isReadonly())? " readonly " : ""), getErrors());
+        return String.format("<input class='text' type='password' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />%n", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getErrors());
     }
     
-    public boolean isDisabled() {
-        return disabled;
+    public String isDisabled() {
+        String out = "" ;
+        if(disabled){
+            out = " disabled " ;
+        }else{
+            out = "" ;
+        }
+        return out;
     }
 
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
+    public void setDisabled() {
+        this.disabled = true;
     }
 
-    public boolean isReadonly() {
-        return readonly;
+    public String isReadonly() {
+        String out = "" ;
+        if(readonly){
+            out = " readonly " ;
+        }else{
+            out = "" ;
+        }
+        return out;
     }
 
-    public void setReadonly(boolean readonly) {
-        this.readonly = readonly;
+    public void setReadonly() {
+        this.readonly = true;
     }
 
 }

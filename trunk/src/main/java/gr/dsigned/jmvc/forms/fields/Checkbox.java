@@ -12,46 +12,87 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package gr.dsigned.jmvc.forms.fields;
 
 import gr.dsigned.jmvc.types.Tuple2;
 
- /**
+/**
  * @author Vas Chryssikou <vchrys@gmail.com>
  */
 public class Checkbox extends Field {
 
-    private boolean checked;
-    private boolean disabled;
-    
+    private boolean checked = false;
+    private boolean disabled = false;
+    private String inputValue;
     String template = "<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s />%n";
 
-    public Checkbox(String labelName, String fieldName, String inputValue, String value, boolean checked, boolean disabled, Tuple2<Rule, String>... rules) {
-        super(labelName, fieldName, inputValue, value, rules);
-        setChecked(checked);
-        setDisabled(disabled);
+    /**
+     * 
+     * @param labelName
+     * @param fieldName
+     * @param inputValue (the value we assign to the input value attribute)
+     * @param value (the value we are going to get from the post:: if checked we are going to get the inputValue else an empty string)
+     * @param rules
+     */
+    public Checkbox(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
+        super(labelName, fieldName, value, rules);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />%n", getFieldName(), "id_" + getFieldName(), getInputValue(), ((isChecked())? " checked " : ""), ((isDisabled())? " disabled " : ""), getErrors());
+        return String.format("<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />%n", getFieldName(), "id_" + getFieldName(), getValue(),  isChecked(), isDisabled(), getErrors());
+    }
+
+    public String isChecked() {
+        String out = "";
+        if (getValue() != null && getValue().equalsIgnoreCase("1") || checked) {
+            out = " checked ";
+        }
+        return out;
+    }
+
+    public void setChecked() {
+        this.checked = true;
+    }
+
+    public String isDisabled() {
+        String out = "";
+        if (disabled) {
+            out = " disabled ";
+        }
+        else {
+            out = "";
+        }
+        return out;
+    }
+
+    public void setDisabled() {
+        this.disabled = true;
+    }
+
+    @Override
+    public String getValue() {
+        String out = "0";
+        if (!value.isEmpty()) {
+            out = "1";
+        }
+        return out;
     }
     
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
-    }
     
-    public boolean isDisabled() {
-        return disabled;
+    @Override
+    public boolean validates() {
+        validates = true;
+        for (Tuple2<Rule, String> r : rules) {
+            switch (r._1) {
+                case REQUIRED:
+                    if (getValue().equals("0")) {
+                        addError(getLabelName() + " is required.");
+                        validates = false;
+                    }
+                    break;
+            }
+        }
+        return validates;
     }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
 }

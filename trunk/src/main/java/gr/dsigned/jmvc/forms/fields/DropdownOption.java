@@ -28,6 +28,9 @@ public class DropdownOption {
     private boolean selected;
     
     /**
+     * Contstructor that constructs options with selected attribute that can be set either true of false. 
+     * Mostly used for the case that we want an option to be set to true 
+     * 
      * @param optionLabel
      * @param value
      * @param selected
@@ -35,9 +38,10 @@ public class DropdownOption {
     public DropdownOption(String optionLabel, String value, boolean selected) {
         this.optionLabel = optionLabel ;
         this.value = value ;
-        this.selected = false ;
+        this.selected = selected ;
     }
     /**
+     * Contstructor that constructs options with no selected attribute 
      * 
      * @param optionLabel
      * @param value

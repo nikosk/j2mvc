@@ -33,45 +33,46 @@ public class Field {
 
     public enum Rule {
         REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, 
-        ALPHANUM, DATE, ALLOWED_EXTENSIONS, MAX_FILE_SIZE, DEFAULT_NOT_ALLOWED
+        ALPHANUM, DATE, ALLOWED_EXTENSIONS, MAX_FILE_SIZE, DEFAULT_NOT_ALLOWED, EQUALS, PROFILE_NAME
     }
     protected String fieldName;
-    protected String labelName;
+    protected String label;
     protected String value;
-    protected String inputValue;
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
     protected ArrayList<String> errors = new ArrayList<String>();
    
-    /*
-     * 
-     * Used by:
-     * 
-     * submitButton
-     * resetButton
-     * buttonField
-     * hiddenField
-     */
-    public Field(String labelName, String fieldName, Tuple2<Rule, String>... rules) {
-        this.labelName = labelName;
+   /**
+    * Create a new field with initial name and value.
+    * No field label. 
+    * @param fieldName the name='' of the field
+    * @param value
+    * @param rules
+    */
+    public Field(String fieldName, String value, Tuple2<Rule, String>... rules) {
         this.fieldName = fieldName;
-        this.value = "";
+        this.value = value;
+        for (Tuple2<Rule, String> t : rules) {
+            this.rules.add(t);
+        }
+    }
+   /**
+    * Create a new field with initial name and value.
+    * No field label. 
+    * @param fieldName the name='' of the field
+    * @param value
+    * @param rules
+    */
+    public Field(String fieldName, Tuple2<Rule, String>... rules) {
+        this.fieldName = fieldName;
+        this.value = "" ;
         for (Tuple2<Rule, String> t : rules) {
             this.rules.add(t);
         }
     }
     
-    /*
-     * Used by:
-     * 
-     * textarea
-     * passwordField
-     * charField
-     * fileField
-     * dropdownMenu
-     */
     public Field(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
-        this.labelName = labelName;
+        this.label = labelName;
         this.fieldName = fieldName;
         this.value = value;
         for (Tuple2<Rule, String> t : rules) {
@@ -79,22 +80,6 @@ public class Field {
         }
     }
     
-    /*
-     * Used by:
-     * 
-     * Checkbox
-     * radioButton
-     */
-    public Field(String labelName, String fieldName, String inputValue, String value, Tuple2<Rule, String>... rules) {
-        this.labelName = labelName;
-        this.fieldName = fieldName;
-        this.inputValue = inputValue;
-        this.value = value;
-        for (Tuple2<Rule, String> t : rules) {
-            this.rules.add(t);
-        }
-    }
-
     public boolean isRequired(){
         boolean required = false;
         for (Tuple2<Rule, String> r : rules) {
@@ -119,33 +104,33 @@ public class Field {
             }
             switch (r._1) {
                 case REQUIRED:
-                    if (this.value.isEmpty()) {
+                    if (this.getValue().isEmpty()) {
                         addError(label + " is required.");
                         validates = false;
                     }
                     break;
                 case MAX_LENGTH:
-                    if (this.value.length() > Integer.parseInt(r._2)) {
+                    if (this.getValue().length() > Integer.parseInt(r._2)) {
                         addError(label + " too long.");
                         validates = false;
                     }
                     break;
                 case MIN_LENGTH:
-                    if (this.value.length() < Integer.parseInt(r._2)) {
+                    if (this.getValue().length() < Integer.parseInt(r._2)) {
                         addError(label + " too short.");
                         validates = false;
                     }
                     break;
                 case EMAIL:
                     p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
-                    m = p.matcher(value);
+                    m = p.matcher(getValue());
                     if (!m.matches()) {
                         addError(label + " is not a valid email.");
                         validates = false;
                     }
                     break;
                 case DOMAIN:
-                    String domain = "http://"+ this.value ;
+                    String domain = "http://"+ this.getValue() ;
                     p = Pattern.compile("(http):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?");
                     m = p.matcher(domain);
                     if (!m.matches()) {
@@ -155,7 +140,7 @@ public class Field {
                     break;
                 case NUMERIC:
                     p = Pattern.compile("\\d*");
-                    m = p.matcher(this.value);
+                    m = p.matcher(this.getValue());
                     if (!m.matches()) {
                         addError(label + " does not consist of numbers.");
                         validates = false;
@@ -163,7 +148,7 @@ public class Field {
                     break;
                 case ALPHA:
                     p = Pattern.compile("[a-zA-Z]*");
-                    m = p.matcher(this.value);
+                    m = p.matcher(this.getValue());
                     if (!m.matches()) {
                         addError(label + " does not consist of numbers.");
                         validates = false;
@@ -171,19 +156,33 @@ public class Field {
                     break;
                 case ALPHANUM:
                     p = Pattern.compile("\\w*");
-                    m = p.matcher(this.value);
+                    m = p.matcher(this.getValue());
                     if (!m.matches()) {
                         addError(label + " does not consist of numbers and letters.");
                         validates = false;
                     }
                     break;
+                case PROFILE_NAME:
+                    p = Pattern.compile("[a-zA-Z0-9]{1,}[a-zA-Z0-9-_]*");
+                    m = p.matcher(this.getValue());
+                    if (!m.matches()) {
+                        addError(label + " should consists characters of numbers, letters (a-z,A-Z) or '-' '_'. Cannot start with '-' or '_'");
+                        validates = false;
+                    }
+                    break;
+                case EQUALS:
+                    if(!this.getValue().equals(r._2)){
+                        addError(label + " does not match.");
+                        validates = false;
+                    }
+                    break;
                 case DATE:
-                    if (!this.value.isEmpty()) {
+                    if (!this.getValue().isEmpty()) {
                         SimpleDateFormat dtFormatter = new SimpleDateFormat(r._2);
                         dtFormatter.setLenient(false);
                         try
                         {
-                            dtFormatter.parse(this.value);
+                            dtFormatter.parse(this.getValue());
                         }
                         catch (ParseException ex)
                         {
@@ -202,12 +201,19 @@ public class Field {
     protected void addError(String str){
         errors.add(str);
     }
+    /**
+     * Builds a list of error messages for the field
+     * Caution: No messages are displayed when rendering the field
+     * when this is called. You need to validate the field again to display errors
+     * @return Div list of error messages
+     */
     public String renderErrors() {
+        String out = "";
         if (errors.size() != 0) {
-            return String.format("<div class='error'> %1$s </div>", getErrors());
-        } else {
-            return "";
-        }
+            out = String.format("<div class='error'> %1$s </div>", getErrors());
+        } 
+        errors.clear();
+        return out;
     }
 
     public String getErrors() {
@@ -232,11 +238,11 @@ public class Field {
     }
 
     public String getLabelName() {
-        return labelName;
+        return label;
     }
 
     public void setLabelName(String labelName) {
-        this.labelName = labelName;
+        this.label = labelName;
     }
 
     public String getFieldName() {
@@ -262,43 +268,8 @@ public class Field {
     public void setValue(String value) {
         this.value = value;
     }
-
-    public String getInputValue() {
-        return inputValue;
-    }
-
-    public void setInputValue(String inputValue) {
-        this.inputValue = inputValue;
-    }
     
-    /**
-     * enum type that returns a field html tag with hooks to
-     * pass parameters. Params : 1. name: will be used as id
-     * as well. Required. 2. value: Pass it to fields that
-     * need a value. 3. method: Only pass it to a FORM_OPEN
-     * 4. selected: Pass the string selected if the field is
-     * an OPTION.
-     */
-    public enum FormElems {
-
-        INPUT_TEXT("<input type='text' name='%1$s' id='%1$s' value='%2$s'/>%n"),
-        INPUT_PASS("%n"),
-        TEXTAREA("<textarea name='%1$s' id='%1$s'>%2$s</textarea>%n"),
-        HIDDEN("<input type='hidden' name='%1$s' value='%2$s' />%n"),
-        CHECKBOX("<input type='checkbox' name='%1$s' value='%2$s' id='%1$s' />%n"),
-        BUTTON(""),
-        RADIOBUTTON("<input name='%1$s' type='radio' value='%2$s' id='%1$s' />%n"),
-        FILE("<input type='file' name='%1$s' id='%1$s' />%n"),
-        SELECT("<select name='%1$s' id='%1$s'>%2$s</select>%n"),
-        OPTION("<option value='%2$s' %4$s>%3$s</option>%n");
-        private final String body;
-
-        FormElems(String body) {
-            this.body = body;
-        }
-
-        public String toString() {
-            return this.body;
-        }
+    public void customErrorMsg( String msg){
+        addError(msg);
     }
 }

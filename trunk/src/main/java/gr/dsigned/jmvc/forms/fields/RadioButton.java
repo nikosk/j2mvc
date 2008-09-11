@@ -1,5 +1,5 @@
-/*
- *  RadioButton.java
+    /*
+ *  DropdownOption.java
  *
  *  Copyright (C) 2008 Vas Chryssikou <vchrys@gmail.com>
  *
@@ -12,55 +12,80 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-
 package gr.dsigned.jmvc.forms.fields;
 
-import gr.dsigned.jmvc.types.Tuple2;
-
- /**
- * @author Vas Chryssikou <vchrys@gmail.com>
+/**
+ *
+ * @author VChrys <vchrys@gmail.com>
  */
-public class RadioButton extends Field {
+public class RadioButton {
 
-    private boolean checked;
-    private boolean disabled;
-            
-    String template = "<input type='radio' name='%1$s' id='%2$s' value='%3$s' %4$s />%n";
+    private String fieldName;
+    private String radioLabel;
+    private String value;
+    private boolean checked = false;
+    private boolean disabled = false;
 
     /**
+     * Contstructor that constructs radioButtons with checked attribute that can be set either true of false. 
+     * Mostly used for the case that we want an option to be set to true 
      * 
-     * @param labelName
      * @param fieldName
-     * @param inputValue
+     * @param radioLabel
      * @param value
      * @param checked
-     * @param disabled
-     * @param rules
      */
-    public RadioButton(String labelName, String fieldName, String inputValue, String value, boolean checked, boolean disabled, Tuple2<Rule, String>... rules) {
-        super(labelName, fieldName, inputValue, value, rules);
-        setChecked(checked);
-        setDisabled(disabled);
-    }
-
-    @Override
-    public String renderField() {
-        return String.format("<input type='radio' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s/>%n", getFieldName(), "id_" + getFieldName(), getInputValue(), (isChecked()?"checked":""), (isDisabled()?"disabled":""), getErrors());
+    public RadioButton(String fieldName, String radioLabel, String value) {
+        this.fieldName = fieldName;
+        this.radioLabel = radioLabel;
+        this.value = value;
     }
     
+    public String getRadioLabel() {
+        return radioLabel;
+    }
+
+    public void setRadioLabel(String radioLabel) {
+        this.radioLabel = radioLabel;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     public boolean isChecked() {
         return checked;
     }
 
-    public void setChecked(boolean checked) {
-        this.checked = checked;
+    public void checked() {
+        this.checked = true;
     }
-    
-        public boolean isDisabled() {
+
+    public void unchecked() {
+        this.checked = false;
+    }
+
+    public String render() {
+        return String.format("%3$s<input type='radio' name='%1$s' id='%2$s' value='%4$s' %5$s %6$s/>%n", getFieldName(), "id_" + getFieldName(), getRadioLabel(), getValue(), (isChecked()) ? "checked" : "", isDisabled() ? "disabled" : "");
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    public boolean isDisabled() {
         return disabled;
     }
 
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
+    public void setDisabled() {
+        this.disabled = true;
     }
 }

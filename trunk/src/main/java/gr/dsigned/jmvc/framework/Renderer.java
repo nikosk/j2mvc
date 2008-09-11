@@ -15,10 +15,9 @@
 package gr.dsigned.jmvc.framework;
 
 import gr.dsigned.jmvc.*;
+import gr.dsigned.jmvc.types.Tuple2;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 /**
  *
@@ -56,6 +55,18 @@ public class Renderer {
     public static String root_url() {
         return Settings.get("ROOT_URL");
     }
+    
+    public static String div(String innerHTML,Tuple2... attr){
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div ");
+        for(Tuple2 t : attr ){
+            sb.append(t._1).append("='").append(t._2).append("'");            
+        }
+        sb.append(">").append(innerHTML).append("</div>");
+        return sb.toString();
+    }
+    
+    
     /**
      * Allows dynamically calling methods on extending classes.
      * @param methodName the name of the method you need to run.

@@ -24,8 +24,8 @@ public class TextareaField extends Field {
     
     private String cols;
     private String rows;
-    private boolean disabled;
-    private boolean readonly;
+    private boolean disabled = false;
+    private boolean readonly = false;
 
     String template = "<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s'>%5$s</textarea>%n";
 
@@ -36,19 +36,17 @@ public class TextareaField extends Field {
      * @param rows
      * @param cols
      * @param value
-     * @param disabled
-     * @param readonly
      * @param rules
      */
-    public TextareaField(String labelName, String fieldName, String rows, String cols, String value, boolean disabled, boolean readonly, Tuple2<Rule, String>... rules) {
+    public TextareaField(String labelName, String fieldName, String rows, String cols, String value, Tuple2<Rule, String>... rules) {
         super(labelName,fieldName, value, rules);
-        setDisabled(disabled);
-        setReadonly(readonly);
+        setRows(rows);
+        setCols(cols);
     }
 
     @Override
     public String renderField() {
-        return String.format("<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s' %6$s %7$s >%5$s</textarea>%n", getFieldName(), "id_" + getFieldName(), getRows(), getCols(), getValue(), ((isDisabled())? " disabled " : ""), ((isReadonly())? " readonly" : ""), getErrors());
+        return String.format("<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s' %6$s %7$s >%5$s</textarea>%n", getFieldName(), "id_" + getFieldName(), getRows(), getCols(), getValue(), isDisabled(), isReadonly(), getErrors());
     }
         
     public String getCols() {
@@ -67,19 +65,31 @@ public class TextareaField extends Field {
         this.rows = rows;
     }
     
-    public boolean isDisabled() {
-        return disabled;
+    public String isDisabled() {
+        String out = "" ;
+        if(disabled){
+            out = " disabled " ;
+        }else{
+            out = "" ;
+        }
+        return out;
     }
 
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
+    public void setDisabled() {
+        this.disabled = true;
     }
 
-    public boolean isReadonly() {
-        return readonly;
+    public String isReadonly() {
+        String out = "" ;
+        if(readonly){
+            out = " readonly " ;
+        }else{
+            out = "" ;
+        }
+        return out;
     }
 
-    public void setReadonly(boolean readonly) {
-        this.readonly = readonly;
+    public void setReadonly() {
+        this.readonly = true;
     }
 }

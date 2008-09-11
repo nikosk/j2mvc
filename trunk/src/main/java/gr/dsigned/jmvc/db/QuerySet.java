@@ -151,8 +151,7 @@ public class QuerySet {
         sb.append("\nORDER BY ");
         int i = 0;
         for (String field : fields) {
-            sb.append("?,");
-            orderByData.add(field);
+            sb.append(field).append(",");
         }
         sb.deleteCharAt(sb.length() - 1);
         if (orderType == OrderBy.ASC) {
@@ -245,9 +244,6 @@ public class QuerySet {
         sb.append(limitSet == null ? "" : limitSet);
         if (whereSet != null) {
             data.addAll(whereData);
-        }
-        if (orderBySet != null) {
-            data.addAll(orderByData);
         }
         return sb.toString();
     }

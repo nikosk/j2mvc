@@ -23,35 +23,70 @@ import java.util.ArrayList;
  */
 public class DropdownMenu extends Field {
     
-    private boolean disabled;
+    private boolean disabled = false;
     private ArrayList<DropdownOption> options = new ArrayList<DropdownOption>();
 
+    public static String DEFULT_VALUE = "" ;
     String template = "<select name='%1$s' id='%2$s'>%3$s</select>%n";
     
     /**
+     * Constructor for drop downmenu with default value field
      * 
-     * @param labelName
+     * @param label
      * @param fieldName
-     * @param defaultValue
-     * @param optionValues
-     * @param disabled
+     * @param defaultValue (the value that is going to be selected when rendering the dropdown and will not be counted as correct input ie: Select value)
+     * @param value (the value we are going to get from post)
+     * @param optionValues ((key ie:id, label of option) options to render within the select tags)
      * @param rules
      */
-    public DropdownMenu(String labelName, String fieldName, String defaultValue, Hmap optionValues, boolean disabled, Tuple2<Rule, String>... rules) {
-        super(labelName, fieldName, rules);
-        if(defaultValue!=null && defaultValue.length()!=0)
-        {
-            addOption(new DropdownOption(defaultValue, "0"));
+    public DropdownMenu(String labelName, String fieldName, String defaultValue, String value, Hmap optionValues, Tuple2<Rule, String>... rules) {
+        super(labelName, fieldName, value, rules);
+
+        if(value!=null && value.length()!=0){
+            if(defaultValue!=null && defaultValue.length()!=0){
+               addOption(new DropdownOption(defaultValue, DEFULT_VALUE));
+            }
+        }else{
+            if(defaultValue!=null && defaultValue.length()!=0){
+               addOption(new DropdownOption(defaultValue, DEFULT_VALUE, true));
+            }
         }    
+        
         for (String o : optionValues.keySet()) {
-            addOption(new DropdownOption(optionValues.get(o), o));
+            if(value.equalsIgnoreCase(o)){
+                addOption(new DropdownOption(optionValues.get(o), o, true));
+            }
+            else{
+                addOption(new DropdownOption(optionValues.get(o), o));
+            }
         }
-        setDisabled(disabled);
+    }
+    
+    /**
+     * Constructor for drop downmenu without default value field
+     * 
+     * @param label
+     * @param fieldName
+     * @param value (the value we are going to get from post)
+     * @param optionValues ((key ie:id, label of option) options to render within the select tags)
+     * @param rules
+     */
+    public DropdownMenu(String labelName, String fieldName, String value, Hmap optionValues, Tuple2<Rule, String>... rules) {
+        super(labelName, fieldName, value, rules);
+
+        for (String o : optionValues.keySet()) {
+            if(value.equalsIgnoreCase(o)){
+                addOption(new DropdownOption(optionValues.get(o), o, true));
+            }
+            else{
+                addOption(new DropdownOption(optionValues.get(o), o));
+            }
+        }
     }
     
     @Override
     public String renderField() {
-        return String.format("<select name='%1$s' id='%2$s' %4$s>%3$s</select>%n", getFieldName(), "id_" + getFieldName(), renderOptions(), ((isDisabled())? " disabled " : ""), getErrors());
+        return String.format("<select name='%1$s' id='%2$s' %4$s>%3$s</select>%n", getFieldName(), "id_" + getFieldName(), renderOptions(), isDisabled(), getErrors());
     }
 
     public DropdownOption addOption(DropdownOption option) {
@@ -103,7 +138,7 @@ public class DropdownMenu extends Field {
     }
     
     public String getSelectedValue() {
-        return (getSelectedDropdownOption().getValue() == null) ? "" : getSelectedDropdownOption().getValue();
+        return (getSelectedDropdownOption() == null) ? "" : getSelectedDropdownOption().getValue();
     }
 
     @Override
@@ -111,12 +146,18 @@ public class DropdownMenu extends Field {
         return getSelectedValue();
     }
 
-    public boolean isDisabled() {
-        return disabled;
+    public String isDisabled() {
+        String out = "" ;
+        if(disabled){
+            out = " disabled " ;
+        }else{
+            out = "" ;
+        }
+        return out;
     }
 
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
+    public void setDisabled() {
+        this.disabled = true;
     }
 
     public boolean validates() {
@@ -130,12 +171,14 @@ public class DropdownMenu extends Field {
                         validates = false;
                     }
                     break;
-                case DEFAULT_NOT_ALLOWED:
-                    if (this.getSelectedValue().isEmpty() || this.getSelectedValue().equalsIgnoreCase("0")) {
-                        addError(getLabelName() + " is required.");
-                        validates = false;
-                    }
-                    break;
+//                case DEFAULT_NOT_ALLOWED:
+//                    System.out.println(getSelectedValue());
+//                    System.out.println(getValue());
+//                    if (this.getSelectedValue().isEmpty() || this.getSelectedValue().equalsIgnoreCase(DEFULT_VALUE)) {
+//                        addError(getLabelName() + " cannot have the default value.");
+//                        validates = false;
+//                    }
+//                    break;
             }
         }
         return validates;

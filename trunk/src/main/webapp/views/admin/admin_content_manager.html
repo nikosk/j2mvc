@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Phiresoft CMS - Content manager</title>
+<%style-yui%>
+<%styles-typography%>
+<link rel="stylesheet" type="text/css" media="all" href="/css/calendar-blue.css" title="win2k-cold-1">
+<script type="text/javascript" src="/js/misc/calendar.js"></script>
+<script type="text/javascript" src="/js/misc/lang/calendar-en.js"></script>
+<script type="text/javascript" src="/js/misc/calendar-setup.js"></script>
+<%mootools%>
+<script type="text/javascript" src="/js/misc/zebra.js" ></script>
+<script type="text/javascript" src="/js/conte_manager_kit.js" ></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="/css/admin_styles.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="doc3" class="yui-t1">
+  <div id="hd">
+    <h1>Phiresoft CMS </h1>
+  </div>
+  <div id="bd">
+    <div id="yui-main">
+      <div class="yui-b">
+        <div class="yui-gc">
+          <div class="yui-u first">
+            <table width="100%" border="0" cellpadding="0">
+              <caption>
+              Toolbar
+              </caption>
+              <tr class="toolbar">
+                <td><a href="#" class="edit_link"><img src="/images/icons/aesthetica/add.png" /></a>
+                <div>New Content</div></td>
+                <td><a href="#" class="edit_link"><img src="/images/icons/aesthetica/application_add.png"/></a>
+                <div>Publish</div></td>
+                <td><a href="#" class="edit_link"><img src="/images/icons/aesthetica/application_remove.png"/></a>
+                <div>Unpublish</div></td>
+                <td><a href="#" class="edit_link"><img src="/images/icons/aesthetica/remove.png"/></a>
+                <div>Trash</div></td>
+                <td><a href="#" class="edit_link"><img src="/images/icons/aesthetica/page_edit.png"/></a>
+                <div>Edit</div></td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+            <table width="100%" border="0" cellpadding="1">
+              <caption>
+              Filter by
+              </caption>
+              <tr>
+                <th scope="col">Author</th>
+                <th scope="col">Date</th>
+                <th scope="col">Category</th>
+                <th scope="col">Search</th>
+                <th scope="col">Type</th>
+              </tr>
+              <tr>
+                <td><select name="">
+                    <option>Select author</option>
+                    <option>Νικος Χατζηγιαννάκης</option>
+                    <option>Βασίλης Βασιλείου</option>
+                  </select></td>
+                <td><input id="f_date_a" name="date" size="9" type="text">
+                  -
+                  <input id="f_date_b" name="date2" size="9" type="text">
+                </td>
+                <td><select name="">
+                    <option>Select category</option>
+                    <option>Πολιτική</option>
+                    <option>Ελλάδα</option>
+                    <option>Πολιτική</option>
+                    <option>Ελλάδα</option>
+                    <option>Πολιτική</option>
+                    <option>Ελλάδα</option>
+                  </select>
+                </td>
+                <td><input name="" size="9" type="text">
+                  <input type="button" value="go" >
+                  <input type="button" value="reset" >
+                </td>
+                <td><select name="">
+                    <option>Select type</option>
+                    <option>Σειρά</option>
+                    <option>Επεισόδιο</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+            <table id="content_list" class="zebra" width="100%" border="0" cellpadding="0">
+              <caption>
+              Content Manager
+              </caption>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col"><input name="" type="checkbox" value=""></th>
+                <th scope="col">title</th>
+                <th scope="col"><div align="center">published</div></th>
+                <th scope="col">custom order</th>
+                <th scope="col">category</th>
+                <th scope="col"><div align="right">type</div></th>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Μαρία η άσχημη</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="1" size="2" maxlength="2"></td>
+                <td><strong>tvguide/σειρές/</strong></td>
+                <td><div align="right">Σειρά</div></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Μαρία η άσχημη - Επεισόδιο 12/07/2009</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="2" size="2" maxlength="2"></td>
+                <td><strong>tvguide/σειρές/επεισόδια/Μαρία η άσχημη</strong></td>
+                <td><div align="right">Επεισόδιο</div></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Champions league: Μίλαν - Άρσεναλ</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="3" size="2" maxlength="2"></td>
+                <td><strong>tvguide/Αθλητικά/ποδόσφαιρο/champions_league/</strong></td>
+                <td><div align="right">Μεμονωμένο</div></td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Μαρία η άσχημη</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="1" size="2" maxlength="2"></td>
+                <td><strong>tvguide/σειρές/</strong></td>
+                <td><div align="right">Σειρά</div></td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Μαρία η άσχημη - Επεισόδιο 12/07/2009</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="2" size="2" maxlength="2"></td>
+                <td><strong>tvguide/σειρές/επεισόδια/Μαρία η άσχημη</strong></td>
+                <td><div align="right">Επεισόδιο</div></td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Champions league: Μίλαν - Άρσεναλ</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="3" size="2" maxlength="2"></td>
+                <td><strong>tvguide/Αθλητικά/ποδόσφαιρο/champions_league/</strong></td>
+                <td><div align="right">Μεμονωμένο</div></td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Μαρία η άσχημη</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="1" size="2" maxlength="2"></td>
+                <td><strong>tvguide/σειρές/</strong></td>
+                <td><div align="right">Σειρά</div></td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Μαρία η άσχημη - Επεισόδιο 12/07/2009</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="2" size="2" maxlength="2"></td>
+                <td><strong>tvguide/σειρές/επεισόδια/Μαρία η άσχημη</strong></td>
+                <td><div align="right">Επεισόδιο</div></td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Champions league: Μίλαν - Άρσεναλ</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="3" size="2" maxlength="2"></td>
+                <td><strong>tvguide/Αθλητικά/ποδόσφαιρο/champions_league/</strong></td>
+                <td><div align="right">Μεμονωμένο</div></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><input name="" type="checkbox" value=""></td>
+                <td><a href="#" class="edit_link">Champions league: Μίλαν - Άρσεναλ</a></td>
+                <td><div align="center"><a href="#" class="edit_link"><img src="/images/icons/famfam/accept.png"/></a></div></td>
+                <td><input name="textfield" type="text" value="3" size="2" maxlength="2"></td>
+                <td><strong>tvguide/Αθλητικά/ποδόσφαιρο/champions_league/</strong></td>
+                <td><div align="right">Μεμονωμένο</div></td>
+              </tr>
+            </table>			
+            <div id="pagination" style="text-align:center;margin-bottom:10px;"> 
+				<span>
+					<strong>1</strong> 
+					<a href="#" class="edit_link">2</a> 
+					<a href="#" class="edit_link">3</a> 
+					<a href="#" class="edit_link">4</a> 
+					<a href="#" class="edit_link">5</a> 
+					<a href="#" class="edit_link">6</a> 
+					<a href="#" class="edit_link">7</a> 
+					<a href="#" class="edit_link">8</a> 
+					<a href="#" class="edit_link">9</a> 
+					<a href="#" class="edit_link">10</a> 
+					<a href="#" class="edit_link">&gt;&gt;</a>  
+					<a href="#" class="edit_link">Τέλος</a> 
+				</span>
+			</div>
+			<div>
+			  <div align="center">items per page : 
+			    <select name="">
+			      <option>10</option>
+			      <option>20</option>
+			      <option>50</option>
+			      <option>100</option>
+		        </select>
+		      </div>
+			</div>
+          </div>
+          <div class="yui-u">
+            <div class="help">
+			<h3><img src="images/icons/famfam/help.png" width="16" height="16">Online help</h3>			
+			<p id="help_content">
+			</p>
+			<div id="help_links">
+			<ul>
+				<li><a href="#" class="edit_link">Πως να προσθέσετε content</a></li>
+				<li><a href="#" class="edit_link">Πως να σβήσετε content</a></li>
+			</ul>
+			</div>
+			</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="yui-b">
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="navigation_manager.html">Menu manager</a></li>
+        <li><a href="structure_content_manager.html">Structure Content Manager</a></li>
+        <li><a href="article_manager.html" class="highlight">Content Manager</a></li>
+        <li><a href="#">Plugin Manager</a></li>
+        <li><a href="template_manager.html">Template Manager </a></li>
+        <li><a href="navigation_manager.html">Navigation Manager </a></li>
+      </ul>
+    </div>
+  </div>
+  <div id="ft"><small>phiresoft 2008</small></div>
+</div>
+<script type="text/javascript">
+    function catcalc(cal) {
+        var date = cal.date;
+        var time = date.getTime()
+        // use the _other_ field
+        var field = document.getElementById("f_date_a");        
+        var date2 = new Date(time);
+        field.value = date2.print("%Y-%m-%d");
+    }
+    Calendar.setup({
+        inputField     :    "f_date_a",   // id of the input field
+        ifFormat       :    "%d-%m-%Y",       // format of the input field
+        showsTime      :    false,
+        timeFormat     :    "24",
+        //onUpdate       :    catcalc
+    });    
+	Calendar.setup({
+        inputField     :    "f_date_b",   // id of the input field
+        ifFormat       :    "%d-%m-%Y",       // format of the input field
+        showsTime      :    false,
+        timeFormat     :    "24",
+        //onUpdate       :    catcalc
+    });   
+</script>
+</body>
+</html>
