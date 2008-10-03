@@ -15,10 +15,13 @@
 package gr.dsigned.jmvc.forms;
 
 import gr.dsigned.jmvc.forms.fields.Field;
+import gr.dsigned.jmvc.forms.fields.HiddenField;
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.framework.Library;
 import java.util.LinkedHashMap;
 import static gr.dsigned.jmvc.framework.Renderer.*;
+import static gr.dsigned.jmvc.types.operators.*;
+
 /**
  *  
  * @author Nikosk <nikosk@dsigned.gr>
@@ -27,17 +30,28 @@ import static gr.dsigned.jmvc.framework.Renderer.*;
 public class NewForms extends Library {
 
     private LinkedHashMap<String, Field> fields = new LinkedHashMap<String, Field>();
-
-    private String action ;
+    private String action;
     private boolean enctype = false;
+
+    public NewForms() {
+    }
+
+    public NewForms(String act) {
+        this.action = act;
+    }
+
     /**
-     * Renders the complete form.
+     * Renders the form as a table with form tags. 
      * @return Html form
      */
     public String renderForm() {
         return String.format("<form action='%1$s' method='POST' %2$s>%3$s</form>", getAction(), isEnctype(), build());
     }
-    
+
+    public String renderFormAsList() {
+        return String.format("<form action='%1$s' method='POST' %2$s>%3$s</form>", getAction(), isEnctype(), buildAsUList());
+    }
+
     public String build() {
         return buildAsTable();
     }
@@ -58,7 +72,7 @@ public class NewForms extends Library {
             sb.append(f.renderErrors());
             sb.append("</td>");
             sb.append("</tr>");
-        }        
+        }
         sb.append("</table>");
         return sb.toString();
     }
@@ -68,13 +82,13 @@ public class NewForms extends Library {
         for (String name : fields.keySet()) {
             Field f = fields.get(name);
             sb.append("<li>");
-            sb.append(f.renderLabel());
+            sb.append(span(f.renderLabel(), o("class", "label_span")));
             sb.append("</li>");
             sb.append("<li>");
-            sb.append(f.renderField());
+            sb.append(div(f.renderField()));
             sb.append(div(f.renderErrors()));
             sb.append("</li>");
-        }        
+        }
         sb.append("</ul>");
         return sb.toString();
     }
@@ -83,8 +97,9 @@ public class NewForms extends Library {
         for (Field f : fields) {
             this.fields.put(f.getFieldName(), f);
         }
+
     }
-    
+
     /**
      * Takes an Hmap<fieldName,value> and sets
      * the data to the fields in the list
@@ -94,8 +109,9 @@ public class NewForms extends Library {
         for (String k : data.keySet()) {
             fields.get(k).setValue(data.get(k));
         }
+
     }
-    
+
     /**
      * Checks to see if the form is valid by iterating the fields.
      * When you render the form before calling isValid 
@@ -109,10 +125,11 @@ public class NewForms extends Library {
             if (!f.validates()) {
                 valid = false;
             }
+
         }
         return valid;
     }
-    
+
     /**
      * Get the data.
      * @return Hmap<fieldName,Value>
@@ -123,8 +140,10 @@ public class NewForms extends Library {
             Field f = fields.get(name);
             hmap.put(f.getFieldName(), f.getValue());
         }
+
         return hmap;
     }
+
     /**
      * Map of the fields in this form in case 
      * you want to process them in the controller.
@@ -133,7 +152,7 @@ public class NewForms extends Library {
     public LinkedHashMap<String, Field> getFields() {
         return fields;
     }
-    
+
     /**
      * Returns a Map of --field name, error message--.
      * Caution: When getErrorMessages is called 
@@ -147,9 +166,10 @@ public class NewForms extends Library {
             Field f = fields.get(name);
             hmap.put(f.getFieldName(), f.renderErrors());
         }
+
         return hmap;
     }
-    
+
     /** 
      * Set a custom error message to a field of the form
      * @param fieldName
@@ -157,9 +177,10 @@ public class NewForms extends Library {
      */
     public void setErrorMessage(String fieldName, String errorMessage) {
         Field f = fields.get(fieldName);
-        if(f != null){
+        if (f != null) {
             f.customErrorMsg(errorMessage);
         }
+
     }
 
     public String getAction() {
@@ -171,10 +192,11 @@ public class NewForms extends Library {
     }
 
     private String isEnctype() {
-        String out = "" ;
-        if(enctype){
-            out = "enctype='multipart/form-data'" ;
+        String out = "";
+        if (enctype) {
+            out = "enctype='multipart/form-data'";
         }
+
         return out;
     }
 

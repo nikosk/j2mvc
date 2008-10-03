@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.db;
 
+import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.types.Hmap;
 import java.sql.Connection;
@@ -30,18 +31,24 @@ import java.util.ArrayList;
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public abstract class DB {
-    
-    public abstract Connection getConn() throws SQLException;
-    public abstract void closeConn(Connection conn) throws SQLException;
 
-    public ResultSet executeUpdate(String sql, ArrayList<String> values) throws SQLException {
-        Jmvc.logDebug("[DB:executeUpdate] " + " sql: " + sql + " values: " + values);
+    public abstract Connection getConn() throws SQLException;
+
+    public abstract void closeConn(Connection conn) throws SQLException;
+    private static final boolean debug = Settings.get("DEBUG").equals("TRUE");
+    private long end = 0;
+    private long start = 0;
+    private String executeInsert(String sql, ArrayList<String> values) throws SQLException {
+        Jmvc.logDebug("[DB:executeInsert] " + " sql: " + sql + " values: " + values);
+        if (debug) {
+            start = System.nanoTime();
+        }
         Connection conn = getConn();
         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
             for (String s : values) {
-                if (s == null || s.equalsIgnoreCase("null")) {
+                if (s == null || s.trim().equalsIgnoreCase("null")) {
                     pstmt.setNull(parameterIndex, Types.NULL);
                 } else {
                     pstmt.setObject(parameterIndex, s);
@@ -50,11 +57,59 @@ public abstract class DB {
             }
         }
         pstmt.executeUpdate();
+        ResultSet rsGenKeys = pstmt.getGeneratedKeys();
+        String output = null;
+        if (rsGenKeys.next()) {
+            output = rsGenKeys.getString(1);
+        }
+
+        try {
+            pstmt.close();
+        } catch (Exception ex) {
+            // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+        }
         closeConn(conn);
-        return pstmt.getGeneratedKeys();
+        if (debug) {
+            end = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+        }
+        return output;
     }
 
-    public ResultSet executeUpdate(String sql) throws SQLException {
+    private int executeUpdate(String sql, ArrayList<String> values) throws SQLException {
+        Jmvc.logDebug("[DB:executeUpdate] " + " sql: " + sql + " values: " + values);
+        if (debug) {
+            start = System.nanoTime();
+        }
+        Connection conn = getConn();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        if (values != null) {
+            int parameterIndex = 1;
+            for (String s : values) {
+                if (s == null || s.trim().equalsIgnoreCase("null")) {
+                    pstmt.setNull(parameterIndex, Types.NULL);
+                } else {
+                    pstmt.setObject(parameterIndex, s);
+                }
+                parameterIndex++;
+            }
+        }
+        int updatedRows = pstmt.executeUpdate();
+
+        try {
+            pstmt.close();
+        } catch (Exception ex) {
+            // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+        }
+        closeConn(conn);
+        if (debug) {
+            end = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+        }
+        return updatedRows;
+    }
+
+    public int executeUpdate(String sql) throws SQLException {
         return executeUpdate(sql, null);
     }
 
@@ -66,14 +121,17 @@ public abstract class DB {
      * @throws SQLException 
      */
     public Hmap executeQueryForObject(String sql, ArrayList<String> values) throws SQLException {
-        Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);        
+        Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
+        if (debug) {
+            start = System.nanoTime();
+        }
         Hmap result = null;
         Connection conn = getConn();
         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
         if (values != null) {
             int parameterIndex = 1;
             for (String s : values) {
-                if (s == null || s.equalsIgnoreCase("null")) {
+                if (s == null || s.trim().equalsIgnoreCase("null")) {
                     pstmt.setNull(parameterIndex, Types.NULL);
                 } else {
                     pstmt.setObject(parameterIndex, s);
@@ -92,7 +150,7 @@ public abstract class DB {
                 if (val == null) {
                     val = "";
                 }
-                columnName = rsmd.getColumnName(i);
+                columnName = rsmd.getColumnLabel(i);
                 if (result.containsKey(columnName)) {
                     result.put(rsmd.getTableName(i) + "." + columnName, val);
                 } else {
@@ -100,7 +158,75 @@ public abstract class DB {
                 }
             }
         }
+        try {
+            rs.close();
+            pstmt.close();
+        } catch (Exception ex) {
+            // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+            // Jmvc.logError("ex:  " + ex);
+        }
         closeConn(conn);
+        if (debug) {
+            end = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+        }
+        return result;
+    }
+
+    /**
+     * Executes the given query and returns the result as a HashMap<String,String>
+     * @param sql The SQL query to execute.
+     * @param values 
+     * @return HashMap<String,String>
+     * @throws SQLException 
+     */
+    public Hmap executeQueryForHmap(String sql, ArrayList<String> values) throws SQLException {
+        Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
+        if (debug) {
+            start = System.nanoTime();
+        }
+        Hmap result = null;
+        Connection conn = getConn();
+        PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        if (values != null) {
+            int parameterIndex = 1;
+            for (String s : values) {
+                if (s == null || s.trim().equalsIgnoreCase("null")) {
+                    pstmt.setNull(parameterIndex, Types.NULL);
+                } else {
+                    pstmt.setObject(parameterIndex, s);
+                }
+                parameterIndex++;
+            }
+        }
+        ResultSet rs = pstmt.executeQuery();
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        result = new Hmap();
+        while (rs.next()) {
+            String id = "";
+            String val = "";
+            for (int i = 1; i <= columnCount; i++) {
+                if (i == 1) {
+                    id = rs.getString(i);
+                } else {
+                    val = rs.getString(i);
+                    result.put(id, val);
+                }
+            }
+        }
+        try {
+            rs.close();
+            pstmt.close();
+        } catch (Exception ex) {
+            // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+            // Jmvc.logError("ex:  " + ex);
+        }
+        closeConn(conn);
+        if (debug) {
+            end = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+        }
         return result;
     }
 
@@ -113,6 +239,9 @@ public abstract class DB {
      */
     public ArrayList<Hmap> executeQueryForList(String sql, ArrayList<String> values) throws SQLException {
         Jmvc.logDebug("[DB:executeQueryForList] " + "sql: " + sql + " values: " + values);
+        if (debug) {
+            start = System.nanoTime();
+        }
         ArrayList<Hmap> result = new ArrayList<Hmap>();
         int resultIndex = 0;
         Connection conn = getConn();
@@ -120,7 +249,7 @@ public abstract class DB {
         if (values != null) {
             int parameterIndex = 1;
             for (String s : values) {
-                if (s == null || s.equalsIgnoreCase("null")) {
+                if (s == null || s.trim().equalsIgnoreCase("null")) {
                     pstmt.setNull(parameterIndex, Types.NULL);
                 } else {
                     pstmt.setObject(parameterIndex, s);
@@ -139,7 +268,7 @@ public abstract class DB {
                 if (val == null) {
                     val = "";
                 }
-                columnName = rsmd.getColumnName(i);
+                columnName = rsmd.getColumnLabel(i);
                 if (row.containsKey(columnName)) {
                     row.put(rsmd.getTableName(i) + "." + columnName, val);
                 } else {
@@ -149,7 +278,18 @@ public abstract class DB {
             result.add(row);
             resultIndex++;
         }
+        try {
+            rs.close();
+            pstmt.close();
+        } catch (Exception ex) {
+            // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+            // Jmvc.logError("ex:  " + ex);
+        }
         closeConn(conn);
+        if (debug) {
+            end = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+        }
         return result;
     }
 
@@ -200,13 +340,33 @@ public abstract class DB {
     }
 
     /**
+     * Execute query set
+     * @param qs 
+     * @return Hmap
+     * @throws SQLException 
+     */
+    public Hmap getHmap(QuerySet qs) throws SQLException {
+        return executeQueryForHmap(qs.compileSelect(), qs.getData());
+    }
+
+    /**
      * Execute an update query set
      * @param qs 
      * @return ArrayList<LinkedHashMap> of results
      * @throws SQLException 
      */
-    public ResultSet update(QuerySet qs) throws SQLException {
+    public int update(QuerySet qs) throws SQLException {
         return executeUpdate(qs.compileUpdate(), qs.getData());
+    }
+
+    /**
+     * Execute a delete query set
+     * @param qs 
+     * @return ArrayList<LinkedHashMap> of results
+     * @throws SQLException 
+     */
+    public int delete(QuerySet qs) throws SQLException {
+        return executeUpdate(qs.compileDelete(), qs.getData());
     }
 
     /**
@@ -231,13 +391,7 @@ public abstract class DB {
      * @throws SQLException 
      */
     public String insert(QuerySet qs) throws SQLException {
-        ResultSet rs = executeUpdate(qs.compileInsert(), qs.getData());
-        if (rs.next()) {
-            return  rs.getString(1);
-        } else {
-            Jmvc.logDebug("DB class: insert method : We just did an insert and return a null id back.");
-            throw new SQLException("No id was returned");            
-        }
+        return executeInsert(qs.compileInsert(), qs.getData());
     }
 
     /**
@@ -265,6 +419,9 @@ public abstract class DB {
         sb.append("CREATE TABLE ").append(table).append(" (id int(10) unsigned NOT NULL auto_increment,");
         sb.append(" PRIMARY KEY (id))").append(" ENGINE=InnoDB ").append(" DEFAULT CHARSET=utf8 ");
         Jmvc.logDebug("[DB:create] " + sb.toString());
+        if (debug) {
+            Jmvc.dbDebug("SQL: " + sb.toString());
+        }
         executeUpdate(sb.toString());
     }
 

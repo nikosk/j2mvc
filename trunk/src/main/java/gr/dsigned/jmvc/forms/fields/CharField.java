@@ -25,6 +25,7 @@ public class CharField extends Field {
 
     private boolean disabled = false;
     private boolean readonly = false;
+    private String maxlength = "" ;
     
     String template = "<input type='text' name='%1$s' id='%2$s' value='%3$s'/>%n";
     
@@ -41,7 +42,7 @@ public class CharField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<input class='text' type='text' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s/>%n", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getErrors());
+        return String.format("<input class='text' type='text' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s %6$s/>%n", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getMaxlength(), getErrors());
     }
     
     public String isDisabled() {
@@ -70,6 +71,14 @@ public class CharField extends Field {
 
     public void setReadonly() {
         this.readonly = true;
+    }
+
+    public String getMaxlength() {
+        return maxlength;
+    }
+
+    public void setMaxlength(String maxlength) {
+        this.maxlength = "maxlength = '" + maxlength + "'";
     }
     
 }

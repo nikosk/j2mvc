@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.db;
 
-import gr.dsigned.jmvc.db.Model.OrderBy;
+import gr.dsigned.jmvc.db.enums.Join;
 import gr.dsigned.jmvc.types.Hmap;
 import java.util.ArrayList;
 
@@ -34,13 +34,14 @@ public class QuerySet {
     private String whereSet;
     private String orderBySet;
     private String limitSet;
+    private String groupBySet;
     private String setSet;
     private String insertSet;
     private String updateSet;
+    private String deleteSet;
     private ArrayList<String> data = new ArrayList<String>();
     private ArrayList<String> setData = new ArrayList<String>();
     private ArrayList<String> whereData = new ArrayList<String>();
-    private ArrayList<String> orderByData = new ArrayList<String>();
 
     /**
      * Build the select statement.
@@ -101,26 +102,119 @@ public class QuerySet {
      * where methods.
      * @param column the column used by the where 
      * @param value the value to compare
-     * @param operand the type of the comparison (=,<> etc)
      * @param type type of where (AND or OR)
      * @return
      */
-    private QuerySet where(String column, String value, String operand, String type) {
+    public QuerySet whereIn(String column, String value, String type) {
         if (whereSet == null) {
             whereSet = "\nWHERE ";
         } else {
             whereSet += "\n" + type + " ";
         }
-        whereSet += column + operand + "? ";
+        checkSqlInValue(value);
+        whereSet += column + " " + Operand.IN + " (" + value +")";
+        return this;
+    }
+
+    /**
+     * Builds the where part of the query. 
+     * @param column the column used by the where 
+     * @param values 
+     * @param value the value to compare
+     * @param type type of where (AND or OR)
+     * @return
+     */
+    public QuerySet whereIn(String column, ArrayList<String> values, String type) {
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += column + " " + Operand.IN + " (" + renderArrayListWithIds(values) +")";
+        return this;
+    }
+
+    private String renderArrayListWithIds(ArrayList<String> values) {
+        String result = "";
+        StringBuilder sb = new StringBuilder();
+        for(String value: values) {
+            sb.append(value).append(",");
+        }
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+        }
+        result = sb.toString();
+        //Additional check to verify that String in list are integers throws exception if not
+        checkSqlInValue(result);
+        return result;
+    }
+    
+    private void checkSqlInValue(String input) {
+        String stringValues[] = input.split(",");
+        for (int i = 0; i < stringValues.length; i++) {
+            Integer.parseInt(stringValues[i]);    
+        }
+    }
+
+    /**
+     * Builds the where part of the query. Used internally by the public 
+     * where methods.
+     * @param column the column used by the where 
+     * @param value the value to compare
+     * @param operand the type of the comparison (=,<> etc)
+     * @param type type of where (AND or OR)
+     * @return
+     */
+    private QuerySet where(String column, String value, Operand operand, String type) {
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += column + " " + operand + " ? ";
         whereData.add(value);
         return this;
     }
 
-    public QuerySet orWhere(String key, String value, String operand) {
+    /**
+     * Builds the where part of the query. Used internally by the public 
+     * where methods.
+     * @param column the column used by the where 
+     * @param type type of where (AND or OR)
+     * @return
+     */
+    public QuerySet whereIsNull(String column, String type) {
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += column + " " + " IS NULL ";
+        return this;
+    }
+
+    /**
+     * Builds the where part of the query. Used internally by the public 
+     * where methods.
+     * @param column the column used by the where 
+     * @param type type of where (AND or OR)
+     * @return
+     */
+    public QuerySet whereIsNotNull(String column, String type) {
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += column + " IS NOT NULL ";
+        return this;
+    }
+
+    public QuerySet orWhere(String key, String value, Operand operand) {
         return where(key, value, operand, "OR");
     }
 
-    public QuerySet where(String key, String value, String operand) {
+    public QuerySet where(String key, String value, Operand operand) {
         return where(key, value, operand, "AND");
     }
 
@@ -141,7 +235,7 @@ public class QuerySet {
      * @param type INNER, OUTER, LEFT, RIGHT
      * @return QuerySet
      */
-    public QuerySet join(String table, String condition, String type) {
+    public QuerySet join(String table, String condition, Join type) {
         joinSet = (joinSet == null) ? "\n" + type + " JOIN " + table + " ON " + condition : joinSet + "\n" + type + " JOIN " + table + " ON " + condition;
         return this;
     }
@@ -149,16 +243,11 @@ public class QuerySet {
     public QuerySet orderBy(OrderBy orderType, String... fields) {
         StringBuilder sb = new StringBuilder();
         sb.append("\nORDER BY ");
-        int i = 0;
         for (String field : fields) {
             sb.append(field).append(",");
         }
         sb.deleteCharAt(sb.length() - 1);
-        if (orderType == OrderBy.ASC) {
-            sb.append(" ASC ");
-        } else {
-            sb.append(" DESC ");
-        }
+        sb.append(orderType);
         orderBySet = sb.toString();
         return this;
     }
@@ -186,6 +275,11 @@ public class QuerySet {
 
     public QuerySet update(String tableName) {
         updateSet = "UPDATE " + tableName;
+        return this;
+    }
+
+    public QuerySet delete(String tableName) {
+        deleteSet = "DELETE FROM " + tableName + " ";
         return this;
     }
 
@@ -229,17 +323,24 @@ public class QuerySet {
         return this;
     }
 
+    public QuerySet groupBy(String groupByField) {
+        this.groupBySet = "\nGROUP BY " + groupByField;
+        return this;
+    }
+
     /**
      * Builds the query and returns an sql string.
      * @return SQL query
      */
     protected String compileSelect() {
+        data.clear();
         StringBuilder sb = new StringBuilder();
         sb.append(selectDistinctSet == null ? "SELECT " : "SELECT DISTINCT ");
         sb.append(selectSet == null ? "*" : selectSet);
         sb.append(fromSet == null ? "" : fromSet);
         sb.append(joinSet == null ? "" : joinSet);
         sb.append(whereSet == null ? "" : whereSet);
+        sb.append(groupBySet == null ? "" : groupBySet);
         sb.append(orderBySet == null ? "" : orderBySet);
         sb.append(limitSet == null ? "" : limitSet);
         if (whereSet != null) {
@@ -249,6 +350,7 @@ public class QuerySet {
     }
 
     protected String compileCount() {
+        data.clear();
         StringBuilder sb = new StringBuilder();
         sb.append(selectDistinctSet == null ? "SELECT " : "SELECT DISTINCT ");
         sb.append("count(*) AS count");
@@ -261,6 +363,7 @@ public class QuerySet {
     }
 
     protected String compileUpdate() {
+        data.clear();
         StringBuilder sb = new StringBuilder();
         sb.append(updateSet);
         sb.append(setSet);
@@ -270,7 +373,17 @@ public class QuerySet {
         return sb.toString();
     }
 
+    protected String compileDelete() {
+        data.clear();
+        StringBuilder sb = new StringBuilder();
+        sb.append(deleteSet);
+        sb.append(whereSet == null ? "" : whereSet);
+        data.addAll(whereData);
+        return sb.toString();
+    }
+
     protected String compileInsert() {
+        data.clear();
         StringBuilder sb = new StringBuilder();
         sb.append(insertSet);
         sb.append(setSet);

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
@@ -32,8 +31,32 @@ import java.util.regex.Pattern;
 public class Field {
 
     public enum Rule {
-        REQUIRED, MAX_LENGTH, MIN_LENGTH, DOMAIN, EMAIL, NUMERIC, ALPHA, 
-        ALPHANUM, DATE, ALLOWED_EXTENSIONS, MAX_FILE_SIZE, DEFAULT_NOT_ALLOWED, EQUALS, PROFILE_NAME
+
+        /**
+         * Signifies that the field cannot be empty
+         * o(REQUIRED, "true")
+         */
+        REQUIRED,
+        /**
+         * Max length of field (only applies to text type fields)
+         * o(MAX_LENGTH, "45")
+         */
+        MAX_LENGTH,
+        MIN_LENGTH,
+        DOMAIN,
+        EMAIL,
+        NUMERIC,
+        ALPHA,
+        ALPHANUM,
+        DATE,
+        ALLOWED_EXTENSIONS,
+        MAX_FILE_SIZE,
+        DEFAULT_NOT_ALLOWED,
+        EQUALS,
+        PROFILE_NAME,
+        CAPTCHA,
+        EITHER,
+        ALPHANUM_WITH_SPACES
     }
     protected String fieldName;
     protected String label;
@@ -41,14 +64,14 @@ public class Field {
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
     protected ArrayList<String> errors = new ArrayList<String>();
-   
-   /**
-    * Create a new field with initial name and value.
-    * No field label. 
-    * @param fieldName the name='' of the field
-    * @param value
-    * @param rules
-    */
+
+    /**
+     * Create a new field with initial name and value.
+     * No field label. 
+     * @param fieldName the name='' of the field
+     * @param value
+     * @param rules
+     */
     public Field(String fieldName, String value, Tuple2<Rule, String>... rules) {
         this.fieldName = fieldName;
         this.value = value;
@@ -56,21 +79,22 @@ public class Field {
             this.rules.add(t);
         }
     }
-   /**
-    * Create a new field with initial name and value.
-    * No field label. 
-    * @param fieldName the name='' of the field
-    * @param value
-    * @param rules
-    */
+
+    /**
+     * Create a new field with initial name and value.
+     * No field label. 
+     * @param fieldName the name='' of the field
+     * @param value
+     * @param rules
+     */
     public Field(String fieldName, Tuple2<Rule, String>... rules) {
         this.fieldName = fieldName;
-        this.value = "" ;
+        this.value = "";
         for (Tuple2<Rule, String> t : rules) {
             this.rules.add(t);
         }
     }
-    
+
     public Field(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
         this.label = labelName;
         this.fieldName = fieldName;
@@ -79,100 +103,128 @@ public class Field {
             this.rules.add(t);
         }
     }
-    
-    public boolean isRequired(){
+
+    public boolean isRequired() {
         boolean required = false;
         for (Tuple2<Rule, String> r : rules) {
-            if(r._1 == Rule.REQUIRED){
+            if (r._1 == Rule.REQUIRED) {
                 required = true;
                 break;
             }
         }
         return required;
     }
-    
+
     public boolean validates() {
         validates = true;
-        Pattern p = null ;
-        Matcher m = null ;
+        Pattern p = null;
+        Matcher m = null;
         for (Tuple2<Rule, String> r : rules) {
-            String label = "" ;
-            if(getLabelName()!=null && getLabelName().length()!=0){
+            String label = "";
+            if (getLabelName() != null && getLabelName().length() != 0) {
                 label = getLabelName();
-            }else{    
+            } else {
                 label = getFieldName();
             }
             switch (r._1) {
                 case REQUIRED:
-                    if (this.getValue().isEmpty()) {
+                    if (getValue().isEmpty()) {
                         addError(label + " is required.");
                         validates = false;
                     }
                     break;
                 case MAX_LENGTH:
-                    if (this.getValue().length() > Integer.parseInt(r._2)) {
+                    if (!getValue().isEmpty() && getValue().length() > Integer.parseInt(r._2)) {
                         addError(label + " too long.");
                         validates = false;
                     }
                     break;
                 case MIN_LENGTH:
-                    if (this.getValue().length() < Integer.parseInt(r._2)) {
+                    if (!getValue().isEmpty() && getValue().length() < Integer.parseInt(r._2)) {
                         addError(label + " too short.");
                         validates = false;
                     }
                     break;
                 case EMAIL:
-                    p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
-                    m = p.matcher(getValue());
-                    if (!m.matches()) {
-                        addError(label + " is not a valid email.");
-                        validates = false;
+                    if (!getValue().isEmpty()) {
+                        p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
+                        m = p.matcher(getValue());
+                        if (!m.matches()) {
+                            addError(label + " is not a valid email.");
+                            validates = false;
+                        }
                     }
                     break;
                 case DOMAIN:
-                    String domain = "http://"+ this.getValue() ;
-                    p = Pattern.compile("(http):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?");
-                    m = p.matcher(domain);
-                    if (!m.matches()) {
-                        addError(label + " is not a valid domain.");
-                        validates = false;
+                    if (!getValue().isEmpty()) {
+                        String domain = "http://" + this.getValue();
+                        p = Pattern.compile("(http):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?");
+                        m = p.matcher(domain);
+                        if (!m.matches()) {
+                            addError(label + " is not a valid domain.");
+                            validates = false;
+                        }
                     }
                     break;
                 case NUMERIC:
-                    p = Pattern.compile("\\d*");
-                    m = p.matcher(this.getValue());
-                    if (!m.matches()) {
-                        addError(label + " does not consist of numbers.");
-                        validates = false;
+                    if (!getValue().isEmpty()) {
+                        p = Pattern.compile("\\d*");
+                        m = p.matcher(this.getValue());
+                        if (!m.matches()) {
+                            addError(label + " should consist of numbers.");
+                            validates = false;
+                        }
                     }
                     break;
                 case ALPHA:
-                    p = Pattern.compile("[a-zA-Z]*");
-                    m = p.matcher(this.getValue());
-                    if (!m.matches()) {
-                        addError(label + " does not consist of numbers.");
-                        validates = false;
+                    if (!getValue().isEmpty()) {
+                        p = Pattern.compile("[a-zA-Z]*");
+                        m = p.matcher(this.getValue());
+                        if (!m.matches()) {
+                            addError(label + " should consist of letters.");
+                            validates = false;
+                        }
                     }
                     break;
                 case ALPHANUM:
-                    p = Pattern.compile("\\w*");
-                    m = p.matcher(this.getValue());
-                    if (!m.matches()) {
-                        addError(label + " does not consist of numbers and letters.");
-                        validates = false;
+                    if (!getValue().isEmpty()) {
+                        p = Pattern.compile("\\w*");
+                        m = p.matcher(this.getValue());
+                        if (!m.matches()) {
+                            addError(label + " should consist of numbers and letters.");
+                            validates = false;
+                        }
+                    }
+                    break;
+                case ALPHANUM_WITH_SPACES:
+                    if (!getValue().isEmpty()) {
+                        p = Pattern.compile("[0-9a-zA-Zα-ωΑ-Ωάέήίόώύ ]*");
+                        m = p.matcher(this.getValue());
+                        if (!m.matches()) {
+                            addError(label + " should consist of numbers, letters and spaces.");
+                            validates = false;
+                        }
                     }
                     break;
                 case PROFILE_NAME:
-                    p = Pattern.compile("[a-zA-Z0-9]{1,}[a-zA-Z0-9-_]*");
-                    m = p.matcher(this.getValue());
-                    if (!m.matches()) {
-                        addError(label + " should consists characters of numbers, letters (a-z,A-Z) or '-' '_'. Cannot start with '-' or '_'");
-                        validates = false;
+                    if (!getValue().isEmpty()) {
+                        p = Pattern.compile("[a-zA-Z0-9]{1,}[a-zA-Z0-9-_]*");
+                        m = p.matcher(this.getValue());
+                        if (!m.matches()) {
+                            addError(label + " should consists characters of numbers, letters (a-z,A-Z) or '-' '_'. Cannot start with '-' or '_'");
+                            validates = false;
+                        }
                     }
                     break;
                 case EQUALS:
-                    if(!this.getValue().equals(r._2)){
+                    if (!getValue().isEmpty() && !this.getValue().equals(r._2)) {
                         addError(label + " does not match.");
+                        validates = false;
+                    }
+                    break;
+                case EITHER:
+                    if (getValue().isEmpty() && r._2.isEmpty()) {
+                        addError("Both cannot be empty.");
                         validates = false;
                     }
                     break;
@@ -180,27 +232,26 @@ public class Field {
                     if (!this.getValue().isEmpty()) {
                         SimpleDateFormat dtFormatter = new SimpleDateFormat(r._2);
                         dtFormatter.setLenient(false);
-                        try
-                        {
+                        try {
                             dtFormatter.parse(this.getValue());
-                        }
-                        catch (ParseException ex)
-                        {
+                        } catch (ParseException ex) {
                             validates = false;
-                            addError(label + " is not of the correct date format: "+r._2);
+                            addError(label + " is not of the correct date format: " + r._2);
                         }
-                    }else{
+                    } else {
                         validates = false;
-                        addError(label + " is not of the correct date format "+r._2);
+                        addError(label + " is not of the correct date format " + r._2);
                     }
                     break;
             }
         }
         return validates;
     }
-    protected void addError(String str){
+
+    protected void addError(String str) {
         errors.add(str);
     }
+
     /**
      * Builds a list of error messages for the field
      * Caution: No messages are displayed when rendering the field
@@ -211,7 +262,7 @@ public class Field {
         String out = "";
         if (errors.size() != 0) {
             out = String.format("<div class='error'> %1$s </div>", getErrors());
-        } 
+        }
         errors.clear();
         return out;
     }
@@ -223,13 +274,12 @@ public class Field {
         }
         return out;
     }
-    
-    
+
     public String renderLabel() {
-        if(getLabelName()!=null && getLabelName().length()!=0){
-            return String.format("<label for='id_%1$s'>%1$s</label>", getLabelName());
-        }else{    
-            return String.format("<label for='id_%1$s'>%1$s</label>", getFieldName());
+        if (getLabelName() != null && getLabelName().length() != 0) {
+            return String.format("<label for='id_%1$s'>%2$s</label>", getFieldName(), getLabelName());
+        } else {
+            return "";
         }
     }
 
@@ -266,10 +316,10 @@ public class Field {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        this.value = value.trim();
     }
-    
-    public void customErrorMsg( String msg){
+
+    public void customErrorMsg(String msg) {
         addError(msg);
     }
 }

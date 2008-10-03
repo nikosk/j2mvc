@@ -6,9 +6,10 @@ package gr.dsigned.jmvc.models;
 
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.db.Model;
+import gr.dsigned.jmvc.db.Operand;
+import gr.dsigned.jmvc.db.OrderBy;
 import gr.dsigned.jmvc.db.QuerySet;
 import java.util.ArrayList;
-import static gr.dsigned.jmvc.db.Model.Operands;
 
 /**
  *
@@ -23,7 +24,7 @@ public class Issue extends Model {
     public ArrayList<Hmap> getIssuesBySiteId(String siteId) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("issues");
-        qs.where("site_id",siteId, Operands.EQUAL.toString());
+        qs.where("site_id",siteId, Operand.EQUAL);
         qs.orderBy(OrderBy.DESC, "id");
         return db.getList(qs);
     }
@@ -41,7 +42,7 @@ public class Issue extends Model {
         QuerySet qs = new QuerySet();
         qs.set("label", label);
         qs.set("description", description);
-        qs.where("id", id, Operands.EQUAL.toString());
+        qs.where("id", id, Operand.EQUAL);
         qs.update(tableName);
         db.update(qs);
     }

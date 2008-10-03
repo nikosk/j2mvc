@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.framework;
 
+import com.phiresoft.social.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.db.DB;
 import gr.dsigned.jmvc.db.Model;
@@ -44,6 +45,8 @@ public class Jmvc {
     private static final Logger infoLogger = Logger.getLogger("Info");
     private static final Logger debugLogger = Logger.getLogger("Debug");
     private static final Logger errorLogger = Logger.getLogger("Error");
+    private static boolean debug = Settings.get("DEBUG").equals("TRUE");
+    private static ArrayList<String> dbDebug;
     public HttpServletRequest request;
     public ServletContext context;
     public static LinkedHashMap<String, String> parsedTemplates = new LinkedHashMap<String, String>();
@@ -55,6 +58,8 @@ public class Jmvc {
     public DB db;
     public Input input;
     public Session session;
+
+    
 
     public Jmvc() throws Exception {
         init();
@@ -91,6 +96,7 @@ public class Jmvc {
         if (Settings.AutoLoad.SESSION.loadIt()) {
             session = new Session(req);
         }
+        dbDebug = new ArrayList<String>();
     }
 
     /**
@@ -116,14 +122,28 @@ public class Jmvc {
             parsedTemplates.put(view_name, template);
         }
         if (data != null) {
+            boolean dollarFound = false;
             for (String key : data.keySet()) {
-                template = template.replaceAll("<% ?" + key + " ?%>", data.get(key));
+                String value = data.get(key);
+                dollarFound = value.indexOf("$") != -1 ? true : false;
+                if (dollarFound) {
+                    value = value.replaceAll("\\$", "!d!");
+                }
+                template = template.replaceAll("<% ?" + key + " ?%>", value);
+                if (dollarFound) {//replace it back
+                    template = template.replaceAll("\\!d!", "\\$");
+                }
             }
         }
         response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
+        response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         out.println(template);
+        if (debug) {
+            out.println(buildDebugOutput());
+        }
         out.flush();
+        out.close();
     }
 
     /**
@@ -132,9 +152,21 @@ public class Jmvc {
      * @param response Servlet response to write to
      * @param cont Servlet context to load the template
      */
-    public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont) {
+    public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont, HttpErrors er) {
         try {
             String template = "";
+            switch (er) {
+                case E404:
+                    response.setStatus(404);
+                    break;
+                case E500:
+                    response.setStatus(500);
+                    break;
+                case CUSTOM:
+                    response.setStatus(500);
+                    break;
+            }
+
             template = Jmvc.readWithStringBuilder(cont.getRealPath("/") + "error_pages" + File.separator + "404.html");
             PrintWriter out = response.getWriter();
             String message = e.toString();
@@ -161,6 +193,15 @@ public class Jmvc {
             }
             template = template.replace("<% error %>", html);
             out.println(template);
+            if (debug) {
+                String debugInfo = "<div style='margin:10px auto;padding:5px;width:50%;font:10px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
+                debugInfo += "<div style='background-color:#000;color:#fff'> Database queries ran: " + dbDebug.size() + "</div>";
+                for (String s : dbDebug) {
+                    debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + "</div>";
+                }
+                debugInfo += "</div>";
+                out.println(debugInfo);
+            }
             out.flush();
         } catch (Exception exc) {
             logError("[Jmvc:loadErrorPage] " + exc.getMessage());
@@ -278,7 +319,7 @@ public class Jmvc {
     @SuppressWarnings("unchecked")
     public static <T extends Renderer> T loadRenderer(String rendererName) throws ClassNotFoundException,
             InstantiationException, IllegalAccessException {
-        Class<T> c = (Class<T>) Class.forName(Settings.get("SYSTEM_PACKAGE") +".renderers." + rendererName);
+        Class<T> c = (Class<T>) Class.forName(Settings.get("SYSTEM_PACKAGE") + ".renderers." + rendererName);
         T m = c.newInstance();
         return m;
     }
@@ -311,5 +352,45 @@ public class Jmvc {
 
     public static void logError(String msg) {
         errorLogger.error(msg);
+    }
+
+    /**
+     * Used by db to log query info. 
+     * CAUTION: This is not thread safe. Only use it in development.
+     * @param s
+     */
+    public static void dbDebug(String s) {
+        dbDebug.add(s);
+    }
+
+    /**
+     * Append debug info
+     * @param debug
+     */
+    public void debug(boolean debug) {
+        Jmvc.debug = debug;
+    }
+
+    private String buildDebugOutput() {
+        long now = System.nanoTime();
+        long then = (Long) request.getAttribute("begin_time");
+        String debugInfo = "<div style='margin:10px auto;padding:5px;width:50%;font:11px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
+        debugInfo += "<div><b>Request processed in " + ((double) (now - then) / 1000000) + " milliseconds.</b></div>";
+        debugInfo += "<div style='background-color:#000;color:#fff'><b>Database queries ran: " + dbDebug.size() + "</b></div>";
+        for (String s : dbDebug) {
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + "</div>";
+        }
+        if (this.session != null) {
+            debugInfo += (session.permHM.size() > 0) ? "<div style='background-color:#000;color:#fff'><b>Permanent session data</b></div>" : "";
+            for (String s : session.permHM.keySet()) {
+                debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + ": " + session.permHM.get(s) + "</div>";
+            }
+            debugInfo += (session.tempHM.size() > 0) ? "<div style='background-color:#000;color:#fff'><b>Flash session data</b></div>" : "";
+            for (String s : session.tempHM.keySet()) {
+                debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + ": " + session.tempHM.get(s) + "</div>";
+            }
+        }
+        debugInfo += "</div>";
+        return debugInfo;
     }
 }

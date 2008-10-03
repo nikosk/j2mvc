@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import gr.dsigned.jmvc.db.Model;
+import gr.dsigned.jmvc.db.Operand;
 import gr.dsigned.jmvc.db.QuerySet;
 
 /**
@@ -53,7 +54,7 @@ public class Category extends Model {
     public ArrayList<Hmap> getCategoryById(String id) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from(this.tableName);
-        qs.where("id", id, Operands.EQUAL.toString());
+        qs.where("id", id, Operand.EQUAL);
         return db.getList(qs);
     }
 }

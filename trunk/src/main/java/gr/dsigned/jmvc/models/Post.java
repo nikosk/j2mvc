@@ -14,6 +14,8 @@
  */
 package gr.dsigned.jmvc.models;
 
+import gr.dsigned.jmvc.db.OrderBy;
+import gr.dsigned.jmvc.db.OrderBy;
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.db.QuerySet;
 import java.sql.SQLException;

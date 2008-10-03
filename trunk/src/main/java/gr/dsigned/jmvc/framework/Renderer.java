@@ -25,48 +25,101 @@ import java.util.HashMap;
  */
 public class Renderer {
 
-    public static String anchor(String segments, String title, String attributes) {
+    /**
+     * Create an A html tag in this form ROOT_URL/segments/
+     * 
+     * @param segments the segments of the url /controller/method/etc/etc/etc
+     * @param innerHtml the text to be displayed in the link. (also used in the link title attribute for better SEO)
+     * @param attribute  i.e.: "class = elementClass")
+     * @return Html A tag as a string
+     */
+    public static String anchor(String segments, String title, String attribute) {
         String href = Settings.get("ROOT_URL");
         href = (!Settings.get("SUB_DIR").isEmpty()) ? Settings.get("SUB_DIR") + "/" : "";
         href = (segments.startsWith("/") && segments.length() < 2) ? "" : segments;
-        if (attributes == null || attributes.isEmpty()) {
+        if (attribute == null || attribute.isEmpty()) {
             return String.format("<a href='%1$s' title='%2$s'>%2$s</a>", href, title);
         } else {
-            return String.format("<a href='%1$s' title='%2$s' %3$s>%2$s</a>", href, title, attributes);
+            return String.format("<a href='%1$s' title='%2$s' %3$s>%2$s</a>", href, title, attribute);
         }
     }
 
-    public static String anchor(String segments, String title, HashMap<String, String> attributes) {
+    /**
+     * Create an A html tag in this form ROOT_URL/segments/
+     * 
+     * @param segments the segments of the url /controller/method/etc/etc/etc
+     * @param innerHtml the text to be displayed in the link. (also used in the link title attribute for better SEO)
+     * @param attributes Tuples2 of attribute/value pairs i.e.: o("class","elementClass")
+     * @return Html A tag as a string
+     */
+    public static String anchor(String segments, String innerHtml, Tuple2... attributes) {
         segments = (segments.startsWith("/") && segments.length() > 2) ? segments.substring(1) : segments;
-        String href = Settings.get("ROOT_URL");
-        href = (!Settings.get("SUB_DIR").isEmpty()) ? Settings.get("SUB_DIR") + "/" : "";
-        href = (segments.startsWith("/") && segments.length() < 2) ? "" : segments;
+        String href = Settings.get("ROOT_URL");        
+        href += (segments.startsWith("/") && segments.length() < 2) ? "" : segments;
         if (attributes == null) {
-            return String.format("<a href='%1$s' title='%2$s'>%2$s</a>", href, title);
+            return String.format("<a href='%1$s' title='%2$s'>%2$s</a>", href, innerHtml);
         } else {
             String attr = "";
-            for (String a : attributes.keySet()) {
-                attr += a + "='" + attributes.get(a) + "' ";
+            for (Tuple2 t : attributes) {
+                attr += t._1 + "='" + t._2 + "' ";
             }
-            return String.format("<a href='%1$s' title='%2$s' %3$s>%2$s</a>", href, title, attr);
+            return String.format("<a href='%1$s' title='%2$s' %3$s>%2$s</a>", href, innerHtml, attr);
         }
     }
 
     public static String root_url() {
         return Settings.get("ROOT_URL");
     }
+
+    public static String div(String innerHTML, Tuple2... attr) {
+        return htmlTag("div", innerHTML, attr);
+    }
+
+    public static String span(String innerHTML, Tuple2... attr) {
+        return htmlTag("span", innerHTML, attr);
+    }
+
+    public static String h1(String innerHTML, Tuple2... attr) {
+        return htmlTag("h1", innerHTML, attr);
+    }
+
+    public static String h2(String innerHTML, Tuple2... attr) {
+        return htmlTag("h2", innerHTML, attr);
+    }
+
+    public static String h3(String innerHTML, Tuple2... attr) {
+        return htmlTag("h3", innerHTML, attr);
+    }
+    public static String b(String innerHTML, Tuple2... attr) {
+        return htmlTag("b", innerHTML, attr);
+    }
+    public static String a(String innerHTML, Tuple2... attr) {
+        return htmlTag("a", innerHTML, attr);
+    }
+    public static String img(Tuple2... attr) {
+        return htmlTag("img",attr);
+    }
     
-    public static String div(String innerHTML,Tuple2... attr){
+    private static String htmlTag(String tagName, String innerHTML, Tuple2... attr) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<div ");
-        for(Tuple2 t : attr ){
-            sb.append(t._1).append("='").append(t._2).append("'");            
+        sb.append("<").append(tagName);
+        for (Tuple2 t : attr) {
+            sb.append(" ").append(t._1).append("='").append(t._2).append("'");
         }
-        sb.append(">").append(innerHTML).append("</div>");
+        sb.append(">").append(innerHTML).append("</").append(tagName).append(">");
         return sb.toString();
     }
     
-    
+    private static String htmlTag(String tagName,Tuple2... attr) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<").append(tagName);
+        for (Tuple2 t : attr) {
+            sb.append(" ").append(t._1).append("='").append(t._2).append("'");
+        }
+        sb.append("/>");
+        return sb.toString();
+    }
+
     /**
      * Allows dynamically calling methods on extending classes.
      * @param methodName the name of the method you need to run.
@@ -78,8 +131,8 @@ public class Renderer {
         Class[] classNames = new Class[args.length];
         int index = 0;
         for (Object o : args) {
-           classNames[index] = o.getClass();
-           index++;
+            classNames[index] = o.getClass();
+            index++;
         }
         Class c = this.getClass();
         Method m = c.getMethod(methodName, classNames);

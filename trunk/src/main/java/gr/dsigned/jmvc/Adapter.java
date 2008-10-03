@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc;
 
+import com.phiresoft.social.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Utils;
@@ -63,11 +64,11 @@ public class Adapter extends HttpServlet {
             } else {
                 Exception e = new Exception("Method not found");
                 Jmvc.logError("[Adapter] " + e.getMessage());
-                Jmvc.loadErrorPage(e, response, this.getServletContext());  // This should return 404
+                Jmvc.loadErrorPage(e, response, this.getServletContext(), HttpErrors.E404);  // This should return 404
             }
         } catch (Exception e) {
             Jmvc.logError("[Adapter] " + e.toString());
-            Jmvc.loadErrorPage(e, response, this.getServletContext());
+            Jmvc.loadErrorPage(e, response, this.getServletContext(),HttpErrors.E500);
         } 
     }
 
