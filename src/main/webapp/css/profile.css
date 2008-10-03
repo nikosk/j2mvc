@@ -1,0 +1,55 @@
+/* 
+    Document   : profile
+    Created on : 16 Σεπ 2008, 4:24:32 μμ
+    Author     : user
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+.left{float:left;}
+.leftWP{float:left; margin-left:25px;}/*With extra padding*/  
+.floatWrapper{overflow:hidden;}
+
+#screen_name
+{
+  font-size:30px;
+  font-weight:bolder;
+}
+
+#quote
+{
+  border: 1px dashed #000000;
+  font-style: italic;
+  font-size: 22px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+#avatarFormWrapper
+{
+    
+}
+
+#screenNameQuoteHolder{overflow:hidden;}
+#screenName{font-size:30px;font-weight:bolder;float:left;}
+#quote{float:left;border: 1px dashed #000000;font-style: italic;color: #ccc;cursor: pointer; margin-left:25px;}
+#friendsHolder, #groupsHolder, #groupHeaderHolder{overflow: hidden;}
+.hr{border-top: 1px dotted #CFCFCF ;}
+
+#groupsOwner{float:left;}
+#groupLinks{float:left; margin-left:430px;}
+
+#friendActions{ text-align: center;}
+
+.friendDetails, .groupDetails{ float:left; overflow: hidden; padding: 0px 10px 20px 0px}
+.friendThumb, .groupThumb{float:left;}
+.friendRest, .groupRest {float:left; padding : 0px 5px 0px 5px; }
+.friendScname { font-weight:bolder; font-size:14px;margin-bottom:20px;}
+.groupTitle { font-weight:bolder; font-size:14px;margin-bottom:3px;}
+
+
+

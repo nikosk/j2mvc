@@ -20,7 +20,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import gr.dsigned.jmvc.db.Model;
+import gr.dsigned.jmvc.db.Operand;
+import gr.dsigned.jmvc.db.OrderBy;
 import gr.dsigned.jmvc.db.QuerySet;
+import gr.dsigned.jmvc.db.enums.Join;
 import java.sql.Timestamp;
 
 /**
@@ -38,8 +41,8 @@ public class Article extends Model {
     public ArrayList<Hmap> getLatestPosts(int numberToFetch) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.join("categories", "categories.id = articles.category_id", "left");
-        qs.where("categories.name","basket", Operands.EQUAL.toString());
+        qs.join("categories", "categories.id = articles.category_id", Join.LEFT);
+        qs.where("categories.name","basket", Operand.EQUAL);
         qs.orderBy(OrderBy.DESC, "published");
         qs.limit(numberToFetch);
         return db.getList(qs);
@@ -55,8 +58,8 @@ public class Article extends Model {
     public ArrayList<Hmap> getArticlesByCat(String cat, int limit, int offset) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.join("categories", "Articles.category_id = Categories.id","inner");
-        qs.where("Categories.name", cat, Operands.EQUAL.toString());
+        qs.join("categories", "Articles.category_id = Categories.id",Join.INNER);
+        qs.where("Categories.name", cat, Operand.EQUAL);
         qs.orderBy(OrderBy.DESC, "published");
         qs.limit(offset, limit);
         return db.getList(qs);
@@ -65,8 +68,8 @@ public class Article extends Model {
     public int countArticlesByCat(String cat) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.join("categories", "Articles.category_id = Categories.id", "left");
-        qs.where("Categories.name", cat, Operands.EQUAL.toString());
+        qs.join("categories", "Articles.category_id = Categories.id", Join.LEFT);
+        qs.where("Categories.name", cat, Operand.EQUAL);
         qs.orderBy(OrderBy.DESC, "published");
         return db.count(qs);
     }
@@ -88,7 +91,7 @@ public class Article extends Model {
     public ArrayList<Hmap> getArticleById(String id) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.where("id",id, Operands.EQUAL.toString());
+        qs.where("id",id, Operand.EQUAL);
         return db.getList(qs);
     }
     
@@ -101,14 +104,14 @@ public class Article extends Model {
         qs.set("content", content);
         qs.set("category_id", category_id);
         qs.set("updated", ""+new Timestamp(new java.util.Date().getTime()));
-        qs.where("id", id, Operands.EQUAL.toString());
+        qs.where("id", id, Operand.EQUAL);
         qs.update(tableName);
         db.update(qs);
     }
     
     public void deleteArticle(String id) throws SQLException {
         QuerySet qs = new QuerySet();
-        qs.where("id", id, Operands.EQUAL.toString());
+        qs.where("id", id, Operand.EQUAL);
         db.delete(tableName, id);
     }
 

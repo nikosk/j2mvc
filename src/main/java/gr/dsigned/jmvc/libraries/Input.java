@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedHashMap;
 
 import java.util.Map;
@@ -31,7 +32,7 @@ import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.servlet.*;
 import org.apache.commons.fileupload.util.*;
 import javax.servlet.http.HttpServletRequest;
-
+import static org.apache.commons.io.FilenameUtils.getExtension;
 /**
  * This class will at some point contain methods to sanitize 
  * data coming in and out of the application. 
@@ -80,14 +81,16 @@ public class Input extends Library {
                     } else {
                         if(item.getName()!=null && item.getName().length()!=0){
                             File tmpDir = new File(context.getRealPath("/")+ "tmp/");
-                            File tmpFile = new File(context.getRealPath("/") + "tmp/" + item.getName());
+                            
+                            String tmpfileName = String.valueOf(new Date().getTime()+ "." +getExtension(item.getName()));
+                            File tmpFile = new File(context.getRealPath("/") + "tmp/" + tmpfileName);
                             tmpDir.mkdirs();
                             tmpFile.createNewFile();
                             FileOutputStream fos = new FileOutputStream(tmpFile);
                             int c;
                             while ((c = stream.read()) != -1) {
                                 fos.write(c);
-                                postParams.put(name, context.getRealPath("/") + "tmp/" + item.getName()) ;
+                                postParams.put(name, context.getRealPath("/") + "tmp/" + tmpfileName) ;
                             }
                             fos.close();
                             stream.close();
@@ -131,7 +134,7 @@ public class Input extends Library {
         } else if (pathParts.size() > 0 && pathParts.size() > index) {
             return pathParts.get(index);
         } else {
-            return null;
+            return "";
         }
     }
 

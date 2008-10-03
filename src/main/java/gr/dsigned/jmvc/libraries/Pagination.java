@@ -16,6 +16,10 @@ package gr.dsigned.jmvc.libraries;
 
 import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Library;
+import static gr.dsigned.jmvc.framework.Renderer.div;
+import static gr.dsigned.jmvc.framework.Renderer.a;
+import gr.dsigned.jmvc.types.Tuple2;
+import static gr.dsigned.jmvc.types.operators.*;
 
 /**
  * 16 Μαρ 2008, gr.dsigned.jmvc.libraries
@@ -26,13 +30,13 @@ public class Pagination extends Library {
 
     public enum PagingType {
 
-        SEARCH, ITEM;
+        SEARCH, ITEM, AJAX;
     }
     public String baseUrl = "";
     public int totalRows = 0;
     public int curPage = 0;
     public int noItemsPerQuery = 0;    //DEFAULT VALUES
-    private int perPage = 15;
+    private int perPage = 10;
     private int leftRight = 5;
     private String separationChar = "&nbsp;&nbsp;";
     private String classStartArrowOn = "";
@@ -90,7 +94,10 @@ public class Pagination extends Library {
     public String createPagingLinks(int currentPage, PagingType type) {
 
         StringBuilder sb = new StringBuilder();
-        int pageCount = Math.round(totalRows / perPage);
+        int pageCount = (int) Math.floor(totalRows / perPage);
+        if (totalRows % perPage > 0) {
+            pageCount = (int) Math.floor(totalRows / perPage) + 1;
+        }
         Jmvc.logDebug("[Pagination:createPagingLinks] " + "PAGE COUNT: " + pageCount);
 
         if (totalRows > 0) {
@@ -101,12 +108,26 @@ public class Pagination extends Library {
 
             if (type == PagingType.ITEM) {
 
-                int diff = 0;
+                /*int diff = 0;
                 if (noItemsPerQuery < perPage) {
-                    diff = perPage - noItemsPerQuery;
+                diff = perPage - noItemsPerQuery;
+                }*/
+
+                int value = 0;
+
+                if (totalRows <= perPage) {
+                    value = totalRows;
+                } else {
+                    int page = currentPage + 1;
+                    if ((totalRows / page) >= perPage) {
+                        value = page * perPage;
+                    } else {
+                        value = (totalRows % perPage) + (perPage * currentPage);
+                    }
                 }
 
-                sb.append("<span>").append((currentPage * perPage) + 1).append(" - ").append(((currentPage + 1) * perPage) - diff).append(" of ").append(totalRows).append(" </span>");
+                //int value = ((currentPage + 1) * perPage) - diff;
+                sb.append("<span>").append((currentPage * perPage) + 1).append(" - ").append(value).append(" of ").append(totalRows).append(" </span>");
 
                 if (currentPage != 0 && totalRows != perPage) {
                     sb.append(" <a class='").append(classStartArrowOn).append("' href='").append(baseUrl).append("").append("' >").append(imgStartArrowOn).append("</a>");
@@ -116,9 +137,9 @@ public class Pagination extends Library {
                     sb.append(" <span>").append(imgBackArrowOff).append("</span> ");
                 }
 
-                if (currentPage < pageCount && totalRows != perPage) {
+                if (currentPage + 1 < pageCount && totalRows != perPage) {
                     sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
-                    sb.append(" <a class='").append(classEndArrowOn).append("' href='").append(baseUrl).append(pageCount).append("' >").append(imgEndArrowOn).append("</a>");
+                    sb.append(" <a class='").append(classEndArrowOn).append("' href='").append(baseUrl).append(pageCount - 1).append("' >").append(imgEndArrowOn).append("</a>");
                 } else {
                     sb.append(" <span>").append(imgFwdArrowOff).append("</span> ");
                     sb.append(" <span>").append(imgEndArrowOff).append("</span> ");
@@ -133,7 +154,7 @@ public class Pagination extends Library {
 
                     //PAGES NUMBER LINKS
                     for (int i = currentPage - leftRight; i <= currentPage + leftRight; i++) {
-                        if (i < 0 || i > pageCount) {
+                        if (i < 0 || i >= pageCount) {
                             continue;
                         } else {
                             if (i != currentPage) {
@@ -145,10 +166,57 @@ public class Pagination extends Library {
                     }
 
                     //NEXT LINK IF NEEDED
-                    if (currentPage < pageCount) {
+                    if (currentPage + 1 < pageCount) {
                         sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
                     }
                 }
+            } else if (type == PagingType.AJAX) {
+                sb.ensureCapacity(300);
+                for (int i = pageCount; i > 0; i--) {
+                    int from = (totalRows - ((pageCount - i) * perPage));
+                    int to = (i - 1 == 0) ? from - (totalRows % perPage)+1 : from - perPage;
+                    String page = (i == pageCount) ? "" : String.valueOf(pageCount-i);
+                    sb.append(
+                            div(
+                                a("Comments (" + from + " - " + to + ")", o("href", "javascript:void(0);"),o("title", baseUrl + page), o("class","toggler")),o("id", "page_" + page)
+                               )
+                            );
+                    sb.append( div(i+".", o("class","actual_page")));
+                }
+                sb.append("<script type='text/javascript'>\n");
+                sb.append("var req = new Request.HTML({});\n" +
+                        "req.addEvent('complete', function(responseTree, responseElements, responseHTML, responseJavaScript){\n" +
+                        "     req.options.update2.innerHTML = responseHTML;\n" +
+                        "     req.options.update2.set('tween', {duration:1500});\n" +
+                        "     req.options.update2.tween('height',req.options.update2.scrollHeight);\n" +
+                        "});\n" +
+                        "$$('.toggler').each( function(el,index){\n" +
+                        "    if(index == 0){\n" +
+                        "       get_content(el.title,el.getParent().nextSibling);\n" +
+                        "     }\n" +
+                        "     el.addEvent('click' , function(evt){\n" +
+                        "        close(-1);\n" +
+                        "        var the_event = new Event(evt);\n" +
+                        "        $(the_event.target)\n" +
+                        "        var act_page = $(the_event.target).getParent().nextSibling;\n" +
+                        "        get_content(the_event.target.title,act_page);\n" +
+                        "    });\n" +
+                        "});\n" +
+                        "function get_content(url, el){\n" +
+                        "    req.options.url = url;\n" +
+                        "    req.options.update2 = el;\n" +
+                        "    req.get();\n" +
+                        "}\n" +
+                        "function close(exclude){\n" +
+                        "  $$('.actual_page').each( function(el,index){\n" +
+                        "      if(index != exclude){\n" +
+                        "           el.tween('height',0);\n" +
+                        "           el.setStyle('overflow', 'hidden');\n" +
+                        "      }\n" +
+                        "  });    \n" +
+                        "}\n" +
+                        "close(0);");                        
+                sb.append("</script>\n");
             }
         } else {
             return "";

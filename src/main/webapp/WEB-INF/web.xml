@@ -3,13 +3,22 @@
 <web-app>
     <display-name>Archetype Created Web Application</display-name>
     <listener>
-        <listener-class>com.phiresoft.social.help.SessionCounter</listener-class>
+        <listener-class>com.phiresoft.social.help.SessionHandler</listener-class>
     </listener>
     <servlet>
         <servlet-name>CMSAdapter</servlet-name>
         <description>Entry point to JMVC. Everything is called from here.</description>
         <servlet-class>com.phiresoft.social.CMSAdapter</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>jcaptcha</servlet-name>
+        <servlet-class>com.phiresoft.social.ImageCaptchaServlet</servlet-class>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jcaptcha</servlet-name>
+        <url-pattern>/jcaptcha</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CMSAdapter</servlet-name>
         <url-pattern>/</url-pattern>

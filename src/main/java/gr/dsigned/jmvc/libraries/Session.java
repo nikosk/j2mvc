@@ -45,7 +45,7 @@ public class Session extends Library {
                 String name = (String) enames.nextElement();
                 String value = "" + session.getAttribute(name);
                 if (name.substring(0, 2).equals("t_")) {
-                    tempHM.put(name, value);
+                    tempHM.put(name.substring(2), value);
                     session.removeAttribute(name);
                 }
                 else {
@@ -62,8 +62,8 @@ public class Session extends Library {
      */
     public String data(String paramName) {
         String out = "";
-        if (tempHM.containsKey("t_"+paramName)) {
-            out = tempHM.get("t_" + paramName);
+        if (tempHM.containsKey(paramName)) {
+            out = tempHM.get(paramName);
         }
         else {
             out =  permHM.get(paramName);

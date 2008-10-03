@@ -59,7 +59,7 @@ public class FileField extends Field {
                     break;
                 case ALLOWED_EXTENSIONS:
                     boolean found = false;
-                    String[] allowedExtensions = r._2.split("|");
+                    String[] allowedExtensions = r._2.split("\\|");
                     String fileExtension = getExtension(f.getAbsolutePath());
                     for (String ext : allowedExtensions) {
                         if (ext.trim().equalsIgnoreCase(fileExtension)) {
@@ -96,5 +96,14 @@ public class FileField extends Field {
 
     public void setDisabled() {
         this.disabled = true;
+    }
+    
+    @Override
+    public String getErrors() {
+        String out = "";
+        for (String s : errors) {
+            out +=  s+"," ;
+        }
+        return out;
     }
 }

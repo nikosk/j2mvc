@@ -2,6 +2,8 @@ package gr.dsigned.jmvc.models;
 
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.db.Model;
+import gr.dsigned.jmvc.db.Operand;
+import gr.dsigned.jmvc.db.OrderBy;
 import gr.dsigned.jmvc.db.QuerySet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class Site extends Model {
         QuerySet qs = new QuerySet();
         qs.update(tableName);
         qs.set("label", label);
-        qs.where("id", id, Operands.EQUAL.toString());
+        qs.where("id", id, Operand.EQUAL);
         db.update(qs);        
     }
 

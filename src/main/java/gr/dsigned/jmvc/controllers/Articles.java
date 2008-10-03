@@ -128,13 +128,13 @@ public class Articles extends Controller {
             Category cat = $.loadModel("Category");
             Hmap categories = cat.getCategoryIdNamePair();
             form.setFields(
-                    dd = new DropdownMenu("Article Category", "category", "", categories, false, o(REQUIRED, "true")),
-                    new CharField("Title", "title", $.input.post("title"), false,false, o(REQUIRED, "true")),
-                    new CharField("Real Title", "real_title", $.input.post("real_title"), false,false),
-                    new CharField("Sub Title", "sub_title", $.input.post("sub_title"), false,false),
-                    new CharField("Lead In", "lead_in", $.input.post("lead_in"), false,false),
-                    new TextareaField("Content", "content", "5", "20", $.input.post("content"),false,false, o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "10")),
-                    new FileField("File", "file", new File("/"), false),
+                    dd = new DropdownMenu("Article Category", "category", "", categories,  o(REQUIRED, "true")),
+                    new CharField("Title", "title", $.input.post("title"),  o(REQUIRED, "true")),
+                    new CharField("Real Title", "real_title", $.input.post("real_title")),
+                    new CharField("Sub Title", "sub_title", $.input.post("sub_title")),
+                    new CharField("Lead In", "lead_in", $.input.post("lead_in")),
+                    new TextareaField("Content", "content", "5", "20", $.input.post("content"), o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "10")),
+                    new FileField("File", "file", new File("/")),
                     new SubmitButtonField("submit_button", ""));
             int i = 0;
             dd.setSelected($.input.post("category"));
@@ -186,15 +186,14 @@ public class Articles extends Controller {
 
             Category cat = $.loadModel("Category");
             ArrayList<Hmap> beans = cat.getCategories();
-            f.setBean(articleAL.get(0));
             f.setFields(
                     new HiddenField("id", id, o(REQUIRED, "true")),
                     //dd = new DropdownMenu("Category", "category", false, o(REQUIRED, "true")),
-                    new CharField("Title", "title", "", false, false),
-                    new CharField("Real Title", "real_title", "", false, false),
-                    new CharField("Sub Title", "sub_title", "", false, false),
-                    new CharField("Lead In", "lead_in", "",false, false),
-                    new TextareaField("Content", "content", "5", "20", "", false, false, o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "100")),
+                    new CharField("Title", "title", ""),
+                    new CharField("Real Title", "real_title", ""),
+                    new CharField("Sub Title", "sub_title", ""),
+                    new CharField("Lead In", "lead_in", ""),
+                    new TextareaField("Content", "content", "5", "20","",  o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "100")),
                     new SubmitButtonField("submit_button", ""));
             if ($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()) {
                 article.editArticle(id, $.input.post("category"), $.input.post("title"), $.input.post("real_title"), $.input.post("sub_title"), $.input.post("lead_in"), $.input.post("content"));

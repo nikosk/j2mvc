@@ -24,26 +24,6 @@ import java.sql.SQLException;
  */
 public class Model {
 
-    public enum Operands {
-
-        EQUAL ("="),
-        GREATER_THAN (">"),
-        LESS_THAN ("<"),
-        GREATER_THAN_OR_EQUAL (">="),
-        LESS_THAN_OR_EQUAL (">=");
-        
-        private final String value;
-        Operands(String value) {
-            this.value = value;
-        }
-        @Override
-        public String toString() {
-            return value;
-        }
-    }
-    
-    public enum OrderBy { ASC, DESC };
-    
     public String tableName = "";
     public DB db;
     public Hmap data = new Hmap();
@@ -82,8 +62,22 @@ public class Model {
     public Hmap getById(String id) throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from(tableName);
-        qs.where("id", id, Operands.EQUAL.toString());
+        qs.where("id", id, Operand.EQUAL);
         return db.getObject(qs);
+    }
+    
+    /**
+     * Deletes a bean from the db
+     * @todo Do something in case we didn't find any data to load
+     * @param id The id of the row to delete
+     * @return 
+     * @throws SQLException
+     */
+    public int deleteById(String id) throws SQLException {
+        QuerySet qs = new QuerySet();
+        qs.delete(tableName);
+        qs.where("id", id, Operand.EQUAL);
+        return db.delete(qs);
     }
     
     /**

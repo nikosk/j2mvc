@@ -27,12 +27,11 @@ public class Checkbox extends Field {
     String template = "<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s />%n";
 
     /**
-     * 
+     * Note: A checkbox return only 0 or 1
      * @param labelName
      * @param fieldName
-     * @param inputValue (the value we assign to the input value attribute)
-     * @param value (the value we are going to get from the post:: if checked we are going to get the inputValue else an empty string)
-     * @param rules
+     * @param value If this string is empty the field will be unchecked. In any other case it will become checked 
+     * @param rules Only REQUIRED is valid
      */
     public Checkbox(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(labelName, fieldName, value, rules);
