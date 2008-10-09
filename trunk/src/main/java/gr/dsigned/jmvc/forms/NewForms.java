@@ -30,6 +30,7 @@ import static gr.dsigned.jmvc.types.operators.*;
 public class NewForms extends Library {
 
     private LinkedHashMap<String, Field> fields = new LinkedHashMap<String, Field>();
+    private String id;
     private String action;
     private boolean enctype = false;
 
@@ -45,7 +46,7 @@ public class NewForms extends Library {
      * @return Html form
      */
     public String renderForm() {
-        return String.format("<form action='%1$s' method='POST' %2$s>%3$s</form>", getAction(), isEnctype(), build());
+        return String.format("<form id='%4$s' action='%1$s' method='POST' %2$s>%3$s</form>", getAction(), isEnctype(), build(),getId());
     }
 
     public String renderFormAsList() {
@@ -189,6 +190,14 @@ public class NewForms extends Library {
 
     public void setAction(String action) {
         this.action = action;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     private String isEnctype() {

@@ -94,10 +94,7 @@ public class Pagination extends Library {
     public String createPagingLinks(int currentPage, PagingType type) {
 
         StringBuilder sb = new StringBuilder();
-        int pageCount = (int) Math.floor(totalRows / perPage);
-        if (totalRows % perPage > 0) {
-            pageCount = (int) Math.floor(totalRows / perPage) + 1;
-        }
+        int pageCount = pageCount();
         Jmvc.logDebug("[Pagination:createPagingLinks] " + "PAGE COUNT: " + pageCount);
 
         if (totalRows > 0) {
@@ -458,5 +455,25 @@ public class Pagination extends Library {
 
     public void setImgFwdArrowOff(String imgFwdArrowOff) {
         this.imgFwdArrowOff = imgFwdArrowOff;
+    }
+    
+    public int pageCount(){
+        int pageCount = (int) Math.floor(totalRows / perPage);
+        if (totalRows % perPage > 0) {
+            pageCount = (int) Math.floor(totalRows / perPage) + 1;
+        }
+        return pageCount;
+    }
+
+    public int getLastPage(){
+        return pageCount() -1 ;
+    }
+    
+    public boolean goToEndAfterAddition(){
+        return (totalRows>getPerPage())?true:false;
+    }
+
+    public boolean lastRecordToDelete(){
+        return (curPage!=0 && ((curPage+1) -  ((double)totalRows / getPerPage())) == 1  )?true:false;
     }
 }

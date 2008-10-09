@@ -39,11 +39,9 @@ public class MysqlDB extends DB {
         ds.setServerName(Settings.get("DB_URL"));
         ds.setPort(Integer.valueOf(Settings.get("DB_PORT")) );
         ds.setUser(Settings.get("DB_USER"));
-        ds.setPassword(Settings.get("DB_PASS"));
-        ds.setAutoReconnect(true);
-        ds.setAutoReconnectForConnectionPools(true);
+        ds.setPassword(Settings.get("DB_PASS"));       
         ds.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
-        poolMgr = new MiniConnectionPoolManager(ds, 1000);
+        poolMgr = new MiniConnectionPoolManager(ds, 1000, 20);
     }
 
     public static MysqlDB getInstance() {

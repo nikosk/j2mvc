@@ -29,13 +29,13 @@ public class ButtonField extends Field{
      * @param value
      * @param rules
      */
-    public ButtonField(String fieldName, String value, Tuple2<Rule, String>... rules) {
-        super(fieldName, value, rules);
+    public ButtonField(String fieldName, String value) {
+        super(fieldName, value);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input type='button' name='%1$s' id='id_%2$s' value='%3$s' />%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return String.format("<input type='button' name='%1$s' id='id_%2$s' value='%3$s' onclick ='%4$s'/>%n", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
     }
 
     @Override

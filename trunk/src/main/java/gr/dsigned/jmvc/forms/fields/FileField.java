@@ -58,25 +58,29 @@ public class FileField extends Field {
                     }
                     break;
                 case ALLOWED_EXTENSIONS:
-                    boolean found = false;
-                    String[] allowedExtensions = r._2.split("\\|");
-                    String fileExtension = getExtension(f.getAbsolutePath());
-                    for (String ext : allowedExtensions) {
-                        if (ext.trim().equalsIgnoreCase(fileExtension)) {
-                            found = true;
+                    if(f!=null){
+                        boolean found = false;
+                        String[] allowedExtensions = r._2.split("\\|");
+                        String fileExtension = getExtension(f.getAbsolutePath());
+                        for (String ext : allowedExtensions) {
+                            if (ext.trim().equalsIgnoreCase(fileExtension)) {
+                                found = true;
+                            }
                         }
-                    }
-                    if (!found) {
-                        addError(getLabelName() + " is not of the allowed types " + r._2.replace("|", ", ") + ".");
-                        validates = false;
+                        if (!found) {
+                            addError(getLabelName() + " is not of the allowed types " + r._2.replace("|", ", ") + ".");
+                            validates = false;
+                        }
                     }
                     break;
                 case MAX_FILE_SIZE:
-                    long allowedSize = Integer.parseInt(r._2);
-                    long fileSize = f.length();
-                    if(allowedSize < fileSize){
-                        addError(getLabelName() + " exceeds the max file size: "+r._2+".");
-                        validates = false;
+                    if(f!=null){
+                        long allowedSize = Integer.parseInt(r._2);
+                        long fileSize = f.length();
+                        if(allowedSize < fileSize){
+                            addError(getLabelName() + " exceeds the max file size: "+r._2+".");
+                            validates = false;
+                        }
                     }
                     break;
             }

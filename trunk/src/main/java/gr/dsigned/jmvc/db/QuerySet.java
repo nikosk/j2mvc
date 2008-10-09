@@ -16,6 +16,7 @@ package gr.dsigned.jmvc.db;
 
 import gr.dsigned.jmvc.db.enums.Join;
 import gr.dsigned.jmvc.types.Hmap;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -39,16 +40,21 @@ public class QuerySet {
     private String insertSet;
     private String updateSet;
     private String deleteSet;
+    private String unionSet;
     private ArrayList<String> data = new ArrayList<String>();
     private ArrayList<String> setData = new ArrayList<String>();
     private ArrayList<String> whereData = new ArrayList<String>();
+    private ArrayList<String> unionData = new ArrayList<String>();
+    private ArrayList<String> fromData = new ArrayList<String>();
+    private boolean hasRan = false;
 
     /**
      * Build the select statement.
      * @param str The columns you need to select as string
      * @return QuerySet
      */
-    public QuerySet select(String str) {
+    public QuerySet select(String str) throws SQLException {
+        hasRan();
         selectSet = str;
         return this;
     }
@@ -58,7 +64,8 @@ public class QuerySet {
      * @param str The columns you need to select as string parameters
      * @return QuerySet
      */
-    public QuerySet select(String... str) {
+    public QuerySet select(String... str) throws SQLException {
+        hasRan();
         String cols = "";
         for (int i = 0; i < str.length; i++) {
             cols += str[i];
@@ -75,7 +82,8 @@ public class QuerySet {
      * @param bool
      * @return QuerySet
      */
-    public QuerySet selectDistinct(String str) {
+    public QuerySet selectDistinct(String str) throws SQLException {
+        hasRan();
         selectDistinctSet = str;
         return this;
     }
@@ -85,7 +93,8 @@ public class QuerySet {
      * @param bool
      * @return QuerySet
      */
-    public QuerySet selectDistinct(String... str) {
+    public QuerySet selectDistinct(String... str) throws SQLException {
+        hasRan();
         String cols = "";
         for (int i = 0; i < str.length; i++) {
             cols += str[i];
@@ -105,14 +114,15 @@ public class QuerySet {
      * @param type type of where (AND or OR)
      * @return
      */
-    public QuerySet whereIn(String column, String value, String type) {
+    public QuerySet whereIn(String column, String value, String type) throws SQLException {
+        hasRan();
         if (whereSet == null) {
             whereSet = "\nWHERE ";
         } else {
             whereSet += "\n" + type + " ";
         }
         checkSqlInValue(value);
-        whereSet += column + " " + Operand.IN + " (" + value +")";
+        whereSet += column + " " + Operand.IN + " (" + value + ")";
         return this;
     }
 
@@ -124,20 +134,22 @@ public class QuerySet {
      * @param type type of where (AND or OR)
      * @return
      */
-    public QuerySet whereIn(String column, ArrayList<String> values, String type) {
+    public QuerySet whereIn(String column, ArrayList<String> values, String type) throws SQLException {
+        hasRan();
         if (whereSet == null) {
             whereSet = "\nWHERE ";
         } else {
             whereSet += "\n" + type + " ";
         }
-        whereSet += column + " " + Operand.IN + " (" + renderArrayListWithIds(values) +")";
+        whereSet += column + " " + Operand.IN + " (" + renderArrayListWithIds(values) + ")";
         return this;
     }
 
-    private String renderArrayListWithIds(ArrayList<String> values) {
+    private String renderArrayListWithIds(ArrayList<String> values) throws SQLException {
+        hasRan();
         String result = "";
         StringBuilder sb = new StringBuilder();
-        for(String value: values) {
+        for (String value : values) {
             sb.append(value).append(",");
         }
         if (sb.length() > 0) {
@@ -148,12 +160,35 @@ public class QuerySet {
         checkSqlInValue(result);
         return result;
     }
-    
+
     private void checkSqlInValue(String input) {
         String stringValues[] = input.split(",");
         for (int i = 0; i < stringValues.length; i++) {
-            Integer.parseInt(stringValues[i]);    
+            Integer.parseInt(stringValues[i]);
         }
+    }
+
+    /**
+     * Builds the where part of the query. Use with caution
+     * @deprecated 
+     * @param sql 
+     * @param values 
+     * @param column the column used by the where
+     * @param type type of where (AND or OR)
+     * @return
+     */
+    public QuerySet flexibleWhere(String sql, ArrayList<String> values, String type) throws SQLException {
+        hasRan();
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += " ( " + sql + " ) ";
+        for (String value : values) {
+            whereData.add(value);
+        }
+        return this;
     }
 
     /**
@@ -165,7 +200,8 @@ public class QuerySet {
      * @param type type of where (AND or OR)
      * @return
      */
-    private QuerySet where(String column, String value, Operand operand, String type) {
+    private QuerySet where(String column, String value, Operand operand, String type) throws SQLException {
+        hasRan();
         if (whereSet == null) {
             whereSet = "\nWHERE ";
         } else {
@@ -179,11 +215,13 @@ public class QuerySet {
     /**
      * Builds the where part of the query. Used internally by the public 
      * where methods.
+     * @deprecated 
      * @param column the column used by the where 
      * @param type type of where (AND or OR)
      * @return
      */
-    public QuerySet whereIsNull(String column, String type) {
+    public QuerySet whereIsNull(String column, String type) throws SQLException {
+        hasRan();
         if (whereSet == null) {
             whereSet = "\nWHERE ";
         } else {
@@ -196,11 +234,13 @@ public class QuerySet {
     /**
      * Builds the where part of the query. Used internally by the public 
      * where methods.
+     * @deprecated 
      * @param column the column used by the where 
      * @param type type of where (AND or OR)
      * @return
      */
-    public QuerySet whereIsNotNull(String column, String type) {
+    public QuerySet whereIsNotNull(String column, String type) throws SQLException {
+        hasRan();
         if (whereSet == null) {
             whereSet = "\nWHERE ";
         } else {
@@ -210,11 +250,13 @@ public class QuerySet {
         return this;
     }
 
-    public QuerySet orWhere(String key, String value, Operand operand) {
+    public QuerySet orWhere(String key, String value, Operand operand) throws SQLException {
+        hasRan();
         return where(key, value, operand, "OR");
     }
 
-    public QuerySet where(String key, String value, Operand operand) {
+    public QuerySet where(String key, String value, Operand operand) throws SQLException {
+        hasRan();
         return where(key, value, operand, "AND");
     }
 
@@ -223,8 +265,23 @@ public class QuerySet {
      * @param str
      * @return QuerySet
      */
-    public QuerySet from(String str) {
+    public QuerySet from(String str) throws SQLException {
+        hasRan();
         fromSet = " FROM " + str;
+        return this;
+    }
+
+    /**
+     * Builds a composite FROM part of the query.
+     * 
+     * @param qs A QuerySet that produces data (a SELECT)
+     * @param alias The alias for the intermediate table
+     * @return queryset
+     */
+    public QuerySet from(QuerySet qs, String alias) throws SQLException {
+        hasRan();
+        fromSet = "\nFROM (" + qs.compileSelect() + ") as " + alias + " ";
+        fromData.addAll(qs.getData());
         return this;
     }
 
@@ -235,12 +292,14 @@ public class QuerySet {
      * @param type INNER, OUTER, LEFT, RIGHT
      * @return QuerySet
      */
-    public QuerySet join(String table, String condition, Join type) {
+    public QuerySet join(String table, String condition, Join type) throws SQLException {
+        hasRan();
         joinSet = (joinSet == null) ? "\n" + type + " JOIN " + table + " ON " + condition : joinSet + "\n" + type + " JOIN " + table + " ON " + condition;
         return this;
     }
 
-    public QuerySet orderBy(OrderBy orderType, String... fields) {
+    public QuerySet orderBy(OrderBy orderType, String... fields) throws SQLException {
+        hasRan();
         StringBuilder sb = new StringBuilder();
         sb.append("\nORDER BY ");
         for (String field : fields) {
@@ -257,7 +316,8 @@ public class QuerySet {
      * @param limit 
      * @return
      */
-    public QuerySet limit(int limit) {
+    public QuerySet limit(int limit) throws SQLException {
+        hasRan();
         limitSet = "\nLIMIT " + limit;
         return this;
     }
@@ -268,22 +328,27 @@ public class QuerySet {
      * @param offset
      * @return
      */
-    public QuerySet limit(int offset, int limit) {
+    public QuerySet limit(int offset, int limit) throws SQLException {
+        hasRan();
         limitSet = "\nLIMIT " + offset + ", " + limit;
         return this;
     }
 
-    public QuerySet update(String tableName) {
+    public QuerySet update(String tableName) throws SQLException {
+        hasRan();
         updateSet = "UPDATE " + tableName;
         return this;
     }
 
-    public QuerySet delete(String tableName) {
-        deleteSet = "DELETE FROM " + tableName + " ";
+    public QuerySet delete(String tableName) throws SQLException {
+        hasRan();
+        deleteSet = "DELETE ";
+        from(tableName);
         return this;
     }
 
-    public QuerySet update(String tableName, Hmap data) {
+    public QuerySet update(String tableName, Hmap data) throws SQLException {
+        hasRan();
         update(tableName);
         for (String k : data.keySet()) {
             set(k, data.get(k));
@@ -299,7 +364,8 @@ public class QuerySet {
      * @param value
      * @return
      */
-    public QuerySet set(String key, String value) {
+    public QuerySet set(String key, String value) throws SQLException {
+        hasRan();
         if (setSet == null) {
             setSet = "\nSET ";
         } else {
@@ -310,12 +376,14 @@ public class QuerySet {
         return this;
     }
 
-    public QuerySet insert(String tableName) {
+    public QuerySet insert(String tableName) throws SQLException {
+        hasRan();
         this.insertSet = "INSERT INTO " + tableName;
         return this;
     }
 
-    public QuerySet insert(String tableName, Hmap bean) {
+    public QuerySet insert(String tableName, Hmap bean) throws SQLException {
+        hasRan();
         insert(tableName);
         for (String key : bean.keySet()) {
             set(key, bean.get(key));
@@ -323,8 +391,22 @@ public class QuerySet {
         return this;
     }
 
-    public QuerySet groupBy(String groupByField) {
+    public QuerySet groupBy(String groupByField) throws SQLException {
+        hasRan();
         this.groupBySet = "\nGROUP BY " + groupByField;
+        return this;
+    }
+
+    /**
+     * Accepts a SELECT type queryset and builds 
+     * a union select between them.
+     * @param qs A select type queryset
+     * @return
+     */
+    public QuerySet union(QuerySet qs) throws SQLException {
+        hasRan();
+        unionSet = (unionSet == null) ? "\nUNION " + qs.compileSelect() : unionSet + "\nUNION " + qs.compileSelect();
+        unionData.addAll(qs.getData());
         return this;
     }
 
@@ -338,6 +420,9 @@ public class QuerySet {
         sb.append(selectDistinctSet == null ? "SELECT " : "SELECT DISTINCT ");
         sb.append(selectSet == null ? "*" : selectSet);
         sb.append(fromSet == null ? "" : fromSet);
+        if (fromData.size() > 0) {
+            data.addAll(fromData);
+        }
         sb.append(joinSet == null ? "" : joinSet);
         sb.append(whereSet == null ? "" : whereSet);
         sb.append(groupBySet == null ? "" : groupBySet);
@@ -346,6 +431,11 @@ public class QuerySet {
         if (whereSet != null) {
             data.addAll(whereData);
         }
+        if (unionSet != null) {
+            sb.append(unionSet);
+            data.addAll(unionData);
+        }
+        hasRan = true;
         return sb.toString();
     }
 
@@ -359,6 +449,7 @@ public class QuerySet {
         sb.append(whereSet == null ? "" : whereSet);
         sb.append(limitSet == null ? "" : limitSet);
         data.addAll(whereData);
+        hasRan = true;
         return sb.toString();
     }
 
@@ -370,15 +461,22 @@ public class QuerySet {
         sb.append(whereSet == null ? "" : whereSet);
         data.addAll(setData);
         data.addAll(whereData);
+        hasRan = true;
         return sb.toString();
     }
 
-    protected String compileDelete() {
+    protected String compileDelete() throws SQLException {
         data.clear();
         StringBuilder sb = new StringBuilder();
-        sb.append(deleteSet);
+        if (fromSet == null) {
+            throw new SQLException("Empty from in delete");  // Be strict, this is a destructive operation.
+        }
+        sb.append(deleteSet == null ? "DELETE " : deleteSet);
+        sb.append(fromSet);
         sb.append(whereSet == null ? "" : whereSet);
+        sb.append(limitSet == null ? "" : limitSet);
         data.addAll(whereData);
+        hasRan = true;
         return sb.toString();
     }
 
@@ -388,10 +486,17 @@ public class QuerySet {
         sb.append(insertSet);
         sb.append(setSet);
         data.addAll(setData);
+        hasRan = true;
         return sb.toString();
     }
 
     public ArrayList getData() {
         return data;
+    }
+
+    private void hasRan() throws SQLException {
+        if (hasRan) {
+            throw new SQLException("Tried to modify query set after it has been compiled");
+        }
     }
 }

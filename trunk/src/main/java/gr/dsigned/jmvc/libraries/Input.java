@@ -33,6 +33,7 @@ import org.apache.commons.fileupload.servlet.*;
 import org.apache.commons.fileupload.util.*;
 import javax.servlet.http.HttpServletRequest;
 import static org.apache.commons.io.FilenameUtils.getExtension;
+
 /**
  * This class will at some point contain methods to sanitize 
  * data coming in and out of the application. 
@@ -48,7 +49,7 @@ public class Input extends Library {
 
     public Input(HttpServletRequest req, ServletContext cont) throws Exception {
         this.context = cont;
-        this.setRequest(req);        
+        this.setRequest(req);
     }
 
     public HttpServletRequest getRequest() {
@@ -67,7 +68,7 @@ public class Input extends Library {
     public void setRequest(HttpServletRequest req) throws Exception {
         if (req != null) { // check for null or tests fail
             this.request = req; // Set the local request
-            
+
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
             if (isMultipart) {
                 ServletFileUpload upload = new ServletFileUpload();
@@ -79,10 +80,10 @@ public class Input extends Library {
                     if (item.isFormField()) {
                         postParams.put(name, Streams.asString(stream));
                     } else {
-                        if(item.getName()!=null && item.getName().length()!=0){
-                            File tmpDir = new File(context.getRealPath("/")+ "tmp/");
-                            
-                            String tmpfileName = String.valueOf(new Date().getTime()+ "." +getExtension(item.getName()));
+                        if (item.getName() != null && item.getName().length() != 0) {
+                            File tmpDir = new File(context.getRealPath("/") + "tmp/");
+
+                            String tmpfileName = String.valueOf(new Date().getTime() + "." + getExtension(item.getName()));
                             File tmpFile = new File(context.getRealPath("/") + "tmp/" + tmpfileName);
                             tmpDir.mkdirs();
                             tmpFile.createNewFile();
@@ -90,7 +91,7 @@ public class Input extends Library {
                             int c;
                             while ((c = stream.read()) != -1) {
                                 fos.write(c);
-                                postParams.put(name, context.getRealPath("/") + "tmp/" + tmpfileName) ;
+                                postParams.put(name, context.getRealPath("/") + "tmp/" + tmpfileName);
                             }
                             fos.close();
                             stream.close();
@@ -100,26 +101,26 @@ public class Input extends Library {
             } else {
                 Map<String, String[]> lhm = req.getParameterMap(); // Get the params
                 for (String key : lhm.keySet()) { // Get the name of each param
-                        String[] val = lhm.get(key); // For each name retrieve the value
-                        String value = ""; // init the string that will receive our param
-                        // value
-                        if (val.length > 1) { // If multi-value param
-                                for (int i = 0; i < val.length; i++) { // For each value in
-                                        // multi-value param
-                                        value += val[i];
-                                        value += (i + 1 != val.length) ? "," : ""; // Add it to the
-                                        // string as
-                                        // comma
-                                        // separated values
-                                }
-                        } else {
-                                value = val[0];
+                    String[] val = lhm.get(key); // For each name retrieve the value
+                    String value = ""; // init the string that will receive our param
+                    // value
+                    if (val.length > 1) { // If multi-value param
+                        for (int i = 0; i < val.length; i++) { // For each value in
+                            // multi-value param
+                            value += val[i];
+                            value += (i + 1 != val.length) ? "," : ""; // Add it to the
+                        // string as
+                        // comma
+                        // separated values
                         }
-                        if (req.getMethod().equalsIgnoreCase("post")) { // If params from post
-                                postParams.put(key, value); // add them to the post array
-                        } else {
-                                getParams.put(key, value); // else add them to the get array
-                        }
+                    } else {
+                        value = val[0];
+                    }
+                    if (req.getMethod().equalsIgnoreCase("post")) { // If params from post
+                        postParams.put(key, value); // add them to the post array
+                    } else {
+                        getParams.put(key, value); // else add them to the get array
+                    }
                 }
             }
         }
@@ -139,6 +140,35 @@ public class Input extends Library {
     }
 
     /**
+     * If you use parameters in your URI you can retrieve 
+     * a parameter with this method. Warning: If your 
+     * URI has an odd number of parts this will return empty string 
+     * for the last parameter.
+     * 
+     * Example:
+     * URI : domain.com/controller/method/display/list/perpage/10/sort/descending 
+     * <code>
+     * $.input.segment("display");
+     * </code>
+     * should return "list";
+     * @param key The key you use in the URL
+     * @return 
+     * @throws java.lang.Exception
+     */
+    public String segment(String key) throws Exception {
+        String path = this.request.getRequestURI();
+        ArrayList<String> pathParts = new ArrayList<String>(Arrays.asList(path.split("/")));
+        pathParts.remove("");
+        String value = "";
+        for (int i = 0; i < pathParts.size() - 1; i += 2) {
+            if (pathParts.get(i).equals(key)) {
+                value = (i + 1 < pathParts.size()) ? pathParts.get(i + 1) : "";
+            }
+        }
+        return value;
+    }
+
+    /**
      * Returns the value that matches the parameter name. Return null if the
      * parameter does not exist.
      * 
@@ -149,20 +179,23 @@ public class Input extends Library {
     public String post(String paramName) {
         return (this.postParams.get(paramName) != null) ? this.postParams.get(paramName) : "";
     }
-    public Hmap getPostData(){
+
+    public Hmap getPostData() {
         return this.postParams;
     }
+
     public File upload(String paramName) {
         return new File("/");
     }
 
-    public boolean isPost(){
+    public boolean isPost() {
         return this.request.getMethod().equalsIgnoreCase("post");
     }
-    
-    public boolean isGet(){
+
+    public boolean isGet() {
         return this.request.getMethod().equalsIgnoreCase("get");
     }
+
     /**
      * Given a URI it returns the controller part and the method part. Used by
      * Adapter to call the appropriate Controller and method.
