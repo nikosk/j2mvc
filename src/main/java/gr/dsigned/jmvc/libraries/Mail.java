@@ -111,6 +111,89 @@ public class Mail extends Library {
     }
 
     /**
+     * Sends email to only one recipient.
+     * Returns true if message sent successfully, else false.
+     * @param to
+     * @param from
+     * @param subject
+     * @param body
+     * @return 
+     */
+    public static boolean send(String to, String from, String subject, String body) {
+        boolean result = false;
+        if (Settings.get("SMTP_HOST") != null) {
+            Properties props = System.getProperties();
+            props.put("mail.smtp.host", Settings.get("SMTP_HOST"));
+            Session session = Session.getDefaultInstance(props, null);
+            try {
+                Message message = new MimeMessage(session);
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
+                message.setFrom(new InternetAddress(from));
+                message.setSubject(subject);
+                message.setContent(body, "text/html; charset=UTF-8");
+                Transport.send(message);
+                result = true;
+            } catch (Exception ex) {
+                Jmvc.logError("Error while trying to send email to: " + to + " from: " + from + ". Exception: " + ex);
+            }
+        } else {
+            String er = "SMTP server not set or tried to send email with empty TO: address.";
+            Jmvc.logError(er);
+        }
+        return result;
+    }
+
+    /**
+     * Send email to many recipients. Their emails are comma separated.
+     * @param to
+     * @param from
+     * @param subject
+     * @param body
+     * @param adresses
+     * @param type
+     * @return 
+     */
+    public static boolean send(String to, String from, String subject, String body, String adresses, RecipientType type) {
+        boolean result = false;
+        if (Settings.get("SMTP_HOST") != null) {
+            Properties props = System.getProperties();
+            props.put("mail.smtp.host", Settings.get("SMTP_HOST"));
+            Session session = Session.getDefaultInstance(props, null);
+            try {
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(from));
+                ArrayList<InternetAddress> recipients = new ArrayList<InternetAddress>();
+                for (String r : adresses.split(",")) {
+                    recipients.add(new InternetAddress(r, true));
+                }
+                switch (type) {
+                    case TO:
+                        message.setRecipients(Message.RecipientType.TO, recipients.toArray(new InternetAddress[0]));
+                        break;
+                    case CC:
+                        message.setRecipients(Message.RecipientType.CC, recipients.toArray(new InternetAddress[0]));
+                        break;
+                    case BCC:
+                        message.setRecipients(Message.RecipientType.BCC, recipients.toArray(new InternetAddress[0]));
+                        break;
+                }
+                if (type != RecipientType.TO && to != null) {
+                    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
+                }
+                message.setSubject(subject);
+                message.setContent(body, "text/html; charset=UTF-8");
+                Transport.send(message);
+                result = true;
+            } catch (Exception ex) {
+                Jmvc.logError("Error while trying to send email to: " + to + " from: " + from + ". Exception: " + ex);
+            }
+        } else {
+            Jmvc.logError("SMTP server not set or tried to send email with empty TO: address.");
+        }
+        return result;
+    }
+
+    /**
      * 
      * @param settings
      * @param adressess

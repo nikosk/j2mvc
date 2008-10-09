@@ -13,6 +13,7 @@ public enum Operand {
     IS("IS"),
     IS_NOT("IS NOT"),
     IN("IN"),
+    NOT_IN("NOT IN"),
     NULL("NULL"),
     EQUAL("="),
     NOT_EQUAL("!="),

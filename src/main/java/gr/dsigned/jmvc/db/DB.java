@@ -38,9 +38,10 @@ public abstract class DB {
     private static final boolean debug = Settings.get("DEBUG").equals("TRUE");
     private long end = 0;
     private long start = 0;
+
     private String executeInsert(String sql, ArrayList<String> values) throws SQLException {
-        Jmvc.logDebug("[DB:executeInsert] " + " sql: " + sql + " values: " + values);
         if (debug) {
+            Jmvc.logDebug("[DB:executeInsert] " + " sql: " + sql + " values: " + values);
             start = System.nanoTime();
         }
         Connection conn = getConn();
@@ -50,7 +51,9 @@ public abstract class DB {
             for (String s : values) {
                 if (s == null || s.trim().equalsIgnoreCase("null")) {
                     pstmt.setNull(parameterIndex, Types.NULL);
-                } else {
+                } else if (s.equals("NOW()")) {
+                    pstmt.setObject(parameterIndex, "{ fn "+ s + "}");
+                }else {
                     pstmt.setObject(parameterIndex, s);
                 }
                 parameterIndex++;
@@ -62,7 +65,6 @@ public abstract class DB {
         if (rsGenKeys.next()) {
             output = rsGenKeys.getString(1);
         }
-
         try {
             pstmt.close();
         } catch (Exception ex) {
@@ -71,14 +73,14 @@ public abstract class DB {
         closeConn(conn);
         if (debug) {
             end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
         }
         return output;
     }
 
     private int executeUpdate(String sql, ArrayList<String> values) throws SQLException {
-        Jmvc.logDebug("[DB:executeUpdate] " + " sql: " + sql + " values: " + values);
         if (debug) {
+            Jmvc.logDebug("[DB:executeUpdate] " + " sql: " + sql + " values: " + values);
             start = System.nanoTime();
         }
         Connection conn = getConn();
@@ -95,7 +97,6 @@ public abstract class DB {
             }
         }
         int updatedRows = pstmt.executeUpdate();
-
         try {
             pstmt.close();
         } catch (Exception ex) {
@@ -104,7 +105,7 @@ public abstract class DB {
         closeConn(conn);
         if (debug) {
             end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
         }
         return updatedRows;
     }
@@ -121,54 +122,71 @@ public abstract class DB {
      * @throws SQLException 
      */
     public Hmap executeQueryForObject(String sql, ArrayList<String> values) throws SQLException {
-        Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
         if (debug) {
+            Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
             start = System.nanoTime();
         }
         Hmap result = null;
-        Connection conn = getConn();
-        PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-        if (values != null) {
-            int parameterIndex = 1;
-            for (String s : values) {
-                if (s == null || s.trim().equalsIgnoreCase("null")) {
-                    pstmt.setNull(parameterIndex, Types.NULL);
+        int retryCount = 3;
+        ResultSet rs;
+        ResultSetMetaData rsmd;
+        Connection conn;
+        do {
+            try {
+                conn = getConn();
+                PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+                if (values != null) {
+                    int parameterIndex = 1;
+                    for (String s : values) {
+                        if (s == null || s.trim().equalsIgnoreCase("null")) {
+                            pstmt.setNull(parameterIndex, Types.NULL);
+                        } else {
+                            pstmt.setObject(parameterIndex, s);
+                        }
+                        parameterIndex++;
+                    }
+                }
+                rs = pstmt.executeQuery();
+                rsmd = rs.getMetaData();
+                int columnCount = rsmd.getColumnCount();
+                String columnName = ""; // this string is used in the loop so we create it now once instead of every cycle.
+                if (rs.next()) {
+                    result = new Hmap();
+                    for (int i = 1; i <= columnCount; i++) {
+                        String val = rs.getString(i);
+                        if (val == null) {
+                            val = "";
+                        }
+                        columnName = rsmd.getColumnLabel(i);
+                        if (result.containsKey(columnName)) {
+                            result.put(rsmd.getTableName(i) + "." + columnName, val);
+                        } else {
+                            result.put(columnName, val);
+                        }
+                    }
+                }
+                rs.close();
+                pstmt.close();
+                closeConn(conn);
+                retryCount = 0;
+            } catch (SQLException sqlEx) {
+                String sqlState = sqlEx.getSQLState();
+                if ("08S01".equals(sqlState) || "40001".equals(sqlState)) {
+                    retryCount--;
                 } else {
-                    pstmt.setObject(parameterIndex, s);
+                    retryCount = 0;
                 }
-                parameterIndex++;
+                Jmvc.logError("SQLException : " + sqlEx);
+                throw sqlEx;
+            } catch (Exception ex) {
+                // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+                // Jmvc.logError("ex:  " + ex);
+                retryCount = 0;
             }
-        }
-        ResultSet rs = pstmt.executeQuery();
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        String columnName = ""; // this string is used in the loop so we create it now once instead of every cycle.
-        if (rs.next()) {
-            result = new Hmap();
-            for (int i = 1; i <= columnCount; i++) {
-                String val = rs.getString(i);
-                if (val == null) {
-                    val = "";
-                }
-                columnName = rsmd.getColumnLabel(i);
-                if (result.containsKey(columnName)) {
-                    result.put(rsmd.getTableName(i) + "." + columnName, val);
-                } else {
-                    result.put(columnName, val);
-                }
-            }
-        }
-        try {
-            rs.close();
-            pstmt.close();
-        } catch (Exception ex) {
-            // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
-            // Jmvc.logError("ex:  " + ex);
-        }
-        closeConn(conn);
+        } while (retryCount > 0);
         if (debug) {
             end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
         }
         return result;
     }
@@ -181,51 +199,68 @@ public abstract class DB {
      * @throws SQLException 
      */
     public Hmap executeQueryForHmap(String sql, ArrayList<String> values) throws SQLException {
-        Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
         if (debug) {
+            Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
             start = System.nanoTime();
         }
+        int retryCount = 3;
+        ResultSet rs;
+        ResultSetMetaData rsmd;
+        Connection conn;
         Hmap result = null;
-        Connection conn = getConn();
-        PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-        if (values != null) {
-            int parameterIndex = 1;
-            for (String s : values) {
-                if (s == null || s.trim().equalsIgnoreCase("null")) {
-                    pstmt.setNull(parameterIndex, Types.NULL);
-                } else {
-                    pstmt.setObject(parameterIndex, s);
+        do {
+            try {
+                conn = getConn();
+                PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+                if (values != null) {
+                    int parameterIndex = 1;
+                    for (String s : values) {
+                        if (s == null || s.trim().equalsIgnoreCase("null")) {
+                            pstmt.setNull(parameterIndex, Types.NULL);
+                        } else {
+                            pstmt.setObject(parameterIndex, s);
+                        }
+                        parameterIndex++;
+                    }
                 }
-                parameterIndex++;
-            }
-        }
-        ResultSet rs = pstmt.executeQuery();
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        result = new Hmap();
-        while (rs.next()) {
-            String id = "";
-            String val = "";
-            for (int i = 1; i <= columnCount; i++) {
-                if (i == 1) {
-                    id = rs.getString(i);
-                } else {
-                    val = rs.getString(i);
-                    result.put(id, val);
+                rs = pstmt.executeQuery();
+                rsmd = rs.getMetaData();
+                int columnCount = rsmd.getColumnCount();
+                result = new Hmap();
+                while (rs.next()) {
+                    String id = "";
+                    String val = "";
+                    for (int i = 1; i <= columnCount; i++) {
+                        if (i == 1) {
+                            id = rs.getString(i);
+                        } else {
+                            val = rs.getString(i);
+                            result.put(id, val);
+                        }
+                    }
                 }
+                rs.close();
+                pstmt.close();
+                closeConn(conn);
+                retryCount = 0;
+            } catch (SQLException sqlEx) {
+                String sqlState = sqlEx.getSQLState();
+                if ("08S01".equals(sqlState) || "40001".equals(sqlState)) {
+                    retryCount--;
+                } else {
+                    retryCount = 0;
+                }
+                Jmvc.logError("SQLException : " + sqlEx);
+                throw sqlEx;
+            } catch (Exception ex) {
+                // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+                // Jmvc.logError("ex:  " + ex);
+                retryCount = 0;
             }
-        }
-        try {
-            rs.close();
-            pstmt.close();
-        } catch (Exception ex) {
-            // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
-            // Jmvc.logError("ex:  " + ex);
-        }
-        closeConn(conn);
+        } while (retryCount > 0);
         if (debug) {
             end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
         }
         return result;
     }
@@ -238,57 +273,74 @@ public abstract class DB {
      * @throws SQLException 
      */
     public ArrayList<Hmap> executeQueryForList(String sql, ArrayList<String> values) throws SQLException {
-        Jmvc.logDebug("[DB:executeQueryForList] " + "sql: " + sql + " values: " + values);
         if (debug) {
+            Jmvc.logDebug("[DB:executeQueryForList] " + "sql: " + sql + " values: " + values);
             start = System.nanoTime();
         }
+        int retryCount = 3;
+        ResultSet rs;
+        ResultSetMetaData rsmd;
+        Connection conn;
         ArrayList<Hmap> result = new ArrayList<Hmap>();
-        int resultIndex = 0;
-        Connection conn = getConn();
-        PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-        if (values != null) {
-            int parameterIndex = 1;
-            for (String s : values) {
-                if (s == null || s.trim().equalsIgnoreCase("null")) {
-                    pstmt.setNull(parameterIndex, Types.NULL);
+        do {
+            try {
+                int resultIndex = 0;
+                conn = getConn();
+                PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+                if (values != null) {
+                    int parameterIndex = 1;
+                    for (String s : values) {
+                        if (s == null || s.trim().equalsIgnoreCase("null")) {
+                            pstmt.setNull(parameterIndex, Types.NULL);
+                        } else {
+                            pstmt.setObject(parameterIndex, s);
+                        }
+                        parameterIndex++;
+                    }
+                }
+                rs = pstmt.executeQuery();
+                rsmd = rs.getMetaData();
+                int columnCount = rsmd.getColumnCount();
+                String columnName = ""; // this string is used in the loop so we create it now once instead of every cycle.
+                while (rs.next()) {
+                    Hmap row = new Hmap();
+                    for (int i = 1; i <= columnCount; i++) {
+                        String val = rs.getString(i);
+                        if (val == null) {
+                            val = "";
+                        }
+                        columnName = rsmd.getColumnLabel(i);
+                        if (row.containsKey(columnName)) {
+                            row.put(rsmd.getTableName(i) + "." + columnName, val);
+                        } else {
+                            row.put(columnName, val);
+                        }
+                    }
+                    result.add(row);
+                    resultIndex++;
+                }
+                rs.close();
+                pstmt.close();
+                closeConn(conn);
+                retryCount = 0;
+            } catch (SQLException sqlEx) {
+                String sqlState = sqlEx.getSQLState();
+                if ("08S01".equals(sqlState) || "40001".equals(sqlState)) {
+                    retryCount--;
                 } else {
-                    pstmt.setObject(parameterIndex, s);
+                    retryCount = 0;
                 }
-                parameterIndex++;
+                Jmvc.logError("SQLException : " + sqlEx);
+                throw sqlEx;
+            } catch (Exception ex) {
+                // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+                // Jmvc.logError("ex:  " + ex);
+                retryCount = 0;
             }
-        }
-        ResultSet rs = pstmt.executeQuery();
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        String columnName = ""; // this string is used in the loop so we create it now once instead of every cycle.
-        while (rs.next()) {
-            Hmap row = new Hmap();
-            for (int i = 1; i <= columnCount; i++) {
-                String val = rs.getString(i);
-                if (val == null) {
-                    val = "";
-                }
-                columnName = rsmd.getColumnLabel(i);
-                if (row.containsKey(columnName)) {
-                    row.put(rsmd.getTableName(i) + "." + columnName, val);
-                } else {
-                    row.put(columnName, val);
-                }
-            }
-            result.add(row);
-            resultIndex++;
-        }
-        try {
-            rs.close();
-            pstmt.close();
-        } catch (Exception ex) {
-            // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
-            // Jmvc.logError("ex:  " + ex);
-        }
-        closeConn(conn);
+        } while (retryCount > 0);
         if (debug) {
             end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double)(end - start)/ 1000000 ) );
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
         }
         return result;
     }
