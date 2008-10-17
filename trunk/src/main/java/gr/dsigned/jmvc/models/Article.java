@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.models;
 
+import gr.dsigned.jmvc.db.QuerySet.Join;
 import gr.dsigned.jmvc.types.Hmap;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.db.Operand;
 import gr.dsigned.jmvc.db.OrderBy;
 import gr.dsigned.jmvc.db.QuerySet;
-import gr.dsigned.jmvc.db.enums.Join;
 import java.sql.Timestamp;
 
 /**
@@ -38,7 +38,7 @@ public class Article extends Model {
         this.tableName = "articles";
     }
 
-    public ArrayList<Hmap> getLatestPosts(int numberToFetch) throws SQLException {
+    public ArrayList<Hmap> getLatestPosts(int numberToFetch) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.join("categories", "categories.id = articles.category_id", Join.LEFT);
@@ -48,14 +48,14 @@ public class Article extends Model {
         return db.getList(qs);
     }
     
-    public ArrayList<Hmap> getPostsInInterval(Date from, Date to) throws SQLException {
+    public ArrayList<Hmap> getPostsInInterval(Date from, Date to) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.orderBy(OrderBy.DESC, "published");
         return db.getList(qs);
     }
 
-    public ArrayList<Hmap> getArticlesByCat(String cat, int limit, int offset) throws SQLException {
+    public ArrayList<Hmap> getArticlesByCat(String cat, int limit, int offset) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.join("categories", "Articles.category_id = Categories.id",Join.INNER);
@@ -65,7 +65,7 @@ public class Article extends Model {
         return db.getList(qs);
     }               
 
-    public int countArticlesByCat(String cat) throws SQLException {
+    public int countArticlesByCat(String cat) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.join("categories", "Articles.category_id = Categories.id", Join.LEFT);
@@ -88,7 +88,7 @@ public class Article extends Model {
         return db.insert(qs);
     }
 
-    public ArrayList<Hmap> getArticleById(String id) throws SQLException {
+    public ArrayList<Hmap> getArticleById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.where("id",id, Operand.EQUAL);

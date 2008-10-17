@@ -1,5 +1,5 @@
 /*
- *  Home.java
+ *  QuerySet.java
  * 
  *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
  * 
@@ -14,33 +14,19 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.framework.Controller;
-import gr.dsigned.jmvc.models.Article;
-import gr.dsigned.jmvc.renderers.BlogRenderer;
-
-import java.util.ArrayList;
+import gr.dsigned.jmvc.types.Hmap;
 
 /**
  *
- * @author Nikosk <nikosk@dsigned.gr>
+ * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
 public class Home extends Controller {
 
-	public Home() throws Exception{
-		
-	}
-    public  void index() throws Exception{    	
-        Article article = $.loadModel("Article"); // Load model
-        BlogRenderer renderer = $.loadRenderer("BlogRenderer"); //Load renderer
-        Hmap data = new Hmap(); // We'll pass this to the template
-        ArrayList<Hmap> posts = article.getLatestPosts(10); // Get data from model
-        String output = "";
-        for (Hmap lhm : posts) {
-            output = output + renderer.renderPost(lhm); // Render each post
-        }
-        data.put("head", output); // Include the output for parsing 
-        //data.put("menu", renderer.getMenu());
-        $.loadView("blog_frontpage", data);
+    public Home() throws Exception {
+    }
+    
+    public void index() throws Exception{
+        $.loadView("index", new Hmap());
     }
 }

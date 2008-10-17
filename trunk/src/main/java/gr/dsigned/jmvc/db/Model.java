@@ -59,7 +59,7 @@ public class Model {
      * @return 
      * @throws SQLException
      */
-    public Hmap getById(String id) throws SQLException {
+    public Hmap getById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from(tableName);
         qs.where("id", id, Operand.EQUAL);
@@ -73,7 +73,7 @@ public class Model {
      * @return 
      * @throws SQLException
      */
-    public int deleteById(String id) throws SQLException {
+    public int deleteById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.delete(tableName);
         qs.where("id", id, Operand.EQUAL);
@@ -86,13 +86,13 @@ public class Model {
      * @return 
      * @throws SQLException
      */
-    public String insert(Hmap bean) throws SQLException {
+    public String insert(Hmap bean) throws Exception {
         QuerySet qs = new QuerySet();
         qs.insert(tableName,bean);
         return db.insert(qs);
     }
 
-    public void delete(String id) throws SQLException {
+    public void delete(String id) throws Exception {
         db.delete(tableName, id);
     }
 }

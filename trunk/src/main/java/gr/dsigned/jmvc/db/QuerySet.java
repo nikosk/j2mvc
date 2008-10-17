@@ -14,7 +14,6 @@
  */
 package gr.dsigned.jmvc.db;
 
-import gr.dsigned.jmvc.db.enums.Join;
 import gr.dsigned.jmvc.types.Hmap;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ public class QuerySet {
     private String fromSet;
     private String joinSet;
     private String whereSet;
+    private String andClauseSet;
     private String orderBySet;
     private String limitSet;
     private String groupBySet;
@@ -44,8 +44,26 @@ public class QuerySet {
     private ArrayList<String> data = new ArrayList<String>();
     private ArrayList<String> setData = new ArrayList<String>();
     private ArrayList<String> whereData = new ArrayList<String>();
+    private ArrayList<String> andClauseData = new ArrayList<String>();
     private ArrayList<String> unionData = new ArrayList<String>();
     private ArrayList<String> fromData = new ArrayList<String>();
+    private ArrayList<String> updatedTables = new ArrayList<String>();
+    private ArrayList<String> sourceTables = new ArrayList<String>();
+    public enum Join {
+        INNER("INNER"),
+        OUTER("OUTER"),
+        LEFT("LEFT"),
+        RIGHT("RIGHT");
+        private final String value;
+        Join(String value) {
+            this.value = value;
+        }
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+    
     private boolean hasRan = false;
 
     /**
@@ -145,6 +163,28 @@ public class QuerySet {
         return this;
     }
 
+    /**
+     * Builds the where part of the query. 
+     * This methods compiles a query set if a sub query in select is needed 
+     * @param column the column used by the where 
+     * @param values 
+     * @param value the value to compare
+     * @param type type of where (AND or OR)
+     * @return
+     */
+    public QuerySet whereIn(String column, QuerySet innerQuery, String type) throws SQLException {
+        hasRan();
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += column + " " + Operand.IN + " (" + innerQuery.compileSelect() + ")";
+        whereData.addAll(innerQuery.getData());
+        sourceTables.addAll(innerQuery.getSourceTables());
+        return this;
+    }
+
     private String renderArrayListWithIds(ArrayList<String> values) throws SQLException {
         hasRan();
         String result = "";
@@ -188,6 +228,14 @@ public class QuerySet {
         for (String value : values) {
             whereData.add(value);
         }
+        return this;
+    }
+
+    public QuerySet andClause(String column, String value, Operand operand, String type) throws SQLException {
+        hasRan();
+        String s = "\n" + column + " " + operand + " ? ";
+        andClauseSet = andClauseSet == null ? s : type + " " + andClauseSet + s;
+        andClauseData.add(value);
         return this;
     }
 
@@ -262,12 +310,14 @@ public class QuerySet {
 
     /**
      * Build the FROM of the query.
-     * @param str
+     * CAUTION: DON'T PLACE MULTIPLE TABLE NAMES HERE. JUST CALL from() MULTIPLE TIMES
+     * @param str A SINGLE TABLE NAME
      * @return QuerySet
      */
-    public QuerySet from(String str) throws SQLException {
+    public QuerySet from(String tableName) throws SQLException {
         hasRan();
-        fromSet = " FROM " + str;
+        fromSet = " FROM " + tableName;
+        sourceTables.add(tableName);
         return this;
     }
 
@@ -282,6 +332,7 @@ public class QuerySet {
         hasRan();
         fromSet = "\nFROM (" + qs.compileSelect() + ") as " + alias + " ";
         fromData.addAll(qs.getData());
+        sourceTables.addAll(qs.getSourceTables());
         return this;
     }
 
@@ -295,6 +346,7 @@ public class QuerySet {
     public QuerySet join(String table, String condition, Join type) throws SQLException {
         hasRan();
         joinSet = (joinSet == null) ? "\n" + type + " JOIN " + table + " ON " + condition : joinSet + "\n" + type + " JOIN " + table + " ON " + condition;
+        sourceTables.add(table);
         return this;
     }
 
@@ -337,6 +389,7 @@ public class QuerySet {
     public QuerySet update(String tableName) throws SQLException {
         hasRan();
         updateSet = "UPDATE " + tableName;
+        updatedTables.add(tableName);
         return this;
     }
 
@@ -344,12 +397,14 @@ public class QuerySet {
         hasRan();
         deleteSet = "DELETE ";
         from(tableName);
+        updatedTables.add(tableName);
         return this;
     }
 
     public QuerySet update(String tableName, Hmap data) throws SQLException {
         hasRan();
         update(tableName);
+        updatedTables.add(tableName);
         for (String k : data.keySet()) {
             set(k, data.get(k));
         }
@@ -379,12 +434,14 @@ public class QuerySet {
     public QuerySet insert(String tableName) throws SQLException {
         hasRan();
         this.insertSet = "INSERT INTO " + tableName;
+        updatedTables.add(tableName);
         return this;
     }
 
     public QuerySet insert(String tableName, Hmap bean) throws SQLException {
         hasRan();
         insert(tableName);
+        updatedTables.add(tableName);
         for (String key : bean.keySet()) {
             set(key, bean.get(key));
         }
@@ -407,6 +464,7 @@ public class QuerySet {
         hasRan();
         unionSet = (unionSet == null) ? "\nUNION " + qs.compileSelect() : unionSet + "\nUNION " + qs.compileSelect();
         unionData.addAll(qs.getData());
+        sourceTables.addAll(qs.getSourceTables());
         return this;
     }
 
@@ -425,6 +483,10 @@ public class QuerySet {
         }
         sb.append(joinSet == null ? "" : joinSet);
         sb.append(whereSet == null ? "" : whereSet);
+        sb.append(andClauseSet == null ? "" : " AND (" + andClauseSet + ") ");
+        if (andClauseSet != null) {
+            data.addAll(andClauseData);
+        }
         sb.append(groupBySet == null ? "" : groupBySet);
         sb.append(orderBySet == null ? "" : orderBySet);
         sb.append(limitSet == null ? "" : limitSet);
@@ -476,6 +538,7 @@ public class QuerySet {
         sb.append(whereSet == null ? "" : whereSet);
         sb.append(limitSet == null ? "" : limitSet);
         data.addAll(whereData);
+        updatedTables.addAll(sourceTables);
         hasRan = true;
         return sb.toString();
     }
@@ -498,5 +561,13 @@ public class QuerySet {
         if (hasRan) {
             throw new SQLException("Tried to modify query set after it has been compiled");
         }
+    }
+
+    protected ArrayList<String> getSourceTables() {
+        return sourceTables;
+    }
+
+    protected ArrayList<String> getUpdatedTables() {
+        return updatedTables;
     }
 }
