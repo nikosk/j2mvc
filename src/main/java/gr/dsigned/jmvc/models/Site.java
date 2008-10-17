@@ -19,7 +19,7 @@ public class Site extends Model {
         tableName = "sites";
     }
     
-    public ArrayList<Hmap> getSites() throws SQLException {
+    public ArrayList<Hmap> getSites() throws Exception {
         QuerySet qs = new QuerySet();
         qs.from(tableName);
         qs.orderBy(OrderBy.DESC, "label");
@@ -42,11 +42,11 @@ public class Site extends Model {
         db.update(qs);        
     }
 
-    public void deleteTest(String id) throws SQLException {
+    public void deleteTest(String id) throws Exception {
         this.delete(id);
     }
 
-    public LinkedHashMap insertTestQuerySets() throws SQLException {
+    public LinkedHashMap insertTestQuerySets() throws Exception {
         return db.tableDef("sites");
     }
 }

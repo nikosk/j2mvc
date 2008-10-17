@@ -5,7 +5,29 @@
     line-height:30px;
     width: 100%;
 }
-
+#login_small{
+    float:right;
+    color:#fff;
+    height:20px;
+    font: normal 10px/1.2em Arial, sans-serif;
+}
+#login_small ul{   
+    padding:0px;
+    margin:0px;
+}
+#login_small li{   
+    float:left;
+    padding:4px;
+}
+#login_small input{   
+    width:70px;    
+    font: normal 10px/1.2em Arial, sans-serif;
+    padding:1px;
+}
+#login_small label{   
+    margin-top:5px;
+    display:block;
+}
 #hd .hdmenu {
     background:#41454A none repeat scroll 0%;
     color:#FFFFFF;
@@ -78,19 +100,8 @@
     list-style-image:none;
     list-style-position:outside;
     list-style-type:none;
-    margin: 0px;    
-}
-
-#mainarea .mainmenu {
-    background:#41454A none repeat scroll 0%;
-    color:#FFFFFF;
-    float:left;
-    font-family:Verdana,Arial,Helvetica,Sans-serif;
-    font-size:x-small;
-    list-style-image:none;
-    list-style-position:outside;
-    list-style-type:none;
-    margin: 0px;    
+    margin: 0px;  
+    width:100%;        
 }
 
 #mainarea .mainmenu li {
@@ -113,10 +124,43 @@
     background-color: #000000;
 }
 
+#topmenu .mainmenu {
+    background:#41454A none repeat scroll 0%;
+    color:#FFFFFF;
+    float:left;
+    font-family:Verdana,Arial,Helvetica,Sans-serif;
+    font-size:x-small;
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin: 0px;
+    width: 100%;        
+}
+
+#topmenu .mainmenu li {
+    float:left;
+    padding:10px;
+}
+
+#topmenu .mainmenu a {
+    color: #fff;
+    text-decoration: none;
+}
+
+#topmenu .mainmenu a:hover {
+    text-decoration: underline;
+}
+
+#topmenu .mainmenu li .highlight {
+    color: #f3f3f3;
+    text-decoration: none;
+    background-color: #000000;
+}
+
 #mainarea .sidemenu {
     background:#334500 none repeat scroll 0%;
     color:#FFFFFF;
-    float:left;
+    /*float:left;*/
     font-family:Verdana,Arial,Helvetica,Sans-serif;
     font-size:x-small;
     list-style-image:none;
@@ -138,3 +182,100 @@
 #mainarea .sidemenu a:hover {
     text-decoration: underline;
 }
+
+#mainarea .editsidemenu {
+    background:#41454A none repeat scroll 0%;
+    color:#FFFFFF;
+    /*float:left;*/
+    font-family:Verdana,Arial,Helvetica,Sans-serif;
+    font-size:x-small;
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin: 0px;    
+}
+
+#mainarea .editsidemenu li {
+    padding:10px;
+    width: 120px;
+}
+
+#mainarea .editsidemenu a {
+    color: #fff;
+    text-decoration: none;
+}
+
+#mainarea .editsidemenu a:hover {
+    text-decoration: underline;
+}
+
+#mainarea .editsidemenu li .highlight {
+    color: #f3f3f3;
+    text-decoration: none;
+    background-color: #000000;
+}
+
+#toggleSel {
+    float:left;
+    text-align:center;
+    width:10%;
+}
+
+#action {
+    float:right;
+    text-align:center;
+    width:90%;
+}
+
+/*********************** Comment styles  ************************/
+.comments{
+    background-color:#fafafa;
+    padding:5px;    
+}
+.comment{
+    border-bottom:1px dashed #999;
+    padding:5px 0px;
+    overflow:hidden;
+    clear:both;
+}
+.comment .avatar {
+    float: left; 
+    width:70px;    
+}
+.comment_right {
+    float: left;
+    padding-left:5px;
+    width:80%;
+    border-left:1px solid #999;    
+}
+#article_title{
+    font-weight:bold;
+    font-size:1.2em;
+}
+#article_lead{
+    margin:10px 0px 20px 0px;
+}
+.date {
+    color:#999;
+    font-size:0.833em;
+    text-decoration:none;
+}
+
+/*********************** Comment styles  end  ********************/
+/*********************** Activity styles  ************************/
+.activities{
+    padding:10px;
+}
+.activity span{
+  display:block;
+  float:left;
+}
+.activity .activity_descr{
+    width:80%;
+}
+.activity .activity_date{
+    width:20%;
+    color:#999;
+    font:0.833em/1.2em Arial;
+}
+/*********************** Activity styles  end  ********************/

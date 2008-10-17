@@ -1,112 +1,99 @@
-/*
- *  Adapter.java
- * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
- * 
- *  This module is free software: you can redistribute it and/or modify it under
- *  the terms of the GNU Lesser General Public License as published by the Free
- *  Software Foundation, either version 3 of the License, or (at your option)
- *  any later version. See http://www.gnu.org/licenses/lgpl.html.
- * 
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
- *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- */
 package gr.dsigned.jmvc;
 
-import com.phiresoft.social.exceptions.CustomHttpException.HttpErrors;
+
+import gr.dsigned.jmvc.Settings;
+import gr.dsigned.jmvc.annotations.NotPublic;
+import gr.dsigned.jmvc.exceptions.CustomHttpException;
+import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Utils;
 import gr.dsigned.jmvc.libraries.Input;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
- * @author Nikosk <nikosk@dsigned.gr>
+ *
+ * @author nikos
  */
 public class Adapter extends HttpServlet {
 
-    /**
-     * 
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * @param request servlet request
+     * @param response servlet response
      */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * This is the entry point of your application. Given the URI of the request
-     * it loads the appropriate controller and passes to it the appropriate
-     * environment variables (The GET, POST and Context objects).
-     * 
-     * @todo the adapter does not load the correct method of the controller yet.
-     * @param request
-     *            servlet request
-     * @param response
-     *            servlet response
-     */
-    @SuppressWarnings("unchecked")
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
+        if(!Settings.get("DEBUG").isEmpty()) { request.setAttribute("begin_time", System.nanoTime());} // keep time for debug purposes.
+        String path = request.getRequestURI();
         try {
-            request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING") );
-            String path = request.getRequestURI();
             Class<Controller> c = (Class<Controller>) Class.forName(Settings.get("SYSTEM_PACKAGE") + ".controllers." + Utils.capitalize(Input.getController(path).get("controller")));
             gr.dsigned.jmvc.framework.Controller o = c.newInstance();
             o.$.setEnvironment(request, response, this.getServletContext());
             Method m = c.getMethod(Input.getController(path).get("method"), new Class[0]);
-            if (m.getModifiers() != java.lang.reflect.Modifier.PRIVATE) { // We only call public methods
+            if (m.getModifiers() == java.lang.reflect.Modifier.PUBLIC) { // We only call public methods
                 m.invoke(o, new Object[0]);
             } else {
-                Exception e = new Exception("Method not found");
+                Exception e = new Exception("Method not found"); //@TODO Add a new Exception class in JMVC
                 Jmvc.logError("[Adapter] " + e.getMessage());
                 Jmvc.loadErrorPage(e, response, this.getServletContext(), HttpErrors.E404);  // This should return 404
             }
-        } catch (Exception e) {
-            Jmvc.logError("[Adapter] " + e.toString());
-            Jmvc.loadErrorPage(e, response, this.getServletContext(),HttpErrors.E500);
-        } 
+        } catch (ClassNotFoundException e) { // We did not find a controller 
+            // Lets try the using the cms requesthandler
+            try {
+                // Get the controller
+                Class<Controller> c = (Class<Controller>) Class.forName("gr.dsigned.jmvc.controllers.RequestHandler");
+                gr.dsigned.jmvc.framework.Controller o = c.newInstance();
+                o.$.setEnvironment(request, response, this.getServletContext());
+                ArrayList<String> pathParts = new ArrayList<String>(Arrays.asList(path.split("/")));
+                Method m = c.getMethod(pathParts.get(1), new Class[0]);
+                boolean ut = m.isAnnotationPresent(NotPublic.class);
+                if (!ut) {
+                    m.invoke(o, new Object[0]);
+                } else {
+                    Jmvc.logError("Method call call of NotPublic method");
+                    throw new java.lang.NoSuchMethodException("That method is not public");
+                }
+            } catch (CustomHttpException che){
+                    Jmvc.logError("Custom Exception thrown.");
+                    Jmvc.loadErrorPage(che, response, this.getServletContext(), che.getErrorCode());                
+            } catch (Exception innerException) {
+                Jmvc.logError("[Adapter] " + e.toString() + " " + innerException.toString());
+                Jmvc.loadErrorPage(innerException, response, this.getServletContext(), HttpErrors.E404);
+            }
+        } catch (Exception genEx) {
+            Jmvc.logError("[Adapter] " + genEx.toString() + " cause: " + genEx.getCause());
+            Jmvc.loadErrorPage(genEx, response, this.getServletContext() , HttpErrors.E500);
+        }
     }
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     * 
-     * @param request
-     *            servlet request
-     * @param response
-     *            servlet response
-     * @throws ServletException
-     * @throws IOException 
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     * 
-     * @param request
-     *            servlet request
-     * @param response
-     *            servlet response
-     * @throws ServletException
-     * @throws IOException 
+     * @param request servlet request
+     * @param response servlet response
      */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
+    /** 
      * Returns a short description of the servlet.
      */
-    @Override
     public String getServletInfo() {
         return "Short description";
-    }
+    }// </editor-fold>
 }

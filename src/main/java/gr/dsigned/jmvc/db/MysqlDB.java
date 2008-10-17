@@ -14,12 +14,17 @@
  */
 package gr.dsigned.jmvc.db;
 
-import gr.dsigned.jmvc.Settings;
 
+import gr.dsigned.jmvc.framework.Jmvc;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
 
 /**
  * 
@@ -29,19 +34,28 @@ public class MysqlDB extends DB {
 
     private static final MysqlDB INSTANCE = new MysqlDB();
     private static MiniConnectionPoolManager poolMgr;
-
+    DataSource ds;
+    Cache cache;
     /**
      * Creates a new instance of MysqlDB
      */
-    private MysqlDB(){
-        MysqlConnectionPoolDataSource ds = new MysqlConnectionPoolDataSource();
-        ds.setDatabaseName(Settings.get("DB_NAME"));
-        ds.setServerName(Settings.get("DB_URL"));
-        ds.setPort(Integer.valueOf(Settings.get("DB_PORT")) );
-        ds.setUser(Settings.get("DB_USER"));
-        ds.setPassword(Settings.get("DB_PASS"));       
-        ds.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
-        poolMgr = new MiniConnectionPoolManager(ds, 1000, 20);
+    private MysqlDB() {
+        
+        Context initCtx;
+        try {
+            initCtx = new InitialContext();            
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");            
+            ds = (DataSource) envCtx.lookup("jdbc/social");
+        } catch (NamingException ex) {
+            Jmvc.logError(ex.getExplanation());
+        }
+        //poolMgr = new MiniConnectionPoolManager(ds, 255, 20);
+        if (cacheEnabled) {
+            CacheManager singletonManager = CacheManager.create();
+            Cache memoryOnlyCache = new Cache("dbCache", 10000, false, false, 3600, 3600);
+            singletonManager.addCache(memoryOnlyCache);
+            cache = singletonManager.getCache("dbCache");
+        }
     }
 
     public static MysqlDB getInstance() {
@@ -50,11 +64,17 @@ public class MysqlDB extends DB {
 
     @Override
     public Connection getConn() throws SQLException {
-        return poolMgr.getConnection();
+        
+        return ds.getConnection();//poolMgr.getConnection();
     }
 
     @Override
     public void closeConn(Connection conn) throws SQLException {
         conn.close();
+    }
+    
+    @Override
+    public Cache getCache() throws Exception {
+        return cache;
     }
 }

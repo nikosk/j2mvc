@@ -32,7 +32,7 @@ public class Post extends gr.dsigned.jmvc.db.Model {
         this.tableName = "posts";
     }
 
-    public ArrayList<Hmap> getLatestPosts(int numberToFetch) throws SQLException {
+    public ArrayList<Hmap> getLatestPosts(int numberToFetch) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("posts");
         qs.orderBy(OrderBy.DESC, "pub_date");
@@ -40,7 +40,7 @@ public class Post extends gr.dsigned.jmvc.db.Model {
         return db.getList(qs);
     }
 
-    public ArrayList<Hmap> getPostsInInterval(Date from, Date to) throws SQLException {
+    public ArrayList<Hmap> getPostsInInterval(Date from, Date to) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("posts");
         qs.orderBy(OrderBy.DESC, "pub_date");

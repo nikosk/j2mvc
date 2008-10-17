@@ -25,6 +25,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 
 /**
  *
@@ -34,15 +36,18 @@ public abstract class DB {
 
     public abstract Connection getConn() throws SQLException;
 
+    public abstract Cache getCache() throws Exception;
+
     public abstract void closeConn(Connection conn) throws SQLException;
     private static final boolean debug = Settings.get("DEBUG").equals("TRUE");
-    private long end = 0;
-    private long start = 0;
+    protected static final boolean cacheEnabled = Settings.get("CACHE_DB").equals("TRUE");
+    private long endTime = 0;
+    private long startTime = 0;
 
     private String executeInsert(String sql, ArrayList<String> values) throws SQLException {
         if (debug) {
             Jmvc.logDebug("[DB:executeInsert] " + " sql: " + sql + " values: " + values);
-            start = System.nanoTime();
+            startTime = System.nanoTime();
         }
         Connection conn = getConn();
         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -51,9 +56,7 @@ public abstract class DB {
             for (String s : values) {
                 if (s == null || s.trim().equalsIgnoreCase("null")) {
                     pstmt.setNull(parameterIndex, Types.NULL);
-                } else if (s.equals("NOW()")) {
-                    pstmt.setObject(parameterIndex, "{ fn "+ s + "}");
-                }else {
+                } else {
                     pstmt.setObject(parameterIndex, s);
                 }
                 parameterIndex++;
@@ -69,11 +72,12 @@ public abstract class DB {
             pstmt.close();
         } catch (Exception ex) {
             // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+            Jmvc.logError("ex:  " + ex);
         }
         closeConn(conn);
         if (debug) {
-            end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
+            endTime = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (endTime - startTime) / 1000000));
         }
         return output;
     }
@@ -81,7 +85,7 @@ public abstract class DB {
     private int executeUpdate(String sql, ArrayList<String> values) throws SQLException {
         if (debug) {
             Jmvc.logDebug("[DB:executeUpdate] " + " sql: " + sql + " values: " + values);
-            start = System.nanoTime();
+            startTime = System.nanoTime();
         }
         Connection conn = getConn();
         PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -101,16 +105,17 @@ public abstract class DB {
             pstmt.close();
         } catch (Exception ex) {
             // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
+            Jmvc.logError("ex:  " + ex);
         }
         closeConn(conn);
         if (debug) {
-            end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
+            endTime = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (endTime - startTime) / 1000000));
         }
         return updatedRows;
     }
 
-    public int executeUpdate(String sql) throws SQLException {
+    private int executeUpdate(String sql) throws SQLException {
         return executeUpdate(sql, null);
     }
 
@@ -124,7 +129,7 @@ public abstract class DB {
     public Hmap executeQueryForObject(String sql, ArrayList<String> values) throws SQLException {
         if (debug) {
             Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
-            start = System.nanoTime();
+            startTime = System.nanoTime();
         }
         Hmap result = null;
         int retryCount = 3;
@@ -171,7 +176,7 @@ public abstract class DB {
                 retryCount = 0;
             } catch (SQLException sqlEx) {
                 String sqlState = sqlEx.getSQLState();
-                if ("08S01".equals(sqlState) || "40001".equals(sqlState)) {
+                if ("08S01".equals(sqlState)) {
                     retryCount--;
                 } else {
                     retryCount = 0;
@@ -180,13 +185,13 @@ public abstract class DB {
                 throw sqlEx;
             } catch (Exception ex) {
                 // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
-                // Jmvc.logError("ex:  " + ex);
+                Jmvc.logError("ex:  " + ex);
                 retryCount = 0;
             }
         } while (retryCount > 0);
         if (debug) {
-            end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
+            endTime = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (endTime - startTime) / 1000000));
         }
         return result;
     }
@@ -201,7 +206,7 @@ public abstract class DB {
     public Hmap executeQueryForHmap(String sql, ArrayList<String> values) throws SQLException {
         if (debug) {
             Jmvc.logDebug("[DB:executeQueryForObject] " + " sql: " + sql + " values: " + values);
-            start = System.nanoTime();
+            startTime = System.nanoTime();
         }
         int retryCount = 3;
         ResultSet rs;
@@ -245,7 +250,7 @@ public abstract class DB {
                 retryCount = 0;
             } catch (SQLException sqlEx) {
                 String sqlState = sqlEx.getSQLState();
-                if ("08S01".equals(sqlState) || "40001".equals(sqlState)) {
+                if ("08S01".equals(sqlState)) {
                     retryCount--;
                 } else {
                     retryCount = 0;
@@ -254,13 +259,13 @@ public abstract class DB {
                 throw sqlEx;
             } catch (Exception ex) {
                 // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
-                // Jmvc.logError("ex:  " + ex);
+                Jmvc.logError("ex:  " + ex);
                 retryCount = 0;
             }
         } while (retryCount > 0);
         if (debug) {
-            end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
+            endTime = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (endTime - startTime) / 1000000));
         }
         return result;
     }
@@ -275,7 +280,7 @@ public abstract class DB {
     public ArrayList<Hmap> executeQueryForList(String sql, ArrayList<String> values) throws SQLException {
         if (debug) {
             Jmvc.logDebug("[DB:executeQueryForList] " + "sql: " + sql + " values: " + values);
-            start = System.nanoTime();
+            startTime = System.nanoTime();
         }
         int retryCount = 3;
         ResultSet rs;
@@ -325,7 +330,7 @@ public abstract class DB {
                 retryCount = 0;
             } catch (SQLException sqlEx) {
                 String sqlState = sqlEx.getSQLState();
-                if ("08S01".equals(sqlState) || "40001".equals(sqlState)) {
+                if ("08S01".equals(sqlState)) {
                     retryCount--;
                 } else {
                     retryCount = 0;
@@ -334,13 +339,13 @@ public abstract class DB {
                 throw sqlEx;
             } catch (Exception ex) {
                 // TODO: handle or avoid java.lang.IllegalArgumentException: null source 
-                // Jmvc.logError("ex:  " + ex);
+                Jmvc.logError("ex:  " + ex);
                 retryCount = 0;
             }
         } while (retryCount > 0);
         if (debug) {
-            end = System.nanoTime();
-            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (end - start) / 1000000));
+            endTime = System.nanoTime();
+            Jmvc.dbDebug("SQL: " + sql + ". Values: " + values + ". Execution time: " + ((double) (endTime - startTime) / 1000000));
         }
         return result;
     }
@@ -371,14 +376,60 @@ public abstract class DB {
         }
     }
 
+    private void storeCacheKeys(String key, QuerySet theQuery) throws Exception {
+        ArrayList<String> tables = theQuery.getSourceTables();
+        ArrayList<String> keys;
+        Element tableCacheKeys;
+        for (String t : tables) {
+            tableCacheKeys = getCache().get(t);
+            if (tableCacheKeys != null) {
+                keys = (ArrayList<String>) tableCacheKeys.getObjectValue();
+                keys.add(key);
+            } else {
+                keys = new ArrayList<String>();
+                keys.add(key);
+            }
+            getCache().put(new Element(t, keys));
+        }
+    }
+
+    private void invalidateCachedQueries(QuerySet theQuery) throws Exception {
+        Element tableCacheKeys;
+        ArrayList<String> keys;
+        for (String t : theQuery.getUpdatedTables()) {
+            tableCacheKeys = getCache().get(t);
+            if (tableCacheKeys != null) {
+                keys = (ArrayList<String>) tableCacheKeys.getObjectValue();
+                for (String r : keys) {
+                    getCache().remove(r);
+                }
+            }
+        }
+    }
+
     /**
      * Execute query set
      * @param qs 
      * @return ArrayList<LinkedHashMap> of results
      * @throws SQLException 
      */
-    public ArrayList<Hmap> getList(QuerySet qs) throws SQLException {
-        return executeQueryForList(qs.compileSelect(), qs.getData());
+    public ArrayList<Hmap> getList(QuerySet qs) throws SQLException, Exception {
+        String key = qs.compileSelect() + qs.getData().toString();
+        ArrayList<Hmap> result;
+        if (cacheEnabled) {
+            Element e = getCache().get(key);
+            if (e != null) {
+                result = (ArrayList<Hmap>) e.getObjectValue();
+            } else {
+                result = executeQueryForList(qs.compileSelect(), qs.getData());
+                Element resultCacheElement = new Element(key, result);
+                getCache().put(resultCacheElement);
+                storeCacheKeys(key, qs);
+            }
+        } else {
+            result = executeQueryForList(qs.compileSelect(), qs.getData());
+        }
+        return result;
     }
 
     /**
@@ -387,8 +438,23 @@ public abstract class DB {
      * @return Hmap
      * @throws SQLException 
      */
-    public Hmap getObject(QuerySet qs) throws SQLException {
-        return executeQueryForObject(qs.compileSelect(), qs.getData());
+    public Hmap getObject(QuerySet qs) throws SQLException, Exception {
+        String key = qs.compileSelect() + qs.getData().toString();
+        Hmap result;
+        if (cacheEnabled) {
+            Element e = getCache().get(key);
+            if (e != null) {
+                result = (Hmap) e.getObjectValue();
+            } else {
+                result = executeQueryForObject(qs.compileSelect(), qs.getData());
+                Element resultCacheElement = new Element(key, result);
+                getCache().put(resultCacheElement);
+                storeCacheKeys(key, qs);
+            }
+        } else {
+            result = executeQueryForObject(qs.compileSelect(), qs.getData());
+        }
+        return result;
     }
 
     /**
@@ -407,8 +473,12 @@ public abstract class DB {
      * @return ArrayList<LinkedHashMap> of results
      * @throws SQLException 
      */
-    public int update(QuerySet qs) throws SQLException {
-        return executeUpdate(qs.compileUpdate(), qs.getData());
+    public int update(QuerySet qs) throws SQLException, Exception {
+        int i = executeUpdate(qs.compileUpdate(), qs.getData());
+        if (cacheEnabled) {
+            invalidateCachedQueries(qs);
+        }
+        return i;
     }
 
     /**
@@ -417,8 +487,12 @@ public abstract class DB {
      * @return ArrayList<LinkedHashMap> of results
      * @throws SQLException 
      */
-    public int delete(QuerySet qs) throws SQLException {
-        return executeUpdate(qs.compileDelete(), qs.getData());
+    public int delete(QuerySet qs) throws SQLException, Exception {
+        int i = executeUpdate(qs.compileDelete(), qs.getData());
+        if (cacheEnabled) {
+            invalidateCachedQueries(qs);
+        }
+        return i;
     }
 
     /**
@@ -427,10 +501,24 @@ public abstract class DB {
      * @return
      * @throws java.sql.SQLException
      */
-    public int count(QuerySet qs) throws SQLException {
-        Hmap a = executeQueryForObject(qs.compileCount(), qs.getData());
-        if (a.size() > 0) {
-            return Integer.parseInt(a.get("count"));
+    public int count(QuerySet qs) throws SQLException, Exception {
+        String key = qs.compileCount() + qs.getData().toString();
+        Hmap result;
+        if (cacheEnabled) {
+            Element e = getCache().get(key);
+            if (e != null) {
+                result = (Hmap) e.getObjectValue();
+            } else {
+                result = executeQueryForObject(qs.compileCount(), qs.getData());
+                Element resultCacheElement = new Element(key, result);
+                getCache().put(resultCacheElement);
+                storeCacheKeys(key, qs);
+            }
+        } else {
+            result = executeQueryForObject(qs.compileCount(), qs.getData());
+        }
+        if (result.size() > 0) {
+            return Integer.parseInt(result.get("count"));
         } else {
             throw new SQLException("Failed while counting");
         }
@@ -442,8 +530,12 @@ public abstract class DB {
      * @return returns the the auto-generated key as a string
      * @throws SQLException 
      */
-    public String insert(QuerySet qs) throws SQLException {
-        return executeInsert(qs.compileInsert(), qs.getData());
+    public String insert(QuerySet qs) throws SQLException, Exception {
+        String res = executeInsert(qs.compileInsert(), qs.getData());
+        if (cacheEnabled) {
+            invalidateCachedQueries(qs);
+        }
+        return res;
     }
 
     /**

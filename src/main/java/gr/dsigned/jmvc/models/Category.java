@@ -34,13 +34,13 @@ public class Category extends Model {
         this.tableName = "categories";
     }
 
-    public ArrayList<Hmap> getCategories() throws SQLException {
+    public ArrayList<Hmap> getCategories() throws Exception {
         QuerySet qs = new QuerySet();
         qs.from(this.tableName);
         return db.getList(qs);
     }
 
-    public Hmap getCategoryIdNamePair() throws SQLException {
+    public Hmap getCategoryIdNamePair() throws Exception {
         Hmap data = new Hmap();
         QuerySet qs = new QuerySet();
         qs.select("id", "display_name");
@@ -51,7 +51,7 @@ public class Category extends Model {
         return data;
     }
 
-    public ArrayList<Hmap> getCategoryById(String id) throws SQLException {
+    public ArrayList<Hmap> getCategoryById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from(this.tableName);
         qs.where("id", id, Operand.EQUAL);
