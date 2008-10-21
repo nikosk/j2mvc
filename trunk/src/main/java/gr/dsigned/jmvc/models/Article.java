@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import gr.dsigned.jmvc.db.Model;
-import gr.dsigned.jmvc.db.Operand;
-import gr.dsigned.jmvc.db.OrderBy;
 import gr.dsigned.jmvc.db.QuerySet;
+import gr.dsigned.jmvc.db.QuerySet.Operand;
+import gr.dsigned.jmvc.db.QuerySet.OrderBy;
 import java.sql.Timestamp;
 
 /**
@@ -42,7 +42,7 @@ public class Article extends Model {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.join("categories", "categories.id = articles.category_id", Join.LEFT);
-        qs.where("categories.name","basket", Operand.EQUAL);
+        qs.where("categories.name","basket", Operand.EQUALS);
         qs.orderBy(OrderBy.DESC, "published");
         qs.limit(numberToFetch);
         return db.getList(qs);
@@ -59,7 +59,7 @@ public class Article extends Model {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.join("categories", "Articles.category_id = Categories.id",Join.INNER);
-        qs.where("Categories.name", cat, Operand.EQUAL);
+        qs.where("Categories.name", cat, Operand.EQUALS);
         qs.orderBy(OrderBy.DESC, "published");
         qs.limit(offset, limit);
         return db.getList(qs);
@@ -69,7 +69,7 @@ public class Article extends Model {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.join("categories", "Articles.category_id = Categories.id", Join.LEFT);
-        qs.where("Categories.name", cat, Operand.EQUAL);
+        qs.where("Categories.name", cat, Operand.EQUALS);
         qs.orderBy(OrderBy.DESC, "published");
         return db.count(qs);
     }
@@ -91,7 +91,7 @@ public class Article extends Model {
     public ArrayList<Hmap> getArticleById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.where("id",id, Operand.EQUAL);
+        qs.where("id",id, Operand.EQUALS);
         return db.getList(qs);
     }
     
@@ -104,14 +104,14 @@ public class Article extends Model {
         qs.set("content", content);
         qs.set("category_id", category_id);
         qs.set("updated", ""+new Timestamp(new java.util.Date().getTime()));
-        qs.where("id", id, Operand.EQUAL);
+        qs.where("id", id, Operand.EQUALS);
         qs.update(tableName);
         db.update(qs);
     }
     
     public void deleteArticle(String id) throws SQLException {
         QuerySet qs = new QuerySet();
-        qs.where("id", id, Operand.EQUAL);
+        qs.where("id", id, Operand.EQUALS);
         db.delete(tableName, id);
     }
 

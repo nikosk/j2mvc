@@ -16,6 +16,7 @@
  */
 package gr.dsigned.jmvc.forms.fields;
 
+import gr.dsigned.jmvc.libraries.HTMLInputFilter;
 import gr.dsigned.jmvc.types.Tuple2;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -56,7 +57,8 @@ public class Field {
         PROFILE_NAME,
         CAPTCHA,
         EITHER,
-        ALPHANUM_WITH_SPACES
+        ALPHANUM_WITH_SPACES,
+        XSS_CLEAN
     }
     protected String fieldName;
     protected String label;
@@ -206,16 +208,6 @@ public class Field {
                         }
                     }
                     break;
-                case PROFILE_NAME:
-                    if (!getValue().isEmpty()) {
-                        p = Pattern.compile("[a-zA-Z0-9]{1,}[a-zA-Z0-9-_]*");
-                        m = p.matcher(this.getValue());
-                        if (!m.matches()) {
-                            addError(label + " should consists characters of numbers, letters (a-z,A-Z) or '-' '_'. Cannot start with '-' or '_'");
-                            validates = false;
-                        }
-                    }
-                    break;
                 case EQUALS:
                     if (!getValue().isEmpty() && !this.getValue().equals(r._2)) {
                         addError(label + " does not match.");
@@ -242,6 +234,14 @@ public class Field {
                         validates = false;
                         addError(label + " is not of the correct date format " + r._2);
                     }
+                    break;
+                case XSS_CLEAN:
+                    String[] tags = r._2.split(",");
+                    HTMLInputFilter filter = new HTMLInputFilter(true);
+                    for (String tag : tags) {
+                        filter.setVAllowed(tag);
+                    }
+                    setValue(filter.filter(getValue()).trim());
                     break;
             }
         }

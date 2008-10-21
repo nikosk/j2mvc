@@ -18,12 +18,12 @@ import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Library;
 import static gr.dsigned.jmvc.framework.Renderer.div;
 import static gr.dsigned.jmvc.framework.Renderer.a;
-import gr.dsigned.jmvc.types.Tuple2;
 import static gr.dsigned.jmvc.types.operators.*;
 
 /**
  * 16 Μαρ 2008, gr.dsigned.jmvc.libraries
  * Pagination.java
+ * @author Christos Peppas <c.peppas@phiresoft.com>
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Pagination extends Library {
@@ -32,12 +32,12 @@ public class Pagination extends Library {
 
         SEARCH, ITEM, AJAX;
     }
-    public String baseUrl = "";
-    public int totalRows = 0;
-    public int curPage = 0;
-    public int noItemsPerQuery = 0;    //DEFAULT VALUES
+    private String baseURL = "";
+    private int totalRows = 0;
+    private int currentPage = 0;
+    private int noItemsPerQuery = 0;    //DEFAULT VALUES
     private int perPage = 10;
-    private int leftRight = 5;
+    private int linksNum = 5;
     private String separationChar = "&nbsp;&nbsp;";
     private String classStartArrowOn = "";
     private String classStartArrowOff = "";
@@ -65,15 +65,15 @@ public class Pagination extends Library {
         if (pageCount == 0) {
             return "";
         }
-        if (!baseUrl.endsWith("/")) {
-            baseUrl += "/";
+        if (!baseURL.endsWith("/")) {
+            baseURL += "/";
         }
         for (int i = 0; i <= pageCount; i++) {
             if (i != currentPage) {
                 if (i != 0) {
-                    out += "<a href='" + baseUrl + i + "' >" + (i + 1) + "</a> | ";
+                    out += "<a href='" + baseURL + i + "' >" + (i + 1) + "</a> | ";
                 } else {
-                    out += "<a href='" + baseUrl + "' >" + (i + 1) + "</a> | ";
+                    out += "<a href='" + baseURL + "' >" + (i + 1) + "</a> | ";
                 }
             } else {
                 out += "<b>" + (i + 1) + "</b> | ";
@@ -83,7 +83,7 @@ public class Pagination extends Library {
     }
 
     public String createPagingLinks(int currentPage) {
-        return this.createPagingLinks(currentPage, PagingType.SEARCH);
+        return this.createLinks(currentPage, PagingType.SEARCH);
     }
 
     /**
@@ -91,7 +91,7 @@ public class Pagination extends Library {
      * @param currentPage
      * @return (string) html links of pagination
      */
-    public String createPagingLinks(int currentPage, PagingType type) {
+    public String createLinks(int currentPage, PagingType type) {
 
         StringBuilder sb = new StringBuilder();
         int pageCount = pageCount();
@@ -99,8 +99,8 @@ public class Pagination extends Library {
 
         if (totalRows > 0) {
 
-            if (!baseUrl.endsWith("/")) {
-                baseUrl += "/";
+            if (!baseURL.endsWith("/")) {
+                baseURL += "/";
             }
 
             if (type == PagingType.ITEM) {
@@ -127,16 +127,16 @@ public class Pagination extends Library {
                 sb.append("<span>").append((currentPage * perPage) + 1).append(" - ").append(value).append(" of ").append(totalRows).append(" </span>");
 
                 if (currentPage != 0 && totalRows != perPage) {
-                    sb.append(" <a class='").append(classStartArrowOn).append("' href='").append(baseUrl).append("").append("' >").append(imgStartArrowOn).append("</a>");
-                    sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseUrl).append((currentPage - 1) == 0 ? "" : (currentPage - 1)).append("' >").append(imgBackArrowOn).append("</a>");
+                    sb.append(" <a class='").append(classStartArrowOn).append("' href='").append(baseURL).append("").append("' >").append(imgStartArrowOn).append("</a>");
+                    sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseURL).append((currentPage - 1) == 0 ? "" : (currentPage - 1)).append("' >").append(imgBackArrowOn).append("</a>");
                 } else {
                     sb.append(" <span>").append(imgStartArrowOff).append("</span> ");
                     sb.append(" <span>").append(imgBackArrowOff).append("</span> ");
                 }
 
                 if (currentPage + 1 < pageCount && totalRows != perPage) {
-                    sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
-                    sb.append(" <a class='").append(classEndArrowOn).append("' href='").append(baseUrl).append(pageCount - 1).append("' >").append(imgEndArrowOn).append("</a>");
+                    sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseURL).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
+                    sb.append(" <a class='").append(classEndArrowOn).append("' href='").append(baseURL).append(pageCount - 1).append("' >").append(imgEndArrowOn).append("</a>");
                 } else {
                     sb.append(" <span>").append(imgFwdArrowOff).append("</span> ");
                     sb.append(" <span>").append(imgEndArrowOff).append("</span> ");
@@ -146,16 +146,16 @@ public class Pagination extends Library {
                 //&& totalRows!=perPage
                 if (totalRows > perPage) {
                     if (currentPage != 0) {
-                        sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseUrl).append((currentPage - 1) == 0 ? "" : currentPage - 1).append("' >").append(imgBackArrowOn).append("</a>");
+                        sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseURL).append((currentPage - 1) == 0 ? "" : currentPage - 1).append("' >").append(imgBackArrowOn).append("</a>");
                     }
 
                     //PAGES NUMBER LINKS
-                    for (int i = currentPage - leftRight; i <= currentPage + leftRight; i++) {
+                    for (int i = currentPage - linksNum; i <= currentPage + linksNum; i++) {
                         if (i < 0 || i >= pageCount) {
                             continue;
                         } else {
                             if (i != currentPage) {
-                                sb.append(" <a href='").append(baseUrl).append((i == 0) ? "" : i).append("'>").append((i + 1)).append("</a>").append(separationChar);
+                                sb.append(" <a href='").append(baseURL).append((i == 0) ? "" : i).append("'>").append((i + 1)).append("</a>").append(separationChar);
                             } else {//CURRENT PAGE NO LINK
                                 sb.append(" <b>").append(i + 1).append("</b>").append(separationChar);
                             }
@@ -164,7 +164,7 @@ public class Pagination extends Library {
 
                     //NEXT LINK IF NEEDED
                     if (currentPage + 1 < pageCount) {
-                        sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
+                        sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseURL).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
                     }
                 }
             } else if (type == PagingType.AJAX) {
@@ -175,7 +175,7 @@ public class Pagination extends Library {
                     String page = (i == pageCount) ? "" : String.valueOf(pageCount-i);
                     sb.append(
                             div(
-                                a("Comments (" + from + " - " + to + ")", o("href", "javascript:void(0);"),o("title", baseUrl + page), o("class","toggler")),o("id", "page_" + page)
+                                a("Comments (" + from + " - " + to + ")", o("href", "javascript:void(0);"),o("title", baseURL + page), o("class","toggler")),o("id", "page_" + page)
                                )
                             );
                     sb.append( div(i+".", o("class","actual_page")));
@@ -218,7 +218,6 @@ public class Pagination extends Library {
         } else {
             return "";
         }
-
         return sb.toString();
     }
 
@@ -226,7 +225,7 @@ public class Pagination extends Library {
      * @return the baseUrl
      */
     public String getBaseUrl() {
-        return baseUrl;
+        return baseURL;
     }
 
     /**
@@ -234,7 +233,7 @@ public class Pagination extends Library {
      * @param baseUrl
      */
     public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+        this.baseURL = baseUrl;
     }
 
     /**
@@ -256,7 +255,7 @@ public class Pagination extends Library {
      * @return the current page
      */
     public int getCurrentPage() {
-        return curPage;
+        return currentPage;
     }
 
     /**
@@ -264,7 +263,7 @@ public class Pagination extends Library {
      * @param curPage
      */
     public void setCurrentPage(int curPage) {
-        this.curPage = curPage;
+        this.currentPage = curPage;
     }
 
     /**
@@ -301,8 +300,8 @@ public class Pagination extends Library {
      * @return the number of page values that will be next-left and
      * next-right to the current page value in SEARCH PAGING TYPE
      */
-    public int getLeftRight() {
-        return leftRight;
+    public int getLinksNum() {
+        return linksNum;
     }
 
     /**
@@ -310,8 +309,8 @@ public class Pagination extends Library {
      * next-right to the current page value in SEARCH PAGING TYPE
      * @param leftRight
      */
-    public void setLeftRight(int leftRight) {
-        this.leftRight = leftRight;
+    public void setLinksNum(int linksNum) {
+        this.linksNum = linksNum;
     }
 
     /**
@@ -474,6 +473,6 @@ public class Pagination extends Library {
     }
 
     public boolean lastRecordToDelete(){
-        return (curPage!=0 && ((curPage+1) -  ((double)totalRows / getPerPage())) == 1  )?true:false;
+        return (currentPage!=0 && ((currentPage+1) -  ((double)totalRows / getPerPage())) == 1  )?true:false;
     }
 }

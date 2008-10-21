@@ -15,7 +15,8 @@
 package gr.dsigned.jmvc.controllers;
 
 import gr.dsigned.jmvc.framework.Controller;
-import gr.dsigned.jmvc.types.Hmap;
+import gr.dsigned.jmvc.libraries.PageData;
+import static gr.dsigned.jmvc.framework.Renderer.*;
 
 /**
  *
@@ -27,6 +28,9 @@ public class Home extends Controller {
     }
     
     public void index() throws Exception{
-        $.loadView("index", new Hmap());
+        $.request.setAttribute("CACHE_PAGE", "TRUE");
+        PageData data = new PageData();
+        data.append("content", div(h1("jmvc web framework")));        
+        $.loadView("index", data);
     }
 }

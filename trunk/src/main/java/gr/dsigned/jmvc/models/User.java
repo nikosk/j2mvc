@@ -17,8 +17,8 @@ package gr.dsigned.jmvc.models;
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.db.Model;
 
-import gr.dsigned.jmvc.db.Operand;
 import gr.dsigned.jmvc.db.QuerySet;
+import gr.dsigned.jmvc.db.QuerySet.Operand;
 import java.util.ArrayList;
 
 /**
@@ -34,8 +34,8 @@ public class User extends Model {
     public ArrayList<Hmap> auth(String username, String password) throws Exception {
         // TODO Fix db to escape values properly
         QuerySet qs = new QuerySet();
-        qs.where("username", username, Operand.EQUAL);
-        qs.where("password", password, Operand.EQUAL);
+        qs.where("username", username, Operand.EQUALS);
+        qs.where("password", password, Operand.EQUALS);
         qs.from(this.tableName);
         ArrayList<Hmap> al = db.getList(qs);
         return (al.size() > 0) ? al : null;
