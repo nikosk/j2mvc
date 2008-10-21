@@ -14,7 +14,8 @@
  */
 package gr.dsigned.jmvc.db;
 
-
+import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.framework.Jmvc;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,22 +35,33 @@ public class MysqlDB extends DB {
 
     private static final MysqlDB INSTANCE = new MysqlDB();
     private static MiniConnectionPoolManager poolMgr;
-    DataSource ds;
+    MysqlConnectionPoolDataSource ds;
     Cache cache;
+
     /**
      * Creates a new instance of MysqlDB
      */
     private MysqlDB() {
-        
-        Context initCtx;
-        try {
-            initCtx = new InitialContext();            
-            Context envCtx = (Context) initCtx.lookup("java:comp/env");            
-            ds = (DataSource) envCtx.lookup("jdbc/social");
-        } catch (NamingException ex) {
-            Jmvc.logError(ex.getExplanation());
+        if (true) {
+            ds = new MysqlConnectionPoolDataSource();
+            ds.setDatabaseName(Settings.get("DB_NAME"));
+            ds.setServerName(Settings.get("DB_URL"));
+            ds.setPort(Integer.valueOf(Settings.get("DB_PORT")));
+            ds.setUser(Settings.get("DB_USER"));
+            ds.setPassword(Settings.get("DB_PASS"));
+            ds.setAutoReconnect(true);
+            ds.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
+            poolMgr = new MiniConnectionPoolManager(ds, 20);
+        } else {
+            Context initCtx;
+            try {
+                initCtx = new InitialContext();
+                Context envCtx = (Context) initCtx.lookup("java:comp/env");
+                ds = (MysqlConnectionPoolDataSource) envCtx.lookup("jdbc/social");
+            } catch (NamingException ex) {
+                Jmvc.logError(ex.getExplanation());
+            }
         }
-        //poolMgr = new MiniConnectionPoolManager(ds, 255, 20);
         if (cacheEnabled) {
             CacheManager singletonManager = CacheManager.create();
             Cache memoryOnlyCache = new Cache("dbCache", 10000, false, false, 3600, 3600);
@@ -64,7 +76,6 @@ public class MysqlDB extends DB {
 
     @Override
     public Connection getConn() throws SQLException {
-        
         return ds.getConnection();//poolMgr.getConnection();
     }
 
@@ -72,7 +83,7 @@ public class MysqlDB extends DB {
     public void closeConn(Connection conn) throws SQLException {
         conn.close();
     }
-    
+
     @Override
     public Cache getCache() throws Exception {
         return cache;

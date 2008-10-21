@@ -49,21 +49,6 @@ public class QuerySet {
     private ArrayList<String> fromData = new ArrayList<String>();
     private ArrayList<String> updatedTables = new ArrayList<String>();
     private ArrayList<String> sourceTables = new ArrayList<String>();
-    public enum Join {
-        INNER("INNER"),
-        OUTER("OUTER"),
-        LEFT("LEFT"),
-        RIGHT("RIGHT");
-        private final String value;
-        Join(String value) {
-            this.value = value;
-        }
-        @Override
-        public String toString() {
-            return value;
-        }
-    }
-    
     private boolean hasRan = false;
 
     /**
@@ -569,5 +554,64 @@ public class QuerySet {
 
     protected ArrayList<String> getUpdatedTables() {
         return updatedTables;
+    }
+
+    public enum Operand {
+
+        IS("IS"),
+        IS_NOT("IS NOT"),
+        IN("IN"),
+        NOT_IN("NOT IN"),
+        NULL("NULL"),
+        EQUALS("="),
+        NOT_EQUAL("!="),
+        GREATER_THAN(">"),
+        LESS_THAN("<"),
+        GREATER_THAN_OR_EQUAL(">="),
+        LESS_THAN_OR_EQUAL("<=");
+        private final String value;
+
+        Operand(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return " " + value + " ";
+        }
+    }
+
+    public enum Join {
+
+        INNER("INNER"),
+        OUTER("OUTER"),
+        LEFT("LEFT"),
+        RIGHT("RIGHT");
+        private final String value;
+
+        Join(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public enum OrderBy {
+
+        ASC(" ASC "),
+        DESC(" DESC ");
+        private final String value;
+
+        OrderBy(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 }

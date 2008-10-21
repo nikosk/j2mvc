@@ -14,8 +14,6 @@
  */
 package gr.dsigned.jmvc.libraries;
 
-import gr.dsigned.jmvc.Settings;
-
 import java.util.LinkedHashMap;
 
 /**
@@ -25,26 +23,50 @@ import java.util.LinkedHashMap;
  */
 public class PageData extends LinkedHashMap<String, String> {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 5521489114124146406L;
+    private static final String cssLinkTemplate = "<link href='%1$s' media='screen' rel='stylesheet' type='text/css' />";
+    private static final String scriptFileTemplate = "<script src='%1$s' type='text/javascript'></script>";
+    private LinkedHashMap<String, StringBuilder> data = new LinkedHashMap<String, StringBuilder>();
 
     public PageData() {
-        put("title", "My title");
-        put("keywords", "jmvc, framework, java, mvc");
-        put("description", "Java mvc framework inspired by Code Igniter,Ruby on Rails and Django");
-        put("charset", Settings.get("DEFAULT_ENCODING"));
-        /* Styles */
-        put("styles-yui-all", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/reset.css\" >\r\n" + "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/grids.css\">" + "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/fonts.css\">");
-        put("styles-yui-all-min", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/reset-fonts-grids.css\">");
-        put("styles-yui-reset", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/reset.css\" >\r\n");
-        put("styles-yui-grids", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/grids.css\">");
-        put("styles-yui-fonts", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/yui/fonts.css\">");
-        put("styles-typography", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/typography.css\">");
-        put("styles-forms", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/forms.css\">");
-        /* mootools */
-        put("mootools", "<script type=\"text/javascript\" src=\"/js/mootools-1.2-core-yc.js\"></script>");
-        put("mootools-more", "<script type=\"text/javascript\" src=\"/js/mootools-1.2-more.js\"></script>");
+        append("scripts", "");
+        append("css", "");
+    }
+
+    public void append(String tag, String value) {
+        StringBuilder sb = data.get(tag);
+        if (sb == null) {
+            sb = new StringBuilder();
+        }
+        sb.append(value);
+        data.put(tag, sb);
+        this.put(tag, null);//create the key for $.loadView
+    }
+
+    @Override
+    public String get(Object key) {
+        String result = "";
+        StringBuilder sb = data.get(key);
+        if( sb != null){
+            result = sb.toString();
+        }else{
+            result = super.get(key);
+        }
+        return result;
+    }
+
+    public void appendScript(String s) {
+        append("scripts", s);
+    }
+
+    public void appendScriptFile(String s) {
+        append("scripts", String.format(scriptFileTemplate, s));
+    }
+
+    public void appendCss(String s) {
+        append("css", s);
+    }
+
+    public void appendCssFile(String s) {
+        append("css", String.format(cssLinkTemplate, s));
     }
 }

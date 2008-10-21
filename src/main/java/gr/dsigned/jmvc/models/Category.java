@@ -15,12 +15,11 @@
 package gr.dsigned.jmvc.models;
 
 import gr.dsigned.jmvc.types.Hmap;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import gr.dsigned.jmvc.db.Model;
-import gr.dsigned.jmvc.db.Operand;
 import gr.dsigned.jmvc.db.QuerySet;
+import gr.dsigned.jmvc.db.QuerySet.Operand;
 
 /**
  * 15 Μαρ 2008, gr.dsigned.jmvc.models 
@@ -54,7 +53,7 @@ public class Category extends Model {
     public ArrayList<Hmap> getCategoryById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from(this.tableName);
-        qs.where("id", id, Operand.EQUAL);
+        qs.where("id", id, Operand.EQUALS);
         return db.getList(qs);
     }
 }
