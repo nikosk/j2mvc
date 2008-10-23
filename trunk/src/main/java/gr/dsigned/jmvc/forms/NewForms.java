@@ -46,7 +46,7 @@ public class NewForms extends Library {
      * @return Html form
      */
     public String renderForm() {
-        return String.format("<form id='%4$s' action='%1$s' method='POST' %2$s>%3$s</form>", getAction(), isEnctype(), build(),getId());
+        return String.format("<form id='%4$s' action='%1$s' method='post' %2$s>%3$s</form>", getAction(), isEnctype(), build(),getId());
     }
 
     public String renderFormAsList() {
