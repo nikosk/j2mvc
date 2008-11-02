@@ -78,6 +78,9 @@ public class Jmvc {
         if (cacheEnabled) {
             initCache();
         }
+        if(debug){
+            dbDebug = new ArrayList<String>();
+        }
     }
 
     private static void initCache() {
@@ -111,7 +114,7 @@ public class Jmvc {
         if (Settings.AutoLoad.SESSION.loadIt()) {
             session = new Session(req);
         }
-        dbDebug = new ArrayList<String>();
+        
     }
 
     /**

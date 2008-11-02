@@ -150,21 +150,20 @@ public class Articles extends Controller {
         NewForms f = new NewForms();
         DropdownMenu dd;
 
-        ArrayList<Hmap> articleAL = null;
+        Hmap articleAL = null;
         Hmap bArt = null;
 
         String id = $.input.segment(2);
         if (id == null || id.length() == 0) {
             id = $.input.post("id");
             bArt = new Hmap();
-            articleAL = new ArrayList<Hmap>();
+            articleAL = new Hmap();
             bArt.put("title", $.input.post("title"));
             bArt.put("real_title", $.input.post("real_title"));
             bArt.put("sub_title", $.input.post("sub_title"));
             bArt.put("lead_in", $.input.post("lead_in"));
             bArt.put("content", $.input.post("content"));
             bArt.put("category", $.input.post("category"));
-            articleAL.add(bArt);
         } else {
             articleAL = article.getArticleById(id);
         }
