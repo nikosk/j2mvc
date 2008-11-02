@@ -41,8 +41,8 @@ public class Article extends Model {
     public ArrayList<Hmap> getLatestPosts(int numberToFetch) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("articles");
-        qs.join("categories", "categories.id = articles.category_id", Join.LEFT);
-        qs.where("categories.name","basket", Operand.EQUALS);
+        //qs.join("categories", "categories.id = articles.category_id", Join.LEFT);
+        //qs.where("categories.name","basket", Operand.EQUALS);
         qs.orderBy(OrderBy.DESC, "published");
         qs.limit(numberToFetch);
         return db.getList(qs);
@@ -88,11 +88,11 @@ public class Article extends Model {
         return db.insert(qs);
     }
 
-    public ArrayList<Hmap> getArticleById(String id) throws Exception {
+    public Hmap getArticleById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from("articles");
         qs.where("id",id, Operand.EQUALS);
-        return db.getList(qs);
+        return db.getObject(qs);
     }
     
     public void editArticle(String id, String category_id, String title, String real_title, String sub_title, String lead_in, String content) throws Exception {
