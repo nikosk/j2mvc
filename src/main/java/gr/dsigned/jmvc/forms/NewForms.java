@@ -79,19 +79,25 @@ public class NewForms extends Library {
     }
 
     public String buildAsUList() {
-        StringBuilder sb = new StringBuilder("<ul>");
+        StringBuilder listSB = new StringBuilder("<ul>");
+        StringBuilder hiddenSB = new StringBuilder();
         for (String name : fields.keySet()) {
             Field f = fields.get(name);
-            sb.append("<li>");
-            sb.append(span(f.renderLabel(), o("class", "label_span")));
-            sb.append("</li>");
-            sb.append("<li>");
-            sb.append(div(f.renderField()));
-            sb.append(div(f.renderErrors()));
-            sb.append("</li>");
+            if(f instanceof HiddenField){
+                hiddenSB.append(f.renderField());
+            }else {                
+                listSB.append("<li>");
+                listSB.append(span(f.renderLabel(), o("class", "label_span")));
+                listSB.append("</li>");
+                listSB.append("<li>");
+                listSB.append(div(f.renderField()));
+                listSB.append(div(f.renderErrors()));
+                listSB.append("</li>");
+            }
         }
-        sb.append("</ul>");
-        return sb.toString();
+        listSB.append("</ul>");
+        listSB.append(hiddenSB);
+        return listSB.toString();
     }
 
     public void setFields(Field... fields) {
