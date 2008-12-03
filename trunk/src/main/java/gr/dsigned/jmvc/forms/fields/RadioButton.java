@@ -33,7 +33,6 @@ public class RadioButton {
      * @param fieldName
      * @param radioLabel
      * @param value
-     * @param checked
      */
     public RadioButton(String fieldName, String radioLabel, String value) {
         this.fieldName = fieldName;
@@ -70,7 +69,7 @@ public class RadioButton {
     }
 
     public String render() {
-        return String.format("%3$s<input type='radio' name='%1$s' id='%2$s' value='%4$s' %5$s %6$s/>%n", getFieldName(), "id_" + getFieldName(), getRadioLabel(), getValue(), (isChecked()) ? "checked" : "", isDisabled() ? "disabled" : "");
+        return String.format("%3$s<input type='radio' name='%1$s' id='%2$s_%4$s' value='%4$s' %5$s %6$s/>%n", getFieldName(), "id_" + getFieldName(), getRadioLabel(), getValue(), (isChecked()) ? "checked" : "", isDisabled() ? "disabled" : "");
     }
 
     public String getFieldName() {

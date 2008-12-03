@@ -301,7 +301,11 @@ public class QuerySet {
      */
     public QuerySet from(String tableName) throws SQLException {
         hasRan();
-        fromSet = " FROM " + tableName;
+        if (fromSet == null) {
+            fromSet = " FROM " + tableName;
+        } else {
+            fromSet = ", " + tableName;
+        }
         sourceTables.add(tableName);
         return this;
     }
@@ -315,7 +319,11 @@ public class QuerySet {
      */
     public QuerySet from(QuerySet qs, String alias) throws SQLException {
         hasRan();
-        fromSet = "\nFROM (" + qs.compileSelect() + ") as " + alias + " ";
+        if (fromSet == null) {
+            fromSet = "\nFROM (" + qs.compileSelect() + ") AS " + alias + " ";
+        } else {
+            fromSet = ", (" + qs.compileSelect() + ") AS " + alias + " ";
+        }
         fromData.addAll(qs.getData());
         sourceTables.addAll(qs.getSourceTables());
         return this;

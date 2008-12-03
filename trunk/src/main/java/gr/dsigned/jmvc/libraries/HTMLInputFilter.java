@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -75,6 +76,7 @@ public class HTMLInputFilter {
     /** Allowed attributes when no other attributes are specified **/
     protected ArrayList<String> vAllowedAttributes;
     protected boolean vDebug;
+    private boolean validateEntities = true;
 
     public HTMLInputFilter() {
         this(false);
@@ -90,7 +92,7 @@ public class HTMLInputFilter {
         a_atts.add("href");
         a_atts.add("title");
         a_atts.add("target");
-        
+
         //vAllowed.put("a", a_atts);
 
         ArrayList<String> img_atts = new ArrayList<String>();
@@ -137,7 +139,7 @@ public class HTMLInputFilter {
     public static String htmlSpecialChars(String s) {
         s = StringUtils.replace(s, "&", "&amp;");
         s = StringUtils.replace(s, "\"", "&quot;");
-        s = StringUtils.replace(s,"<", "&lt;");
+        s = StringUtils.replace(s, "<", "&lt;");
         s = StringUtils.replace(s, ">", "&gt;");
         return s;
     }
@@ -167,14 +169,18 @@ public class HTMLInputFilter {
 
         s = processRemoveBlanks(s);
         debug("processRemoveBlanks: " + s);
-
-        s = validateEntities(s);
+        if (validateEntities) {
+            s = validateEntities(s);
+        }
         debug("    validateEntites: " + s);
 
         debug("************************************************\n\n");
         return s;
     }
-
+    public String filter(String input, boolean validateEntities){
+        this.validateEntities = validateEntities;
+        return this.filter(input);
+    }
     protected String escapeComments(String s) {
         Pattern p = Pattern.compile("<!--(.*?)-->", Pattern.DOTALL);
         Matcher m = p.matcher(s);
@@ -312,7 +318,8 @@ public class HTMLInputFilter {
                         if (inArray(paramName, vProtocolAtts)) {
                             paramValue = processParamProtocol(paramValue);
                         }
-                    } else if(vAllowedAttributes.contains(paramName)){
+                        params += " " + paramName + "=\"" + paramValue + "\"";
+                    } else if (vAllowedAttributes.contains(paramName)) {
                         params += " " + paramName + "=\"" + paramValue + "\"";
                     }
                 }
@@ -477,6 +484,10 @@ public class HTMLInputFilter {
     public void setVAllowed(String tag) {
         this.vAllowed.put(tag, new ArrayList<String>());
 
+    }
+
+    public void setVAllowed(String tag, ArrayList<String> attrs) {
+        this.vAllowed.put(tag, attrs);
     }
 }
 	

@@ -22,23 +22,20 @@ import gr.dsigned.jmvc.libraries.Input;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.libraries.Session;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
 
 /**
@@ -49,46 +46,42 @@ public class Jmvc {
     private static final Logger infoLogger = Logger.getLogger("Info");
     private static final Logger debugLogger = Logger.getLogger("Debug");
     private static final Logger errorLogger = Logger.getLogger("Error");
-    private static boolean debug = Settings.get("DEBUG").equals("TRUE");
-    private static final boolean cacheEnabled = Settings.get("CACHE_PAGES").equals("TRUE");
-    private static ArrayList<String> dbDebug;
+    private boolean debug = Settings.get("DEBUG").equals("TRUE");
+    private static ArrayList<String> dbDebug = null;
     public HttpServletRequest request;
     public ServletContext context;
-    public static LinkedHashMap<String, String> parsedTemplates = new LinkedHashMap<String, String>();
+    public static ConcurrentHashMap<String, String> parsedTemplates = null;
+    public static HashMap<String, View> parsedViews = null;
     public HttpServletResponse response;
+    private static String viewDirectory;
+    /*
+     * These are the default auto-loaded libraries To load
+     * others use Jmvc.loadLibrary()
+     */
     public DB db;
     public Input input;
     public Session session;
-    public PageData pageData;
-    private static CacheManager singletonManager;
-    private static Cache cache;
 
     public Jmvc() throws Exception {
         init();
     }
 
     private void init() throws Exception {
+        if (parsedTemplates == null) {
+//            parsedTemplates = new ConcurrentHashMap<String, String>();
+        }
+        if (parsedViews == null) {
+            parsedViews = new HashMap<String, View>();
+        }
+        if (dbDebug == null) {
+            dbDebug = new ArrayList<String>();
+        }
+
         input = new Input(null, null);
         if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none")) {
             if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql")) {
                 db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
             }
-        }
-        pageData = new PageData();
-        if (cacheEnabled) {
-            initCache();
-        }
-        if(debug){
-            dbDebug = new ArrayList<String>();
-        }
-    }
-
-    private static void initCache() {
-        if (cache == null) {
-            singletonManager = CacheManager.create();
-            cache = new Cache("pageCache", 10, true, false, 3600, 3600);
-            singletonManager.addCache(cache);
-            cache = singletonManager.getCache("pageCache");
         }
     }
 
@@ -98,6 +91,14 @@ public class Jmvc {
      */
     public HttpServletRequest getRequest() {
         return request;
+    }
+    /**
+     * Return the directory that contains the html files of 
+     * the views
+     * @return the absolute path to the view directory
+     */
+    public static String getViewDirectory() {
+        return viewDirectory;
     }
 
     /**
@@ -111,10 +112,11 @@ public class Jmvc {
         response = resp;
         context = cont;
         input = new Input(request, context);
-        if (Settings.AutoLoad.SESSION.loadIt()) {
-            session = new Session(req);
+        session = new Session(req);
+        viewDirectory = context.getRealPath("/") +"views"+ File.separator;
+        if (debug) {
+            dbDebug = new ArrayList<String>();
         }
-        
     }
 
     /**
@@ -130,12 +132,12 @@ public class Jmvc {
      *            of the tag to be replaced and the value
      *            the replacement.
      */
-    public void loadView(String view_name, LinkedHashMap<String, String> data) throws IOException, Exception {
+    public void loadViewOld(String view_name, LinkedHashMap<String, String> data) throws IOException {
         String template = "";
         if (parsedTemplates.containsKey(view_name)) {
             template = parsedTemplates.get(view_name);
         } else {
-            template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
+            //template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
             template = Parser.parse(template);
             parsedTemplates.put(view_name, template);
         }
@@ -153,20 +155,39 @@ public class Jmvc {
                 }
             }
         }
-        if (cacheEnabled && request.getAttribute("CACHE_PAGE") != null) {
-            String cacheKey = request.getRequestURI();
-            Element e = getCache().get(cacheKey);
-            if (e == null) {
-                Element pageCacheElement = new Element(cacheKey, template);
-                getCache().put(pageCacheElement);
-            }
-        }
         response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         out.println(template);
         if (debug) {
-            out.println(buildDebugOutput());
+            try {
+                out.println(buildDebugOutput());
+            } catch (Exception e) {
+                Jmvc.logError(e.toString());
+            }
+        }
+        out.flush();
+        out.close();
+    }
+
+    public void loadView(String view_name, PageData data) throws IOException {
+        View view = parsedViews.get(view_name);
+        if (view == null) {
+            //String template = "/views/" + view_name + ".html";
+            view = data.getView();
+            parsedViews.put(view_name, view);
+        }
+        String output = view.renderView(data);
+        response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println(output);
+        if (debug) {
+            try {
+                out.println(buildDebugOutput());
+            } catch (Exception e) {
+                Jmvc.logError(e.toString());
+            }
         }
         out.flush();
         out.close();
@@ -181,46 +202,58 @@ public class Jmvc {
     public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont, HttpErrors er) {
         try {
             String template = "";
+            String errorTemplate = "";
+
             switch (er) {
                 case E404:
                     response.setStatus(404);
+                    errorTemplate = "404.html";
                     break;
                 case E500:
                     response.setStatus(500);
+                    errorTemplate = "500.html";
                     break;
                 case CUSTOM:
+                    errorTemplate = "500.html";
                     response.setStatus(500);
                     break;
             }
-            template = Jmvc.readWithStringBuilder(cont.getRealPath("/") + "error_pages" + File.separator + "404.html");
+
+            template ="";// Jmvc.readWithStringBuilder(cont.getRealPath("/") + "error_pages" + File.separator + errorTemplate);
+            response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
             PrintWriter out = response.getWriter();
-            String message = e.toString();
-            String html = "<h1>Something went wrong: </h1>";
-            html += "<pre>" + message + "</pre>";
-            StackTraceElement traceElements[] = e.getStackTrace();
-            html += "<h2>Stacktrace: </h2>";
-            html += "<pre>";
-            for (StackTraceElement elem : traceElements) {
-                html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
-            }
-            html += "</pre>";
-            Throwable c = e.getCause();
-            if (c != null) {
-                String cause = e.getCause().toString();
-                html += "<h2>Exception caused by: </h2>";
-                html += "<pre>" + cause + "</pre>";
+            if (Settings.get("DEBUG").equals("TRUE")) {
+                String message = e.toString();
+                String html = "<h1>Something went wrong: </h1>";
+                html += "<pre>" + message + "</pre>";
+                StackTraceElement traceElements[] = e.getStackTrace();
+                html += "<h2>Stacktrace: </h2>";
                 html += "<pre>";
-                StackTraceElement[] causeTraceElements = e.getCause().getStackTrace();
-                for (StackTraceElement elem : causeTraceElements) {
+                for (StackTraceElement elem : traceElements) {
                     html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
                 }
                 html += "</pre>";
+                Throwable c = e.getCause();
+                if (c != null) {
+                    String cause = e.getCause().toString();
+                    html += "<h2>Exception caused by: </h2>";
+                    html += "<pre>" + cause + "</pre>";
+                    html += "<pre>";
+                    StackTraceElement[] causeTraceElements = e.getCause().getStackTrace();
+                    for (StackTraceElement elem : causeTraceElements) {
+                        html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
+                    }
+                    html += "</pre>";
+                }
+                template = template.replace("<!--%error%-->", html);
+                String debugInfo = "<div style='margin:10px auto;padding:5px;width:50%;font:10px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
+                debugInfo += "<div style='background-color:#000;color:#fff'> Database queries ran: " + dbDebug.size() + "</div>";
+                for (String s : dbDebug) {
+                    debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + "</div>";
+                }
+                debugInfo += "</div>";
             }
-            template = template.replace("<% error %>", html);
             out.println(template);
-            if (debug) {
-                out.println(getDebugInfo());
-            }
             out.flush();
         } catch (Exception exc) {
             logError("[Jmvc:loadErrorPage] " + exc.getMessage());
@@ -247,27 +280,7 @@ public class Jmvc {
         return params;
     }
 
-    /**
-     * Reads the file from disk and returns the content as a
-     * string. Used to load templates.
-     * 
-     * @param fileName
-     *            The name of the file to be read.
-     * @return Returns the contents of the file.
-     * @throws java.io.IOException
-     */
-    static String readWithStringBuilder(String fileName) throws IOException {
-        Reader in = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
-        BufferedReader br = new BufferedReader(in);
-        String line;
-        StringBuilder result = new StringBuilder();
-        while ((line = br.readLine()) != null) {
-            result.append(line).append("\n");
-        }
-        br.close();
-        in.close();
-        return result.toString();
-    }
+    
 
     /**
      * Loads a model from J2mvc.
@@ -386,11 +399,11 @@ public class Jmvc {
      * Append debug info
      * @param debug
      */
-    public void debug(boolean debug) {
-        Jmvc.debug = debug;
+    public void debug(boolean debugMode) {
+        debug = debugMode;
     }
 
-    private String buildDebugOutput() {
+    private String buildDebugOutput() throws Exception {
         long now = System.nanoTime();
         long then = (Long) request.getAttribute("begin_time");
         String debugInfo = "<div style='margin:10px auto;padding:5px;width:50%;font:11px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
@@ -409,43 +422,31 @@ public class Jmvc {
                 debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + ": " + session.tempHM.get(s) + "</div>";
             }
         }
-        if (this.cache != null) {
-            debugInfo += "<div style='background-color:#000;color:#fff'><b>Permanent session data</b></div>";
-            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Total objects: " + cache.getStatistics().getObjectCount() + "</div>";
-            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache hits: " + cache.getStatistics().getCacheHits() + "</div>";
-            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache misses: " + cache.getStatistics().getCacheMisses() + "</div>";
-            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Average get time: " + cache.getStatistics().getAverageGetTime() + "</div>";
-            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Memory size: " + cache.calculateInMemorySize() + "</div>";
-            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Average time: " + cache.getAverageGetTime() + "</div>";
-        }
-        debugInfo += "</div>";
-        return debugInfo;
-    }
-
-    public static String getDebugInfo() {
-        String debugInfo = "";
-        if (debug) {
-            debugInfo = "<div style='margin:10px auto;padding:5px;width:50%;font:10px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
-            debugInfo += "<div style='background-color:#000;color:#fff'> Database queries ran: " + dbDebug.size() + "</div>";
-            for (String s : dbDebug) {
+        if (db.getCache() != null) {
+            NumberFormat numForm = NumberFormat.getNumberInstance(Locale.ENGLISH);
+            numForm.setGroupingUsed(false);
+            numForm.setMinimumFractionDigits(0);
+            numForm.setMaximumFractionDigits(4);
+            long totalQueries = db.getCache().getStatistics().getCacheHits() + db.getCache().getStatistics().getCacheMisses();
+            double percentage = ((double) db.getCache().getStatistics().getCacheHits() / totalQueries) * 100;
+            debugInfo += "<div style='background-color:#000;color:#fff'><b>DB CACHE: " + db.getCache().getName() + "</b></div>";
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache objects: " + db.getCache().getStatistics().getObjectCount() + "</div>";
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache hits: " + db.getCache().getStatistics().getCacheHits() + "</div>";
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache misses: " + db.getCache().getStatistics().getCacheMisses() + "</div>";
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache in-memory hits: " + db.getCache().getStatistics().getInMemoryHits() + "</div>";
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache disk hits: " + db.getCache().getStatistics().getOnDiskHits() + "</div>";
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>In memory size: " + db.getCache().calculateInMemorySize() + "</div>";
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Memory store size: " + db.getCache().getMemoryStoreSize() + "</div>";
+            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache eficiency: " + numForm.format(percentage) + "%</div>";
+            debugInfo += "<div style='background-color:#000;color:#fff'>Cached queries</div>";
+            debugInfo += (db.getCache().getKeys().size() > 1) ? "<div style='height:200px;overflow:auto;'>" : "<div>";
+            for (Object o : db.getCache().getKeys()) {
+                String s = (String) o + ", ";
                 debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + "</div>";
-            }
-            if (cache != null) {
-                debugInfo += "<div style='background-color:#000;color:#fff'><b>Permanent session data</b></div>";
-                debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Total objects: " + cache.getStatistics().getObjectCount() + "</div>";
-                debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache hits: " + cache.getStatistics().getCacheHits() + "</div>";
-                debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Cache misses: " + cache.getStatistics().getCacheMisses() + "</div>";
-                debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Average get time: " + cache.getStatistics().getAverageGetTime() + "</div>";
-                debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Memory size: " + cache.calculateInMemorySize() + "</div>";
-                debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>Average time: " + cache.getAverageGetTime() + "</div>";
             }
             debugInfo += "</div>";
         }
+        debugInfo += "</div>";
         return debugInfo;
-    }
-
-    public static Cache getCache() {
-        initCache();
-        return cache;
     }
 }

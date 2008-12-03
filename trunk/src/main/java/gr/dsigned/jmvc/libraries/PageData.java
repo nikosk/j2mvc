@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.libraries;
 
+import gr.dsigned.jmvc.framework.View;
 import java.util.LinkedHashMap;
 
 /**
@@ -26,10 +27,16 @@ public class PageData extends LinkedHashMap<String, String> {
     private static final String cssLinkTemplate = "<link href='%1$s' media='screen' rel='stylesheet' type='text/css' />";
     private static final String scriptFileTemplate = "<script src='%1$s' type='text/javascript'></script>";
     private LinkedHashMap<String, StringBuilder> data = new LinkedHashMap<String, StringBuilder>();
+    private View view;
+    private String viewName;
 
-    public PageData() {
-        append("scripts", "");
-        append("css", "");
+    public PageData(String view_name) throws Exception {
+        this.view = new View(view_name);
+        this.viewName = view_name;
+    }
+
+    public PageData() throws Exception {
+        //this.view = new View(view_name);
     }
 
     public void append(String tag, String value) {
@@ -46,9 +53,9 @@ public class PageData extends LinkedHashMap<String, String> {
     public String get(Object key) {
         String result = "";
         StringBuilder sb = data.get(key);
-        if( sb != null){
+        if (sb != null) {
             result = sb.toString();
-        }else{
+        } else {
             result = super.get(key);
         }
         return result;
@@ -69,4 +76,10 @@ public class PageData extends LinkedHashMap<String, String> {
     public void appendCssFile(String s) {
         append("css", String.format(cssLinkTemplate, s));
     }
+
+    public View getView() {
+        return view;
+    }
+    
+    
 }

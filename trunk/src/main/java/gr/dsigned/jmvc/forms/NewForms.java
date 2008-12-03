@@ -50,7 +50,7 @@ public class NewForms extends Library {
     }
 
     public String renderFormAsList() {
-        return String.format("<form action='%1$s' method='POST' %2$s>%3$s</form>", getAction(), isEnctype(), buildAsUList());
+        return String.format("<form id='%4$s' action='%1$s' method='post' %2$s>%3$s</form>", getAction(), isEnctype(), buildAsUList(),getId());
     }
 
     public String build() {
@@ -116,7 +116,6 @@ public class NewForms extends Library {
         for (String k : data.keySet()) {
             fields.get(k).setValue(data.get(k));
         }
-
     }
 
     /**
@@ -199,7 +198,7 @@ public class NewForms extends Library {
     }
 
     public String getId() {
-        return id;
+        return id==null?"id_form":id;
     }
 
     public void setId(String id) {

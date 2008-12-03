@@ -47,8 +47,7 @@ public class Session extends Library {
                 if (name.substring(0, 2).equals("t_")) {
                     tempHM.put(name.substring(2), value);
                     session.removeAttribute(name);
-                }
-                else {
+                } else {
                     permHM.put(name, value);
                 }
             }
@@ -64,46 +63,55 @@ public class Session extends Library {
         String out = "";
         if (tempHM.containsKey(paramName)) {
             out = tempHM.get(paramName);
+        } else {
+            out = permHM.get(paramName);
         }
-        else {
-            out =  permHM.get(paramName);
-        }
-        return (out == null) ? "" : out ;
+        return (out == null) ? "" : out;
     }
 
-   /**
+    /**
      * Method that sets a permanant attribute to the session and to the appropriate hashmap
      * @param key
      * @param value
      */
     public void set(String key, String value) {
-        if(this.session == null){
+        if (this.session == null) {
             session = this.request.getSession(true);
+            String expiry = Settings.get("SESSION_EXPIRY");
+            if (!expiry.isEmpty()) {
+                session.setMaxInactiveInterval(Integer.parseInt(expiry));
+            }
         }
         session.setAttribute(key, value);
-        permHM.put(key, value) ;
+        permHM.put(key, value);
     }
-    
+
     /**
      * Method that sets a temporary attribute to the session and to the appropriate hashmap
      * @param key
      * @param value
      */
     public void setTemp(String key, String value) {
-        if(this.session == null){
+        if (this.session == null) {
             session = this.request.getSession(true);
+            String expiry = Settings.get("SESSION_EXPIRY");
+            if (!expiry.isEmpty()) {
+                session.setMaxInactiveInterval(Integer.parseInt(expiry));
+            }
         }
         session.setAttribute("t_" + key, value);
-         tempHM.put(key, value) ;
+        tempHM.put(key, value);
     }
 
     /**
-     * Method that sets all values of a hashmap as attributes to the session
-     * @param data
-     */    
-    public void setData(HashMap<String, String> data) {
-        for (String key : data.keySet()) {
-            this.session.setAttribute(key, data.get(key));
+     * invalidates session and initialise parametres
+     */
+    public void invalidate() {
+        if (session != null) {
+            session.invalidate();
+            session = null;
         }
+        permHM.clear();
+        tempHM.clear();
     }
 }

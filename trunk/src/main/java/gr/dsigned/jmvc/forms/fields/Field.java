@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import static gr.dsigned.jmvc.libraries.Localization.get;
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
@@ -50,6 +50,8 @@ public class Field {
         ALPHA,
         ALPHANUM,
         DATE,
+        PASSED_CHARS_ONLY,
+        DATE_NOT_REQUIRED,
         ALLOWED_EXTENSIONS,
         MAX_FILE_SIZE,
         DEFAULT_NOT_ALLOWED,
@@ -57,8 +59,12 @@ public class Field {
         PROFILE_NAME,
         CAPTCHA,
         EITHER,
-        ALPHANUM_WITH_SPACES,
-        XSS_CLEAN
+        /**
+         * Automatically clean input of this field 
+         * from html. Second param is a comma-separated list of allowed HTML tags
+         */
+        XSS_CLEAN,
+        ALPHANUM_WITH_SPACES
     }
     protected String fieldName;
     protected String label;
@@ -66,7 +72,9 @@ public class Field {
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
     protected ArrayList<String> errors = new ArrayList<String>();
-
+    
+    public static final String GREEK_ALPHA_PUNCTUATION= "[0-9a-zA-Zα-ωΑ-Ωάέήίόώύ;.?\\-_ ]*";
+    
     /**
      * Create a new field with initial name and value.
      * No field label. 
@@ -131,19 +139,19 @@ public class Field {
             switch (r._1) {
                 case REQUIRED:
                     if (getValue().isEmpty()) {
-                        addError(label + " is required.");
+                        addError(get("The field ") + label + get(" is required."));
                         validates = false;
                     }
                     break;
                 case MAX_LENGTH:
                     if (!getValue().isEmpty() && getValue().length() > Integer.parseInt(r._2)) {
-                        addError(label + " too long.");
+                        addError(get("The field ") + label + get("is too long."));
                         validates = false;
                     }
                     break;
                 case MIN_LENGTH:
                     if (!getValue().isEmpty() && getValue().length() < Integer.parseInt(r._2)) {
-                        addError(label + " too short.");
+                        addError(get("The field ") + label + get(" is too short."));
                         validates = false;
                     }
                     break;
@@ -152,7 +160,7 @@ public class Field {
                         p = Pattern.compile("[0-9a-zA-Z]+(\\.{0,1}[0-9a-zA-Z\\+\\-_]+)*@[0-9a-zA-Z\\-]+(\\.{1}[a-zA-Z]{2,6})+");
                         m = p.matcher(getValue());
                         if (!m.matches()) {
-                            addError(label + " is not a valid email.");
+                            addError(get("The field ") + label + get(" is not a valid email."));
                             validates = false;
                         }
                     }
@@ -163,7 +171,7 @@ public class Field {
                         p = Pattern.compile("(http):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?");
                         m = p.matcher(domain);
                         if (!m.matches()) {
-                            addError(label + " is not a valid domain.");
+                            addError(get("The field ") + label + get(" is not a valid domain."));
                             validates = false;
                         }
                     }
@@ -173,7 +181,7 @@ public class Field {
                         p = Pattern.compile("\\d*");
                         m = p.matcher(this.getValue());
                         if (!m.matches()) {
-                            addError(label + " should consist of numbers.");
+                            addError(get("The field ") + label + get(" should consist of numbers."));
                             validates = false;
                         }
                     }
@@ -183,7 +191,7 @@ public class Field {
                         p = Pattern.compile("[a-zA-Z]*");
                         m = p.matcher(this.getValue());
                         if (!m.matches()) {
-                            addError(label + " should consist of letters.");
+                            addError(get("The field ") + label + get(" should consist of letters."));
                             validates = false;
                         }
                     }
@@ -193,7 +201,7 @@ public class Field {
                         p = Pattern.compile("\\w*");
                         m = p.matcher(this.getValue());
                         if (!m.matches()) {
-                            addError(label + " should consist of numbers and letters.");
+                            addError(get("The field ") + label + get(" should consist of numbers and letters."));
                             validates = false;
                         }
                     }
@@ -203,20 +211,40 @@ public class Field {
                         p = Pattern.compile("[0-9a-zA-Zα-ωΑ-Ωάέήίόώύ ]*");
                         m = p.matcher(this.getValue());
                         if (!m.matches()) {
-                            addError(label + " should consist of numbers, letters and spaces.");
+                            addError(get("The field ") + label + get(" should consist of numbers, letters and spaces."));
+                            validates = false;
+                        }
+                    }
+                    break;
+                case PASSED_CHARS_ONLY:
+                    if (!getValue().isEmpty()) {
+                        p = Pattern.compile(r._2);
+                        m = p.matcher(this.getValue());
+                        if (!m.matches()) {
+                            addError(get("The field ") + label + get(" should consist of " + r._2));
+                            validates = false;
+                        }
+                    }
+                    break;
+                case PROFILE_NAME:
+                    if (!getValue().isEmpty()) {
+                        p = Pattern.compile("[a-zA-Z0-9]{1,}[a-zA-Z0-9-_]*");
+                        m = p.matcher(this.getValue());
+                        if (!m.matches()) {
+                            addError(get("The field ") + label + get(" should consists characters of numbers, letters (a-z,A-Z) or '-' '_'. Cannot start with '-' or '_'"));
                             validates = false;
                         }
                     }
                     break;
                 case EQUALS:
                     if (!getValue().isEmpty() && !this.getValue().equals(r._2)) {
-                        addError(label + " does not match.");
+                        addError(get("The field ") + label + get(" does not match with the above field."));
                         validates = false;
                     }
                     break;
                 case EITHER:
                     if (getValue().isEmpty() && r._2.isEmpty()) {
-                        addError("Both cannot be empty.");
+                        addError(get("Both fields cannot be empty."));
                         validates = false;
                     }
                     break;
@@ -228,17 +256,29 @@ public class Field {
                             dtFormatter.parse(this.getValue());
                         } catch (ParseException ex) {
                             validates = false;
-                            addError(label + " is not of the correct date format: " + r._2);
+                            addError(get("The field ") + label + get(" is not of the correct date format: ") + r._2);
                         }
                     } else {
                         validates = false;
-                        addError(label + " is not of the correct date format " + r._2);
+                        addError(get("The field ") + label + get(" is not of the correct date format ") + r._2);
+                    }
+                    break;
+                case DATE_NOT_REQUIRED:
+                    if (!this.getValue().isEmpty()) {
+                        SimpleDateFormat dtFormatter = new SimpleDateFormat(r._2);
+                        dtFormatter.setLenient(false);
+                        try {
+                            dtFormatter.parse(this.getValue());
+                        } catch (ParseException ex) {
+                            validates = false;
+                            addError(get("The field ") + label + get(" is not of the correct date format: ") + r._2);
+                        }
                     }
                     break;
                 case XSS_CLEAN:
                     String[] tags = r._2.split(",");
                     HTMLInputFilter filter = new HTMLInputFilter(true);
-                    for (String tag : tags) {
+                    for(String tag : tags){
                         filter.setVAllowed(tag);
                     }
                     setValue(filter.filter(getValue()).trim());
@@ -273,6 +313,10 @@ public class Field {
             out += "<span>" + s + " </span>";
         }
         return out;
+    }
+
+    public ArrayList<String> getErrorList() {
+        return errors;
     }
 
     public String renderLabel() {

@@ -31,6 +31,16 @@ public class SubmitButton extends Field {
     public SubmitButton(String value) {
         super("submit", value);
     }
+    
+    /**
+     * 
+     * @param fieldName
+     * @param value
+     * @param rules
+     */
+    public SubmitButton(String key, String value) {
+        super(key, value);
+    }
 
     @Override
     public String renderField() {
