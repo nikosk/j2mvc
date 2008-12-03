@@ -21,6 +21,7 @@ import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.libraries.Input;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.libraries.Session;
+import gr.dsigned.jmvc.framework.View;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,6 +32,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import javax.servlet.ServletContext;
@@ -50,16 +52,16 @@ public class Jmvc {
     private static final Logger debugLogger = Logger.getLogger("Debug");
     private static final Logger errorLogger = Logger.getLogger("Error");
     private static boolean debug = Settings.get("DEBUG").equals("TRUE");
+    private boolean showDebugLog = Settings.get("DEBUG_LOG").equals("TRUE");
     private static final boolean cacheEnabled = Settings.get("CACHE_PAGES").equals("TRUE");
     private static ArrayList<String> dbDebug;
     public HttpServletRequest request;
     public ServletContext context;
-    public static LinkedHashMap<String, String> parsedTemplates = new LinkedHashMap<String, String>();
+    public static HashMap<String, View> parsedViews = null;
     public HttpServletResponse response;
     public DB db;
     public Input input;
     public Session session;
-    public PageData pageData;
     private static CacheManager singletonManager;
     private static Cache cache;
 
@@ -74,11 +76,13 @@ public class Jmvc {
                 db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
             }
         }
-        pageData = new PageData();
+        if (parsedViews == null) {
+            parsedViews = new HashMap<String, View>();
+        }
         if (cacheEnabled) {
             initCache();
         }
-        if(debug){
+        if (debug) {
             dbDebug = new ArrayList<String>();
         }
     }
@@ -114,14 +118,14 @@ public class Jmvc {
         if (Settings.AutoLoad.SESSION.loadIt()) {
             session = new Session(req);
         }
-        
+
     }
 
     /**
      * Loads a template and replaces tags with the variables
      * stored in the HashMap. The key is used to find the
      * tag in the template.
-     * 
+     *
      * @param view_name
      *            The name of the template (the path and
      *            extension is added automatically)
@@ -130,43 +134,40 @@ public class Jmvc {
      *            of the tag to be replaced and the value
      *            the replacement.
      */
-    public void loadView(String view_name, LinkedHashMap<String, String> data) throws IOException, Exception {
-        String template = "";
-        if (parsedTemplates.containsKey(view_name)) {
-            template = parsedTemplates.get(view_name);
-        } else {
-            template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
-            template = Parser.parse(template);
-            parsedTemplates.put(view_name, template);
+    public void loadView(String view_name, LinkedHashMap<String, String> data) throws Exception {
+        View view = parsedViews.get(view_name);
+        if (view == null) {
+            String template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
+            view = new View(template);
+            parsedViews.put(view_name, view);
         }
-        if (data != null) {
-            boolean dollarFound = false;
-            for (String key : data.keySet()) {
-                String value = data.get(key);
-                dollarFound = value.indexOf("$") != -1 ? true : false;
-                if (dollarFound) {
-                    value = value.replaceAll("\\$", "!d!");
-                }
-                template = template.replaceAll("<% ?" + key + " ?%>", value);
-                if (dollarFound) {//replace it back
-                    template = template.replaceAll("\\!d!", "\\$");
+        if (debug) {
+            for (String s : view.getPositions().values()) {
+                if (!data.containsKey(s)) {
+                    throw new Exception("Page data not filled. Missing: " + s);
                 }
             }
         }
+        String output = view.format(data);
         if (cacheEnabled && request.getAttribute("CACHE_PAGE") != null) {
             String cacheKey = request.getRequestURI();
             Element e = getCache().get(cacheKey);
             if (e == null) {
-                Element pageCacheElement = new Element(cacheKey, template);
+                Element pageCacheElement = new Element(cacheKey, output);
                 getCache().put(pageCacheElement);
             }
         }
+
         response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out.println(template);
-        if (debug) {
-            out.println(buildDebugOutput());
+        out.write(output);
+        if (showDebugLog) {
+            try {
+                out.println(buildDebugOutput());
+            } catch (Exception e) {
+                Jmvc.logError(e.toString());
+            }
         }
         out.flush();
         out.close();
