@@ -23,8 +23,6 @@ import java.util.ArrayList;
  */
 public class RadioGroup extends Field {
 
-    private boolean checked = false;
-    private boolean disableAll = false;
     private ArrayList<RadioButton> radioButtons = new ArrayList<RadioButton>();
 
     /**

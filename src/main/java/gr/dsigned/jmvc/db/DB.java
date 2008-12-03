@@ -115,7 +115,7 @@ public abstract class DB {
         return updatedRows;
     }
 
-    private int executeUpdate(String sql) throws SQLException {
+    public int executeUpdate(String sql) throws SQLException {
         return executeUpdate(sql, null);
     }
 
@@ -488,7 +488,7 @@ public abstract class DB {
      * @throws SQLException 
      */
     public int delete(QuerySet qs) throws SQLException, Exception {
-        int i = executeUpdate(qs.compileDelete(), qs.getData());
+        int  i = executeUpdate(qs.compileDelete(), qs.getData());
         if (cacheEnabled) {
             invalidateCachedQueries(qs);
         }
@@ -502,7 +502,7 @@ public abstract class DB {
      * @throws java.sql.SQLException
      */
     public int count(QuerySet qs) throws SQLException, Exception {
-        String key = qs.compileCount() + qs.getData().toString();
+       String key = qs.compileCount() + qs.getData().toString();
         Hmap result;
         if (cacheEnabled) {
             Element e = getCache().get(key);
@@ -531,8 +531,8 @@ public abstract class DB {
      * @throws SQLException 
      */
     public String insert(QuerySet qs) throws SQLException, Exception {
-        String res = executeInsert(qs.compileInsert(), qs.getData());
-        if (cacheEnabled) {
+        String res =  executeInsert(qs.compileInsert(), qs.getData());
+       if (cacheEnabled) {
             invalidateCachedQueries(qs);
         }
         return res;

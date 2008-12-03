@@ -16,6 +16,7 @@ package gr.dsigned.jmvc.db;
 
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.Settings;
+import gr.dsigned.jmvc.db.QuerySet.Operand;
 import java.sql.SQLException;
 
 /**
@@ -62,7 +63,7 @@ public class Model {
     public Hmap getById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from(tableName);
-        qs.where("id", id, QuerySet.Operand.EQUALS);
+        qs.where("id", id, Operand.EQUALS);
         return db.getObject(qs);
     }
     
@@ -76,7 +77,8 @@ public class Model {
     public int deleteById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.delete(tableName);
-        qs.where("id", id, QuerySet.Operand.EQUALS);
+        qs.where("id", id, Operand.EQUALS);
+        qs.limit(1);
         return db.delete(qs);
     }
     
@@ -90,5 +92,9 @@ public class Model {
         QuerySet qs = new QuerySet();
         qs.insert(tableName,bean);
         return db.insert(qs);
+    }
+
+    public void delete(String id) throws Exception {
+        db.delete(tableName, id);
     }
 }

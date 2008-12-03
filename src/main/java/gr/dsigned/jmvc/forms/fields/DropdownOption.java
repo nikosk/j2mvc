@@ -77,6 +77,6 @@ public class DropdownOption {
     }
     
     public String render(){
-        return String.format("<option value='%2$s' %3$s>%1$s</option>%n", getOptionLabel(), getValue(), (isSelected())? " selected " : "");
+        return String.format("<option value='%2$s' %3$s>%1$s</option>%n", getOptionLabel(), getValue(), (isSelected())? " selected='selected' " : "");
     }
 }

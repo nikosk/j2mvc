@@ -58,7 +58,7 @@ public class ArticleTest {
             t.start();
         }
         long timr = new Date().getTime();
-        long span = 1000 * 60;
+        long span = 1000 * 2;
         boolean run = true;
         while (run) {
             run = timr + span > new Date().getTime();

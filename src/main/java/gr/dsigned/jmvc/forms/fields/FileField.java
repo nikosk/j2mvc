@@ -18,7 +18,7 @@ import gr.dsigned.jmvc.forms.fields.Field.Rule;
 import gr.dsigned.jmvc.types.Tuple2;
 import java.io.File;
 import static org.apache.commons.io.FilenameUtils.getExtension;
-
+import static gr.dsigned.jmvc.libraries.Localization.get;
 /**
  * @author Vas Chryssikou <vchrys@gmail.com>
  */
@@ -31,7 +31,7 @@ public class FileField extends Field {
     /**
      * Constructs a file field
      * 
-     * @param label
+     * @param labelName
      * @param fieldName
      * @param uploadFile (a file containing the path taken the value from the form's post ie: new File($.input.post("file_"+fieldname)))
      * @param rules
@@ -52,8 +52,8 @@ public class FileField extends Field {
         for (Tuple2<Rule, String> r : rules) {
             switch (r._1) {
                 case REQUIRED:
-                    if (!f.exists()) {
-                        addError(getLabelName() + " is required.");
+                    if (f==null || !f.exists()) {
+                        addError(get("The field ") + getLabelName() + get(" is required."));
                         validates = false;
                     }
                     break;
@@ -68,7 +68,7 @@ public class FileField extends Field {
                             }
                         }
                         if (!found) {
-                            addError(getLabelName() + " is not of the allowed types " + r._2.replace("|", ", ") + ".");
+                            addError(get("The field ") + getLabelName() + get(" is not of the allowed types ") + r._2.replace("|", ", ") + ".");
                             validates = false;
                         }
                     }
@@ -78,7 +78,7 @@ public class FileField extends Field {
                         long allowedSize = Integer.parseInt(r._2);
                         long fileSize = f.length();
                         if(allowedSize < fileSize){
-                            addError(getLabelName() + " exceeds the max file size: "+r._2+".");
+                            addError(get("The field ") + getLabelName() + get(" exceeds the max file size: ")+r._2+".");
                             validates = false;
                         }
                     }

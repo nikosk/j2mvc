@@ -15,7 +15,7 @@
 package gr.dsigned.jmvc.forms.fields;
 
 import gr.dsigned.jmvc.types.Tuple2;
-
+import static gr.dsigned.jmvc.libraries.Localization.get;
 /**
  * @author Vas Chryssikou <vchrys@gmail.com>
  */
@@ -23,15 +23,14 @@ public class Checkbox extends Field {
 
     private boolean checked = false;
     private boolean disabled = false;
-    private String inputValue;
     String template = "<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s />%n";
 
     /**
-     * Note: A checkbox return only 0 or 1
+     * 
      * @param labelName
      * @param fieldName
-     * @param value If this string is empty the field will be unchecked. In any other case it will become checked 
-     * @param rules Only REQUIRED is valid
+     * @param value (the value we are going to get from the post:: if checked we are going to get the inputValue else an empty string)
+     * @param rules
      */
     public Checkbox(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
         super(labelName, fieldName, value, rules);
@@ -86,7 +85,7 @@ public class Checkbox extends Field {
             switch (r._1) {
                 case REQUIRED:
                     if (getValue().equals("0")) {
-                        addError(getLabelName() + " is required.");
+                        addError(get("The field ") + getLabelName() + get(" is required."));
                         validates = false;
                     }
                     break;

@@ -53,7 +53,7 @@ public class EditorField extends TextareaField {
                     "'theme_advanced_buttons3' : ''," +
                     "'entity_encoding' : 'raw', " +
                     "'theme_advanced_toolbar_align' : 'left'," +
-                    "'width':'450'," +
+                    "'width':'350'," +
                     "'height':'200'" +
                  "});</script>";
         return script + tArea;

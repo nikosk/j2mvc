@@ -17,7 +17,7 @@ package gr.dsigned.jmvc.forms.fields;
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.types.Tuple2;
 import java.util.ArrayList;
-
+import static gr.dsigned.jmvc.libraries.Localization.get;
 /**
  * @author Vas Chryssikou <vchrys@gmail.com>
  */
@@ -26,13 +26,13 @@ public class DropdownMenu extends Field {
     private boolean disabled = false;
     private ArrayList<DropdownOption> options = new ArrayList<DropdownOption>();
 
-    public static String DEFULT_VALUE = "" ;
+    private static final String DEFAULT_VALUE = "" ;
     String template = "<select name='%1$s' id='%2$s'>%3$s</select>%n";
     
     /**
      * Constructor for drop downmenu with default value field
      * 
-     * @param label
+     * @param labelName
      * @param fieldName
      * @param defaultValue (the value that is going to be selected when rendering the dropdown and will not be counted as correct input ie: Select value)
      * @param value (the value we are going to get from post)
@@ -44,11 +44,11 @@ public class DropdownMenu extends Field {
 
         if(value!=null && value.length()!=0){
             if(defaultValue!=null && defaultValue.length()!=0){
-               addOption(new DropdownOption(defaultValue, DEFULT_VALUE));
+               addOption(new DropdownOption(defaultValue, DEFAULT_VALUE));
             }
         }else{
             if(defaultValue!=null && defaultValue.length()!=0){
-               addOption(new DropdownOption(defaultValue, DEFULT_VALUE, true));
+               addOption(new DropdownOption(defaultValue, DEFAULT_VALUE, true));
             }
         }    
         
@@ -65,7 +65,7 @@ public class DropdownMenu extends Field {
     /**
      * Constructor for drop downmenu without default value field
      * 
-     * @param label
+     * @param labelName
      * @param fieldName
      * @param value (the value we are going to get from post)
      * @param optionValues ((key ie:id, label of option) options to render within the select tags)
@@ -167,14 +167,14 @@ public class DropdownMenu extends Field {
             switch (r._1) {
                 case REQUIRED:
                     if (this.getSelectedValue().isEmpty()) {
-                        addError(getLabelName() + " is required.");
+                        addError(get("The field ") + getLabelName() + get(" is required."));
                         validates = false;
                     }
                     break;
 //                case DEFAULT_NOT_ALLOWED:
 //                    System.out.println(getSelectedValue());
 //                    System.out.println(getValue());
-//                    if (this.getSelectedValue().isEmpty() || this.getSelectedValue().equalsIgnoreCase(DEFULT_VALUE)) {
+//                    if (this.getSelectedValue().isEmpty() || this.getSelectedValue().equalsIgnoreCase(DEFAULT_VALUE)) {
 //                        addError(getLabelName() + " cannot have the default value.");
 //                        validates = false;
 //                    }

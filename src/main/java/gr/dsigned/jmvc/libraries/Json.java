@@ -1,5 +1,5 @@
 /*
- *  Controller.java
+ *  Json.java
  * 
  *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
  * 
@@ -12,18 +12,18 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package gr.dsigned.jmvc.framework;
+package gr.dsigned.jmvc.libraries;
 
+import gr.dsigned.jmvc.types.Hmap;
 
 /**
  *
- * @author Nikosk <nikosk@dsigned.gr>
+ * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
-public class Controller {
-
-    public Jmvc $ = null;
-
-    public Controller() throws Exception{
-    	$ = new Jmvc();
+public class Json {
+    
+    public Hmap readJson(){
+        return new Hmap();
     }
+    
 }

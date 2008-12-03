@@ -18,6 +18,7 @@ import gr.dsigned.jmvc.framework.Library;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -32,7 +33,7 @@ public class JMVCDate extends Library {
     public static final long weeks = 24 * days;
     public static final long months = 30 * days;
     public static final long years = 12 * months;
-
+    private static String[] monthNames = {"Ιανουαρίου","Φεβρουαρίου","Μαρτίου","Απριλίου", "Μαΐου", "Ιουνίου", "Ιουλίου", "Αυγούστου", "Σεπτέμβρη", "Οκτώβρη", "Νοέμβρη", "Δεκέμβρη"};
     public static enum TIMESPAN {
 
         YEAR, MONTH, WEEK, DAY, HOUR, MIN, SEC
@@ -111,6 +112,16 @@ public class JMVCDate extends Library {
         return sdf.format(d);
     }
 
+    public static Date stringToDate(String dateStr, String pattern) {
+        Date output = null;
+        try {
+            SimpleDateFormat df = new SimpleDateFormat(pattern);
+            output = df.parse(dateStr);
+        } catch (ParseException ex) {
+        }
+        return output;
+    }
+
     public static String formatDatetime(String datetime, String pattern) {
         String output = "";
         try {
@@ -123,7 +134,66 @@ public class JMVCDate extends Library {
         return output;
     }
 
+    public static String formatDatetime(String datetime, String input_pattern, String out_pattern) {
+        String output = "";
+        try {
+            SimpleDateFormat inFormatter = new SimpleDateFormat(input_pattern);
+            Date d = inFormatter.parse(datetime);
+            SimpleDateFormat outFormatter = new SimpleDateFormat(out_pattern);
+            output = outFormatter.format(d);
+        } catch (ParseException ex) {
+        }
+        return output;
+    }
+
     private static int getFlooredValue(Long v, Long d) {
         return (int) Math.floor(v / d);
     }
+    
+    public static String returnFormatedDate(Date date, String pattern){
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        return formatter.format(date);
+    }
+    public static String returnGreekFormatedDate(Date date, String pattern){
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        formatter.getDateFormatSymbols().setMonths(monthNames);
+        return formatter.format(date);
+    }
+    
+    public static Date addYears(Date date, int years)
+    {
+        GregorianCalendar gc = new GregorianCalendar() ;
+        gc.clear();
+        gc.setTime(date);
+        gc.add(GregorianCalendar.YEAR, years);
+        return gc.getTime();
+    }
+    
+    public static Date addMonths(Date date, int months)
+    {
+        GregorianCalendar gc = new GregorianCalendar() ;
+        gc.clear();
+        gc.setTime(date);
+        gc.add(GregorianCalendar.MONTH, months);
+        return gc.getTime();
+    }
+    
+    public static Date addDays(Date date, int days)
+    {
+        GregorianCalendar gc = new GregorianCalendar() ;
+        gc.clear();
+        gc.setTime(date);
+        gc.add(GregorianCalendar.DATE, days);
+        return gc.getTime();
+    }
+
+    public static Date addSecs(Date date, int secs)
+    {
+        GregorianCalendar gc = new GregorianCalendar() ;
+        gc.clear();
+        gc.setTime(date);
+        gc.add(GregorianCalendar.SECOND, secs);
+        return gc.getTime();
+    }
+
 }

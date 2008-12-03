@@ -68,6 +68,7 @@ public class Input extends Library {
     public void setRequest(HttpServletRequest req) throws Exception {
         if (req != null) { // check for null or tests fail
             this.request = req; // Set the local request
+
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
             if (isMultipart) {
                 ServletFileUpload upload = new ServletFileUpload();
@@ -77,10 +78,11 @@ public class Input extends Library {
                     String name = item.getFieldName();
                     InputStream stream = item.openStream();
                     if (item.isFormField()) {
-                        postParams.put(name, Streams.asString(stream));
+                        postParams.put(name, Streams.asString(stream,"UTF-8"));
                     } else {
                         if (item.getName() != null && item.getName().length() != 0) {
                             File tmpDir = new File(context.getRealPath("/") + "tmp/");
+
                             String tmpfileName = String.valueOf(new Date().getTime() + "." + getExtension(item.getName()));
                             File tmpFile = new File(context.getRealPath("/") + "tmp/" + tmpfileName);
                             tmpDir.mkdirs();
