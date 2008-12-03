@@ -19,11 +19,12 @@ import gr.dsigned.jmvc.db.DB;
 import gr.dsigned.jmvc.db.Model;
 import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.libraries.Input;
-import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.libraries.Session;
+import gr.dsigned.jmvc.framework.View;
 
+import gr.dsigned.jmvc.libraries.PageData;
+import gr.dsigned.jmvc.types.Hmap;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -32,10 +33,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import java.util.Locale;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,11 +49,12 @@ public class Jmvc {
     private static final Logger infoLogger = Logger.getLogger("Info");
     private static final Logger debugLogger = Logger.getLogger("Debug");
     private static final Logger errorLogger = Logger.getLogger("Error");
-    private boolean debug = Settings.get("DEBUG").equals("TRUE");
-    private static ArrayList<String> dbDebug = null;
+    private static boolean debug = Settings.get("DEBUG").equals("TRUE");
+    private boolean showDebugLog = Settings.get("DEBUG_LOG").equals("TRUE");
+    private static final boolean cacheEnabled = Settings.get("CACHE_PAGES").equals("TRUE");
+    private static ArrayList<String> dbDebug;
     public HttpServletRequest request;
     public ServletContext context;
-    public static ConcurrentHashMap<String, String> parsedTemplates = null;
     public static HashMap<String, View> parsedViews = null;
     public HttpServletResponse response;
     private static String viewDirectory;
@@ -61,27 +65,33 @@ public class Jmvc {
     public DB db;
     public Input input;
     public Session session;
+    private static CacheManager singletonManager;
+    private static Cache cache;
 
     public Jmvc() throws Exception {
-        init();
-    }
-
-    private void init() throws Exception {
-        if (parsedTemplates == null) {
-//            parsedTemplates = new ConcurrentHashMap<String, String>();
-        }
         if (parsedViews == null) {
             parsedViews = new HashMap<String, View>();
         }
         if (dbDebug == null) {
             dbDebug = new ArrayList<String>();
         }
-
         input = new Input(null, null);
         if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none")) {
             if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql")) {
                 db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
             }
+        }
+    }
+    /**
+     * Creates an new Page cache if not already created.
+     *
+     */
+    private static void initCache() {
+        if (cache == null) {
+            singletonManager = CacheManager.create();
+            cache = new Cache("pageCache", 10, true, false, 3600, 3600);
+            singletonManager.addCache(cache);
+            cache = singletonManager.getCache("pageCache");
         }
     }
 
@@ -92,6 +102,7 @@ public class Jmvc {
     public HttpServletRequest getRequest() {
         return request;
     }
+
     /**
      * Return the directory that contains the html files of 
      * the views
@@ -113,7 +124,7 @@ public class Jmvc {
         context = cont;
         input = new Input(request, context);
         session = new Session(req);
-        viewDirectory = context.getRealPath("/") +"views"+ File.separator;
+        viewDirectory = context.getRealPath("/") + "views" + File.separator;
         if (debug) {
             dbDebug = new ArrayList<String>();
         }
@@ -123,7 +134,7 @@ public class Jmvc {
      * Loads a template and replaces tags with the variables
      * stored in the HashMap. The key is used to find the
      * tag in the template.
-     * 
+     *
      * @param view_name
      *            The name of the template (the path and
      *            extension is added automatically)
@@ -132,57 +143,34 @@ public class Jmvc {
      *            of the tag to be replaced and the value
      *            the replacement.
      */
-    public void loadViewOld(String view_name, LinkedHashMap<String, String> data) throws IOException {
-        String template = "";
-        if (parsedTemplates.containsKey(view_name)) {
-            template = parsedTemplates.get(view_name);
-        } else {
-            //template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
-            template = Parser.parse(template);
-            parsedTemplates.put(view_name, template);
-        }
-        if (data != null) {
-            boolean dollarFound = false;
-            for (String key : data.keySet()) {
-                String value = data.get(key);
-                dollarFound = value.indexOf("$") != -1 ? true : false;
-                if (dollarFound) {
-                    value = value.replaceAll("\\$", "!d!");
-                }
-                template = template.replaceAll("<% ?" + key + " ?%>", value);
-                if (dollarFound) {//replace it back
-                    template = template.replaceAll("\\!d!", "\\$");
-                }
-            }
-        }
-        response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        out.println(template);
-        if (debug) {
-            try {
-                out.println(buildDebugOutput());
-            } catch (Exception e) {
-                Jmvc.logError(e.toString());
-            }
-        }
-        out.flush();
-        out.close();
-    }
-
-    public void loadView(String view_name, PageData data) throws IOException {
+    public void loadView(String view_name, LinkedHashMap<String, String> data) throws Exception {
         View view = parsedViews.get(view_name);
         if (view == null) {
-            //String template = "/views/" + view_name + ".html";
-            view = data.getView();
+            String template = View.readViewTemplate(context.getRealPath("/") + "/views/" + view_name + ".html");
+            view = new View(template);
             parsedViews.put(view_name, view);
         }
-        String output = view.renderView(data);
+        if (debug) {
+            for (String s : view.getPositions().values()) {
+                if (!data.containsKey(s)) {
+                    throw new Exception("Page data not filled. Missing: " + s);
+                }
+            }
+        }
+        String output = view.format(data);
+        if (cacheEnabled && request.getAttribute("CACHE_PAGE") != null) {
+            String cacheKey = request.getRequestURI();
+            Element e = getCache().get(cacheKey);
+            if (e == null) {
+                Element pageCacheElement = new Element(cacheKey, output);
+                getCache().put(pageCacheElement);
+            }
+        }
         response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out.println(output);
-        if (debug) {
+        out.write(output);
+        if (showDebugLog) {
             try {
                 out.println(buildDebugOutput());
             } catch (Exception e) {
@@ -201,7 +189,7 @@ public class Jmvc {
      */
     public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont, HttpErrors er) {
         try {
-            String template = "";
+            
             String errorTemplate = "";
 
             switch (er) {
@@ -219,12 +207,13 @@ public class Jmvc {
                     break;
             }
 
-            template ="";// Jmvc.readWithStringBuilder(cont.getRealPath("/") + "error_pages" + File.separator + errorTemplate);
+            View view = new View(View.readViewTemplate(cont.getRealPath("/") + "error_pages" + File.separator + errorTemplate));
             response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
             PrintWriter out = response.getWriter();
+            String html = "";
             if (Settings.get("DEBUG").equals("TRUE")) {
                 String message = e.toString();
-                String html = "<h1>Something went wrong: </h1>";
+                html = "<h1>Something went wrong: </h1>";
                 html += "<pre>" + message + "</pre>";
                 StackTraceElement traceElements[] = e.getStackTrace();
                 html += "<h2>Stacktrace: </h2>";
@@ -245,7 +234,7 @@ public class Jmvc {
                     }
                     html += "</pre>";
                 }
-                template = template.replace("<!--%error%-->", html);
+                
                 String debugInfo = "<div style='margin:10px auto;padding:5px;width:50%;font:10px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
                 debugInfo += "<div style='background-color:#000;color:#fff'> Database queries ran: " + dbDebug.size() + "</div>";
                 for (String s : dbDebug) {
@@ -253,7 +242,9 @@ public class Jmvc {
                 }
                 debugInfo += "</div>";
             }
-            out.println(template);
+            PageData data = new PageData();
+            data.append("error", html);
+            out.println(view.format(data));
             out.flush();
         } catch (Exception exc) {
             logError("[Jmvc:loadErrorPage] " + exc.getMessage());
@@ -279,8 +270,6 @@ public class Jmvc {
         ArrayList<String> params = new ArrayList<String>(Arrays.asList(path.split("/")));
         return params;
     }
-
-    
 
     /**
      * Loads a model from J2mvc.
@@ -401,6 +390,11 @@ public class Jmvc {
      */
     public void debug(boolean debugMode) {
         debug = debugMode;
+    }
+
+    public static Cache getCache() {
+        initCache();
+        return cache;
     }
 
     private String buildDebugOutput() throws Exception {
