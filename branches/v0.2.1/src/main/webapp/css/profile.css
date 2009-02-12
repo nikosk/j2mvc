@@ -1,0 +1,81 @@
+/* 
+    Document   : profile
+    Created on : 16 Σεπ 2008, 4:24:32 μμ
+    Author     : user
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+.greyText{color: #999999;}
+.boldText{font-weight:bolder;}
+.left{float:left;}
+.right{float:right;}
+.marginUpDown{margin:10px 0px 10px;}
+.leftWP{float:left; margin-left:25px;}/*With extra padding*/  
+.floatWrapper{overflow:hidden;}
+
+#screen_name
+{
+  font-size:30px;
+  font-weight:bolder;
+}
+
+#quote
+{
+  border: 1px dashed #000000;
+  font-style: italic;
+  font-size: 22px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+#avatarFormWrapper
+{
+    
+}
+
+#screenNameQuoteHolder{overflow:hidden;height:100%;}
+#screenName{font-size:30px;font-weight:bolder;float:left;}
+#quote{float:left;border: 1px dashed #000000;font-style: italic;color: #ccc;cursor: pointer; margin-left:25px;}
+#friendsHolder, #groupsHolder, #groupHeaderHolder{overflow: hidden;}
+.hr{border-top: 1px dotted #CFCFCF ;}
+
+#groupsOwner{float:left;}
+#groupLinks{float:left; margin-left:430px;}
+
+#friendActions{ text-align: center;}
+
+.friendDetails, .groupDetails{ float:left; overflow: hidden; padding: 0px 10px 20px 0px}
+.friendThumb, .groupThumb{float:left;}
+.friendRest, .groupRest {float:left; padding : 0px 5px 0px 5px; }
+.friendScname { font-weight:bolder; font-size:14px;margin-bottom:20px;}
+.groupTitle { font-weight:bolder; font-size:14px;margin-bottom:3px;}
+
+#sportsHolder, #teamsHolder{text-align:center; width: 370px;overflow:hidden; border:1px solid #000; padding:6px; background-color: #efefef; float:right; font-size:11px; margin-top:6px;}
+.assignedSportDiv, .assignedTeamDiv { float:left; border: 1px dotted #B8B89F; margin:4px; font-weight: bolder;}
+
+/*#fetchedTeams{ float:left; padding: 4px; margin-top: 10px; border: 1px solid #000; background-color: #efefef; width: 180px; font-weight:bold;}*/
+#fetchedTeams{margin-left:20px;}
+#fetchedTeams div {margin-top: 4px;}
+#fetchedTeams img {margin-right: 4px;}
+
+.editCategoryTitle{ border-bottom: 1px dotted #CFCFCF; margin-bottom:10px; font-weight:bolder; }
+#editTeams{margin-top:30px;}
+
+#greatestMomentForm textarea{width: inherit; height: inherit !important;}
+
+#teamsLogos{overflow:hidden; border:1px dotted #AFAFAF; padding: 3px; text-align:center;}
+#teamsLogosInner{ margin:0 auto;}
+
+#personalInfoUL { margin:0px !important; }
+.labelBox{height:15px; padding:5px; font-size:11px; font-weight:bolder; background-color: #41454A; color:#FFFFFF; margin-top:5px;}
+.boxContainer{background-color: #efefef; padding:5px; font-size:11px; /*font-style:italic;*/ }
+
+.divFriend, .divGroup{overflow:hidden;height:100%; margin-bottom: 15px;}
+.friendImgNameDiv, .groupTextHolder{ float:left;margin-left: 5px;}
+.friendName, .groupName{ font-weight: bolder; font-size:14px;    }
+.friendMsg{margin-top:15px;}
