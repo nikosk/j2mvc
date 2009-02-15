@@ -14,14 +14,11 @@
  */
 package gr.dsigned.jmvc.framework;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Properties;
-import java.util.regex.Matcher;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.SortedMap;
 import java.util.regex.Pattern;
 
 /**
@@ -29,43 +26,43 @@ import java.util.regex.Pattern;
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
 public class Router {
-
-    private static Router instance;
-    private static final Properties properties = new Properties();
-    private File file;
     private Pattern extractControllerMethodPattern = Pattern.compile(".*\\((\\d)\\).*");
+    private LinkedHashMap<String,String> entries = new SortedMap() {}<String, String>();
 
-    private Router() throws URISyntaxException, IOException {
-        URL res = Router.class.getResource("routes.xml");
-        URI uri = new URI(res.toString());
-        file = new File(uri);
-        properties.loadFromXML(new FileInputStream(file));
-        
+    public Router(){
+        entries.put("/admin/*/", "AdminController");
+        entries.put("/admin/articles/edit/", "AdminController.edit");
+        entries.put("/article/preview/", "AdminController");
+        ArrayList<String> entryKeys = new ArrayList(entries.keySet());
+        Collections.sort(entryKeys, new StringLengthComparator());
+        entries.
+        System.out.println("");
     }
-
-    public static Router getInstance() throws URISyntaxException, IOException {
-        if (instance == null) {
-            instance = new Router();
-        }
-        return instance;
-    }
-
+    
     public String getControllerName(String requestPath) {
-        String out = null;
-        for(Object o : properties.keySet()){
-            String str = o.toString();
-            if(extractControllerMethodPattern.matcher(str).matches()){
-                // /?[^/]*/([^/]+).*
-                out = "";
-                Pattern p = Pattern.compile("/?[^/]*/([^/]+).*");
-                Matcher m = p.matcher(str);
-                m.find();
-                if(m.group(1) != null & !m.group(1).isEmpty()){
-                    out = m.group(1);
-                }
-            }
-            Pattern p = Pattern.compile(o.toString(), Pattern.CASE_INSENSITIVE);
+      return "";
+    }
+    
+    private class StringLengthComparator implements Comparator{
+    	
+        @Override
+    	public int compare(Object t1, Object t2){            
+    		int BEFORE = -1;
+    		int EQUAL = 0;
+    		int AFTER = 1;
+    		if(t1.toString().length() > t2.toString().length()){
+    			return BEFORE;
+    		} else if(t1.toString().length() < t2.toString().length()){
+    			return AFTER;
+    		} else {
+    			return EQUAL;
+    		}
+    	}
+
+        @Override
+        public boolean equals(Object obj) {
+            return this.toString().length() == obj.toString().length();
         }
-        return out;
+    	
     }
 }

@@ -29,13 +29,9 @@ public class Adapter extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException{
+            throws ServletException, IOException {
         Router r = null;
-        try {
-            r = Router.getInstance();
-        } catch (URISyntaxException ex) {
-             response.getWriter().println(ex);
-        }
+        r = new Router();
         response.getWriter().println(r.getControllerName(request.getRequestURI()));
     }
 
