@@ -14,55 +14,59 @@
  */
 package gr.dsigned.jmvc.framework;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.SortedMap;
-import java.util.regex.Pattern;
+import java.util.TreeMap;
 
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
 public class Router {
-    private Pattern extractControllerMethodPattern = Pattern.compile(".*\\((\\d)\\).*");
-    private LinkedHashMap<String,String> entries = new SortedMap() {}<String, String>();
+    //private Pattern extractControllerMethodPattern = Pattern.compile(".*\\((\\d)\\).*");
 
-    public Router(){
-        entries.put("/admin/*/", "AdminController");
+    private SortedMap<String, String> entries = new TreeMap<String, String>(new StringLengthComparator());
+
+    public Router() {
+        entries.put("/admin/", "AdminController");
+        entries.put("/admim", "AdminController");
         entries.put("/admin/articles/edit/", "AdminController.edit");
         entries.put("/article/preview/", "AdminController");
-        ArrayList<String> entryKeys = new ArrayList(entries.keySet());
-        Collections.sort(entryKeys, new StringLengthComparator());
-        entries.
-        System.out.println("");
     }
-    
+
     public String getControllerName(String requestPath) {
-      return "";
+        for (String route : entries.keySet()) {
+            String cleanRoute = route.lastIndexOf("/")+1 == route.length() ? route.substring(0, route.length() - 1) : route;
+            String trimmedRequestURL = requestPath.length() > cleanRoute.length() ? requestPath.substring(0, cleanRoute.length()) : requestPath;
+            if (cleanRoute.equalsIgnoreCase(trimmedRequestURL)) {
+                return entries.get(route);
+            }
+        }
+        return "";
     }
-    
-    private class StringLengthComparator implements Comparator{
-    	
+
+    private class StringLengthComparator implements Comparator {
+
         @Override
-    	public int compare(Object t1, Object t2){            
-    		int BEFORE = -1;
-    		int EQUAL = 0;
-    		int AFTER = 1;
-    		if(t1.toString().length() > t2.toString().length()){
-    			return BEFORE;
-    		} else if(t1.toString().length() < t2.toString().length()){
-    			return AFTER;
-    		} else {
-    			return EQUAL;
-    		}
-    	}
+        public int compare(Object t1, Object t2) {
+            int BEFORE = -1;
+            int AFTER = 1;
+            if (t1.toString().length() > t2.toString().length()) {
+                return BEFORE;
+            } else if (t1.toString().length() < t2.toString().length()) {
+                return AFTER;
+            } else {
+                return t1.toString().compareTo(t2.toString());
+            }
+        }
 
         @Override
         public boolean equals(Object obj) {
-            return this.toString().length() == obj.toString().length();
+            if (this.toString().length() == obj.toString().length()) {
+                return (this.toString().compareTo(obj.toString()) == 0) ? true : false;
+            } else {
+                return this.toString().length() == obj.toString().length();
+            }
         }
-    	
     }
 }
