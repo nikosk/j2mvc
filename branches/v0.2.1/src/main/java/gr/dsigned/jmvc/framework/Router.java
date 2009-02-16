@@ -28,23 +28,30 @@ public class Router {
     private SortedMap<String, String> entries = new TreeMap<String, String>(new StringLengthComparator());
 
     public Router() {
-        entries.put("/admin/", "AdminController");
-        entries.put("/admim", "AdminController");
-        entries.put("/admin/articles/edit/", "AdminController.edit");
-        entries.put("/article/preview/", "AdminController");
+    }
+
+
+    protected void setEntries(SortedMap<String, String> entries) {
+        this.entries = new TreeMap(new StringLengthComparator());
+        this.entries.putAll(entries);
     }
 
     public String getControllerName(String requestPath) {
         for (String route : entries.keySet()) {
-            String cleanRoute = route.lastIndexOf("/")+1 == route.length() ? route.substring(0, route.length() - 1) : route;
+            String cleanRoute = route.lastIndexOf("/") + 1 == route.length() ? route.substring(0, route.length() - 1) : route;
             String trimmedRequestURL = requestPath.length() > cleanRoute.length() ? requestPath.substring(0, cleanRoute.length()) : requestPath;
-            if (cleanRoute.equalsIgnoreCase(trimmedRequestURL)) {
+            if (cleanRoute.contains("*")) {
+            } else if (cleanRoute.equalsIgnoreCase(trimmedRequestURL)) {
                 return entries.get(route);
             }
         }
         return "";
     }
 
+    /**
+     * Comparator used for the TreeMap. Compares Strings by length
+     * and if and only the lengths are equal compares them lecically.
+     */
     private class StringLengthComparator implements Comparator {
 
         @Override
