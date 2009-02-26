@@ -4,6 +4,7 @@ package gr.dsigned.jmvc.servlets;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import gr.dsigned.jmvc.framework.Command;
 import gr.dsigned.jmvc.framework.Router;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author nk
  */
-public class Adapter extends HttpServlet {
+public class ApplicationFrontController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -26,9 +27,8 @@ public class Adapter extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Router r = null;
-        r = new Router();
-        response.getWriter().println(r.getControllerName(request.getRequestURI()));
+        Command c = new Command(request);
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
