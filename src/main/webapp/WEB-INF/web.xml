@@ -14,7 +14,7 @@
     </listener>
     <servlet>
         <servlet-name>Adapter</servlet-name>
-        <servlet-class>gr.dsigned.jmvc.servlets.Adapter</servlet-class>
+        <servlet-class>gr.dsigned.jmvc.servlets.ApplicationFrontController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Adapter</servlet-name>
