@@ -8,13 +8,10 @@
     <context-param>
         <param-name>PAGECACHE</param-name>
         <param-value>TRUE</param-value>
-    </context-param>
-    <listener>
-        <listener-class>gr.dsigned.jmvc.listeners.J3mvcAppInitListener</listener-class>
-    </listener>
+    </context-param>    
     <servlet>
         <servlet-name>Adapter</servlet-name>
-        <servlet-class>gr.dsigned.jmvc.servlets.ApplicationFrontController</servlet-class>
+        <servlet-class>gr.dsigned.jmvc.Adapter</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Adapter</servlet-name>
