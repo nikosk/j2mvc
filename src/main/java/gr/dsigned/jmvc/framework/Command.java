@@ -14,8 +14,11 @@
  */
 package gr.dsigned.jmvc.framework;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -23,12 +26,26 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class Command {
 
-    private Method action;
+    Router r;
+    String controllerName;
+    HttpServletRequest request;
+    HttpServletResponse response;
 
-    public Command(HttpServletRequest request) {
+    public Command(HttpServletRequest request, HttpServletResponse response) {
+        this.request = request;
+        this.response = response;
+        r = new Router(request);
+        controllerName = r.getControllerName();
     }
 
-    public Page execute() {
+    public Page execute() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+        Class<Controller> controllerClass = (Class<Controller>) Class.forName("gr.dsigned.jmvc.controllers." + controllerName);
+        Constructor controllerConstructor = controllerClass.getConstructor(new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+        Controller controllerInstance = (Controller) controllerConstructor.newInstance(request, response);
+        Method controllerAction = controllerClass.getMethod(r.getControllerName(), new Class[0]);
+        if (controllerAction.getModifiers() != java.lang.reflect.Modifier.PRIVATE) { // We only call public methods
+            controllerAction.invoke(controllerInstance, new Object[0]);
+        }
         return new Page();
     }
 }

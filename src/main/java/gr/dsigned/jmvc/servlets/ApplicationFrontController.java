@@ -5,8 +5,11 @@ package gr.dsigned.jmvc.servlets;
  * and open the template in the editor.
  */
 import gr.dsigned.jmvc.framework.Command;
-import gr.dsigned.jmvc.framework.Router;
+import gr.dsigned.jmvc.framework.Page;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +30,14 @@ public class ApplicationFrontController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Command c = new Command(request);
-        
+        Command c = new Command(request, response);
+        Page p = null;
+        try {
+            p = c.execute();
+        } catch (Exception ex) {
+            Logger.getLogger(ApplicationFrontController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        request.getRequestDispatcher(p.toString()).forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
