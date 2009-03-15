@@ -62,7 +62,7 @@ public class Model {
     public Hmap getById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from(tableName);
-        qs.where("id", id, Operand.EQUAL);
+        qs.where("id", id, QuerySet.LogicOperands.EQUAL);
         return db.getObject(qs);
     }
     
@@ -76,7 +76,7 @@ public class Model {
     public int deleteById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.delete(tableName);
-        qs.where("id", id, Operand.EQUAL);
+        qs.where("id", id, QuerySet.LogicOperands.EQUAL);
         qs.limit(1);
         return db.delete(qs);
     }

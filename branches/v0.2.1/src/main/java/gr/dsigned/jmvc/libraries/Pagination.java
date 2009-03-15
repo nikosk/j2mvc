@@ -52,7 +52,7 @@ public class Pagination extends Library {
     private String nextLinkText = get("Next") + " &raquo;";
 
     public String createPagingLinks(int currentPage) {
-        return this.createPagingLinks(currentPage, PagingType.SEARCH);
+        return this.createLinks(currentPage, PagingType.SEARCH);
     }
 
     /**
@@ -60,7 +60,7 @@ public class Pagination extends Library {
      * @param currentPage
      * @return (string) html links of pagination
      */
-    public String createPagingLinks(int currentPage, PagingType type) {
+    public String createLinks(int currentPage, PagingType type) {
         StringBuilder sb = new StringBuilder();
         int pageCount = pageCount();
         if (totalRows > 0) {
