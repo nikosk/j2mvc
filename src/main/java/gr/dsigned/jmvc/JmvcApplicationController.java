@@ -1,5 +1,5 @@
 /*
- *  Adapter.java
+ *  JmvcApplicationController.java
  * 
  *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
  * 
@@ -18,13 +18,13 @@ import gr.dsigned.jmvc.exceptions.CustomHttpException;
 import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Jmvc;
-import gr.dsigned.jmvc.framework.Utils;
 import gr.dsigned.jmvc.libraries.Input;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.util.LinkedHashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,13 +34,15 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class Adapter extends HttpServlet {
+public class JmvcApplicationController extends HttpServlet {
 
     private static boolean debug = Settings.get("DEBUG").equals("TRUE");
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static LinkedHashMap<String, Class> controllerClasses;
+
+    @Override
+    public void init() throws ServletException {
+        controllerClasses = (LinkedHashMap<String, Class>) getServletContext().getAttribute("controllerClasses");
+    }
 
     /**
      * This is the entry point of your application. Given the URI of the request
@@ -59,20 +61,10 @@ public class Adapter extends HttpServlet {
             request.setAttribute("begin_time", System.nanoTime());
         } // keep time for debug purposes.
         request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
-        processRequestMain(request, response);
-    }
-
-    /**
-     * Will try to find a controller class with the name
-     * specified in the url. If the class exists it will
-     * find and execute the method specified in the URI.
-     *
-     */
-    private void processRequestMain(HttpServletRequest request, HttpServletResponse response) {
         String path = request.getRequestURI();
         try {
-            Class<Controller> c = (Class<Controller>) Class.forName(Settings.get("SYSTEM_PACKAGE") + ".controllers." + Utils.capitalize(Input.getController(path).get("controller")));
-            gr.dsigned.jmvc.framework.Controller o = c.newInstance();
+            Class c = controllerClasses.get(Input.getController(path));
+            Controller o = (Controller) c.newInstance();
             request.setAttribute("controller_name", Input.getController(path).get("controller") + "_page");
             o.$.setEnvironment(request, response, this.getServletContext());
             Method m = c.getMethod(Input.getController(path).get("method"), new Class[0]);
@@ -82,11 +74,6 @@ public class Adapter extends HttpServlet {
                 NoSuchMethodException e = new NoSuchMethodException("Method found but not callable for URI: " + path);
                 Jmvc.logError("[Adapter] " + e.getMessage());
             }
-        } catch (ClassNotFoundException e) {
-            /* The class was missing or wrong request. We need to see
-             * if the RequestHandler can handle it so we do nothing.*/
-            Jmvc.logError("[Adapter] " + e.getMessage());
-            Jmvc.loadErrorPage(e, response, this.getServletContext(), HttpErrors.E404);
         } catch (InstantiationException ie) {
             /*Something is wrong with the controller. Maybe the controller tried to
             do something weird in its constructor. We should display a 500 error page.*/
@@ -120,6 +107,7 @@ public class Adapter extends HttpServlet {
             Jmvc.loadErrorPage(e, response, this.getServletContext(), HttpErrors.E500);
         }
     }
+   
 
     /**
      * Handles the HTTP <code>GET</code> method.

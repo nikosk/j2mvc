@@ -14,7 +14,6 @@
  */
 package gr.dsigned.jmvc.db;
 
-import gr.dsigned.jmvc.db.enums.Join;
 import gr.dsigned.jmvc.types.Hmap;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,6 +27,64 @@ import java.util.ArrayList;
  */
 public class QuerySet {
 
+    public enum Join {
+
+        INNER("INNER"),
+        OUTER("OUTER"),
+        LEFT("LEFT"),
+        RIGHT("RIGHT");
+        private final String value;
+
+        Join(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public enum LogicOperands {
+
+        IS("IS"),
+        IS_NOT("IS NOT"),
+        IN("IN"),
+        NOT_IN("NOT IN"),
+        NULL("NULL"),
+        EQUAL("="),
+        NOT_EQUAL("!="),
+        GREATER_THAN(">"),
+        LESS_THAN("<"),
+        GREATER_THAN_OR_EQUAL(">="),
+        LESS_THAN_OR_EQUAL("<=");
+        private final String value;
+
+        LogicOperands(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return " " + value + " ";
+        }
+    }
+
+    public enum OrderBy {
+
+        ASC(" ASC "),
+        DESC(" DESC ");
+        private final String value;
+
+        OrderBy(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
     private String selectSet;
     private String selectDistinctSet;
     private String fromSet;
@@ -111,9 +168,9 @@ public class QuerySet {
     }
 
     /**
-     * Builds the where part of the query. Used internally by the public 
+     * Builds the where part of the query. Used internally by the public
      * where methods.
-     * @param column the column used by the where 
+     * @param column the column used by the where
      * @param value the value to compare
      * @param type type of where (AND or OR)
      * @return
@@ -126,14 +183,14 @@ public class QuerySet {
             whereSet += "\n" + type + " ";
         }
         checkSqlInValue(value);
-        whereSet += column + " " + Operand.IN + " (" + value + ")";
+        whereSet += column + " " + LogicOperands.IN + " (" + value + ")";
         return this;
     }
 
     /**
-     * Builds the where part of the query. 
-     * @param column the column used by the where 
-     * @param values 
+     * Builds the where part of the query.
+     * @param column the column used by the where
+     * @param values
      * @param value the value to compare
      * @param type type of where (AND or OR)
      * @return
@@ -145,15 +202,15 @@ public class QuerySet {
         } else {
             whereSet += "\n" + type + " ";
         }
-        whereSet += column + " " + Operand.IN + " (" + renderArrayListWithIds(values) + ")";
+        whereSet += column + " " + LogicOperands.IN + " (" + renderArrayListWithIds(values) + ")";
         return this;
     }
 
     /**
-     * Builds the where part of the query. 
-     * This methods compiles a query set if a sub query in select is needed 
-     * @param column the column used by the where 
-     * @param values 
+     * Builds the where part of the query.
+     * This methods compiles a query set if a sub query in select is needed
+     * @param column the column used by the where
+     * @param values
      * @param value the value to compare
      * @param type type of where (AND or OR)
      * @return
@@ -165,7 +222,7 @@ public class QuerySet {
         } else {
             whereSet += "\n" + type + " ";
         }
-        whereSet += column + " " + Operand.IN + " (" + innerQuery.compileSelect() + ")";
+        whereSet += column + " " + LogicOperands.IN + " (" + innerQuery.compileSelect() + ")";
         whereData.addAll(innerQuery.getData());
         sourceTables.addAll(innerQuery.getSourceTables());
         return this;
@@ -196,9 +253,9 @@ public class QuerySet {
 
     /**
      * Builds the where part of the query. Use with caution
-     * @deprecated 
-     * @param sql 
-     * @param values 
+     * @deprecated
+     * @param sql
+     * @param values
      * @param column the column used by the where
      * @param type type of where (AND or OR)
      * @return
@@ -217,7 +274,7 @@ public class QuerySet {
         return this;
     }
 
-    public QuerySet andClause(String column, String value, Operand operand, String type) throws SQLException {
+    public QuerySet andClause(String column, String value, LogicOperands operand, String type) throws SQLException {
         hasRan();
         String s = "\n" + column + " " + operand + " ? ";
         andClauseSet = andClauseSet == null ? s : type + " " + andClauseSet + s;
@@ -226,15 +283,15 @@ public class QuerySet {
     }
 
     /**
-     * Builds the where part of the query. Used internally by the public 
+     * Builds the where part of the query. Used internally by the public
      * where methods.
-     * @param column the column used by the where 
+     * @param column the column used by the where
      * @param value the value to compare
      * @param operand the type of the comparison (=,<> etc)
      * @param type type of where (AND or OR)
      * @return
      */
-    private QuerySet where(String column, String value, Operand operand, String type) throws SQLException {
+    private QuerySet where(String column, String value, LogicOperands operand, String type) throws SQLException {
         hasRan();
         if (whereSet == null) {
             whereSet = "\nWHERE ";
@@ -247,10 +304,10 @@ public class QuerySet {
     }
 
     /**
-     * Builds the where part of the query. Used internally by the public 
+     * Builds the where part of the query. Used internally by the public
      * where methods.
-     * @deprecated 
-     * @param column the column used by the where 
+     * @deprecated
+     * @param column the column used by the where
      * @param type type of where (AND or OR)
      * @return
      */
@@ -266,10 +323,10 @@ public class QuerySet {
     }
 
     /**
-     * Builds the where part of the query. Used internally by the public 
+     * Builds the where part of the query. Used internally by the public
      * where methods.
-     * @deprecated 
-     * @param column the column used by the where 
+     * @deprecated
+     * @param column the column used by the where
      * @param type type of where (AND or OR)
      * @return
      */
@@ -284,12 +341,12 @@ public class QuerySet {
         return this;
     }
 
-    public QuerySet orWhere(String key, String value, Operand operand) throws SQLException {
+    public QuerySet orWhere(String key, String value, LogicOperands operand) throws SQLException {
         hasRan();
         return where(key, value, operand, "OR");
     }
 
-    public QuerySet where(String key, String value, Operand operand) throws SQLException {
+    public QuerySet where(String key, String value, LogicOperands operand) throws SQLException {
         hasRan();
         return where(key, value, operand, "AND");
     }
@@ -313,7 +370,7 @@ public class QuerySet {
 
     /**
      * Builds a composite FROM part of the query.
-     * 
+     *
      * @param qs A QuerySet that produces data (a SELECT)
      * @param alias The alias for the intermediate table
      * @return queryset
@@ -359,7 +416,7 @@ public class QuerySet {
 
     /**
      * Build the LIMIT part
-     * @param limit 
+     * @param limit
      * @return
      */
     public QuerySet limit(int limit) throws SQLException {
@@ -449,7 +506,7 @@ public class QuerySet {
     }
 
     /**
-     * Accepts a SELECT type queryset and builds 
+     * Accepts a SELECT type queryset and builds
      * a union select between them.
      * @param qs A select type queryset
      * @return

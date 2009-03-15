@@ -118,7 +118,7 @@ public class Jmvc {
      *            of the tag to be replaced and the value
      *            the replacement.
      */
-    public void loadView(String view_name, LinkedHashMap<String,String> data) throws Exception {
+    public void loadView(String view_name, LinkedHashMap<String, String> data) throws Exception {
         View view = parsedViews.get(view_name);
         data.put("controller_name", request.getAttribute("controller_name").toString().trim());
         if (view == null) {
@@ -132,7 +132,7 @@ public class Jmvc {
                     throw new Exception("Page data not filled. Missing: " + s);
                 }
             }
-        }        
+        }
         String output = view.format(data);
         response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         response.setContentType("text/html");
@@ -360,6 +360,10 @@ public class Jmvc {
 
     public static void logError(String msg) {
         errorLogger.error(msg);
+    }
+
+    public static void logError(Exception e) {
+        errorLogger.error(e);
     }
 
     /**

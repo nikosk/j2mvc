@@ -9,9 +9,13 @@
         <param-name>PAGECACHE</param-name>
         <param-value>TRUE</param-value>
     </context-param>    
+    <listener>
+        <description>ee</description>
+        <listener-class>gr.dsigned.jmvc.listeners.JmvcInitializationListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>Adapter</servlet-name>
-        <servlet-class>gr.dsigned.jmvc.Adapter</servlet-class>
+        <servlet-class>gr.dsigned.jmvc.JmvcApplicationController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Adapter</servlet-name>
