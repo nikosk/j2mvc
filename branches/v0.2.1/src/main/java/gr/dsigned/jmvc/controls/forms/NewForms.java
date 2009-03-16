@@ -12,10 +12,11 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package gr.dsigned.jmvc.forms;
+package gr.dsigned.jmvc.controls.forms;
 
-import gr.dsigned.jmvc.forms.fields.Field;
-import gr.dsigned.jmvc.forms.fields.HiddenField;
+import gr.dsigned.jmvc.controls.HTMLControl;
+import gr.dsigned.jmvc.controls.forms.fields.Field;
+import gr.dsigned.jmvc.controls.forms.fields.HiddenField;
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.framework.Library;
 import java.util.LinkedHashMap;
@@ -27,7 +28,7 @@ import static gr.dsigned.jmvc.types.operators.*;
  * @author Nikosk <nikosk@dsigned.gr>
  * @author Vas Chryssikou <vchrys@gmail.com>
  */
-public class NewForms extends Library {
+public class NewForms extends HTMLControl {
 
     private LinkedHashMap<String, Field> fields = new LinkedHashMap<String, Field>();
     private String id;
@@ -39,22 +40,6 @@ public class NewForms extends Library {
 
     public NewForms(String act) {
         this.action = act;
-    }
-
-    /**
-     * Renders the form as a table with form tags. 
-     * @return Html form
-     */
-    public String renderForm() {
-        return String.format("<form id='%4$s' action='%1$s' method='post' %2$s>%3$s</form>", getAction(), isEnctype(), build(), getId());
-    }
-
-    public String renderFormAsList() {
-        return String.format("<form id='%4$s' action='%1$s' method='post' %2$s>%3$s</form>", getAction(), isEnctype(), buildAsUList(), getId());
-    }
-
-    public String build() {
-        return buildAsTable();
     }
 
     private String buildAsTable() {

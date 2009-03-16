@@ -14,7 +14,7 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package gr.dsigned.jmvc.forms.fields;
+package gr.dsigned.jmvc.controls.forms.fields;
 
 import gr.dsigned.jmvc.libraries.HTMLInputFilter;
 import gr.dsigned.jmvc.types.Tuple2;
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static gr.dsigned.jmvc.libraries.Localization.get;
+
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
@@ -73,9 +74,8 @@ public class Field {
     protected ArrayList<Tuple2<Rule, String>> rules = new ArrayList<Tuple2<Rule, String>>();
     protected boolean validates;
     protected ArrayList<String> errors = new ArrayList<String>();
-    
-    public static final String GREEK_ALPHA_PUNCTUATION= "[0-9a-zA-Zα-ωΑ-Ωάέήίόώύ;.?\\-_ ]*";
-    
+    public static final String GREEK_ALPHA_PUNCTUATION = "[0-9a-zA-Zα-ωΑ-Ωάέήίόώύ;.?\\-_ ]*";
+
     /**
      * Create a new field with initial name and value.
      * No field label. 
@@ -237,16 +237,6 @@ public class Field {
                         }
                     }
                     break;
-                case PROFILE_NAME:
-                    if (!getValue().isEmpty()) {
-                        p = Pattern.compile("[a-zA-Z0-9]{1,}[a-zA-Z0-9-_]*");
-                        m = p.matcher(this.getValue());
-                        if (!m.matches()) {
-                            addError(get("The field ") + label + get(" should consists characters of numbers, letters (a-z,A-Z) or '-' '_'. Cannot start with '-' or '_'"));
-                            validates = false;
-                        }
-                    }
-                    break;
                 case EQUALS:
                     if (!getValue().isEmpty() && !this.getValue().equals(r._2)) {
                         addError(get("The field ") + label + get(" does not match with the above field."));
@@ -260,36 +250,19 @@ public class Field {
                     }
                     break;
                 case DATE:
-                    if (!this.getValue().isEmpty()) {
-                        SimpleDateFormat dtFormatter = new SimpleDateFormat(r._2);
-                        dtFormatter.setLenient(false);
-                        try {
-                            dtFormatter.parse(this.getValue());
-                        } catch (ParseException ex) {
-                            validates = false;
-                            addError(get("The field ") + label + get(" is not of the correct date format: ") + r._2);
-                        }
-                    } else {
+                    SimpleDateFormat dtFormatter = new SimpleDateFormat(r._2);
+                    dtFormatter.setLenient(false);
+                    try {
+                        dtFormatter.parse(this.getValue());
+                    } catch (ParseException ex) {
                         validates = false;
-                        addError(get("The field ") + label + get(" is not of the correct date format ") + r._2);
-                    }
-                    break;
-                case DATE_NOT_REQUIRED:
-                    if (!this.getValue().isEmpty()) {
-                        SimpleDateFormat dtFormatter = new SimpleDateFormat(r._2);
-                        dtFormatter.setLenient(false);
-                        try {
-                            dtFormatter.parse(this.getValue());
-                        } catch (ParseException ex) {
-                            validates = false;
-                            addError(get("The field ") + label + get(" is not of the correct date format: ") + r._2);
-                        }
+                        addError(get("The field ") + label + get(" is not of the correct date format: ") + r._2);
                     }
                     break;
                 case XSS_CLEAN:
                     String[] tags = r._2.split(",");
                     HTMLInputFilter filter = new HTMLInputFilter(true);
-                    for(String tag : tags){
+                    for (String tag : tags) {
                         filter.setVAllowed(tag);
                     }
                     setValue(filter.filter(getValue()).trim());

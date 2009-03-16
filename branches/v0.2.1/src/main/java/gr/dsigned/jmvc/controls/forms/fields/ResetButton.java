@@ -13,7 +13,7 @@
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 
-package gr.dsigned.jmvc.forms.fields;
+package gr.dsigned.jmvc.controls.forms.fields;
 
 import static gr.dsigned.jmvc.framework.Renderer.*;
 

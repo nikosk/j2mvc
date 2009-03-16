@@ -4,11 +4,11 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.forms.NewForms;
-import gr.dsigned.jmvc.forms.fields.CharField;
-import gr.dsigned.jmvc.forms.fields.Field.Rule;
-import gr.dsigned.jmvc.forms.fields.PasswordField;
-import gr.dsigned.jmvc.forms.fields.SubmitButton;
+import gr.dsigned.jmvc.controls.forms.NewForms;
+import gr.dsigned.jmvc.controls.forms.fields.CharField;
+import gr.dsigned.jmvc.controls.forms.fields.Field.Rule;
+import gr.dsigned.jmvc.controls.forms.fields.PasswordField;
+import gr.dsigned.jmvc.controls.forms.fields.SubmitButton;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.libraries.PageData;
 import static gr.dsigned.jmvc.types.operators.*;

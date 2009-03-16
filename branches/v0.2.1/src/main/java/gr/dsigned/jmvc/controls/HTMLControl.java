@@ -14,17 +14,31 @@
  */
 package gr.dsigned.jmvc.controls;
 
+import gr.dsigned.jmvc.types.Tuple2;
+
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
 public class HTMLControl extends Control {
-    protected String cssClass;
-    protected String id;
-    protected String tagName;
+
+    public HTMLControl(Tuple2... attributes) {
+    }
 
     @Override
     public String renderControl() {
         return "";
+    }
+
+    public String htmlTag(String tagName, String innerHTML, Tuple2... attr) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<").append(tagName);
+        for (Tuple2 t : attr) {
+            if (!t._1.toString().isEmpty()) {
+                sb.append(" ").append(t._1).append("='").append(t._2).append("'");
+            }
+        }
+        sb.append(">").append(innerHTML).append("</").append(tagName).append(">");
+        return sb.toString();
     }
 }

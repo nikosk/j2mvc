@@ -12,9 +12,9 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package gr.dsigned.jmvc.forms.fields;
+package gr.dsigned.jmvc.controls.forms.fields;
 
-import gr.dsigned.jmvc.forms.fields.Field.Rule;
+import gr.dsigned.jmvc.controls.forms.fields.Field.Rule;
 import gr.dsigned.jmvc.types.Tuple2;
 import java.io.File;
 import static org.apache.commons.io.FilenameUtils.getExtension;
