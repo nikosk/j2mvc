@@ -14,12 +14,12 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.forms.NewForms;
-import gr.dsigned.jmvc.forms.fields.CharField;
-import gr.dsigned.jmvc.forms.fields.DropdownMenu;
-import gr.dsigned.jmvc.forms.fields.HiddenField;
-import gr.dsigned.jmvc.forms.fields.SubmitButton;
-import gr.dsigned.jmvc.forms.fields.TextareaField;
+import gr.dsigned.jmvc.controls.forms.NewForms;
+import gr.dsigned.jmvc.controls.forms.fields.CharField;
+import gr.dsigned.jmvc.controls.forms.fields.DropdownMenu;
+import gr.dsigned.jmvc.controls.forms.fields.HiddenField;
+import gr.dsigned.jmvc.controls.forms.fields.SubmitButton;
+import gr.dsigned.jmvc.controls.forms.fields.TextareaField;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.libraries.Pagination;
@@ -28,7 +28,7 @@ import gr.dsigned.jmvc.models.User;
 import gr.dsigned.jmvc.models.Article;
 import gr.dsigned.jmvc.types.Hmap;
 import java.util.ArrayList;
-import static gr.dsigned.jmvc.forms.fields.Field.Rule.*;
+import static gr.dsigned.jmvc.controls.forms.fields.Field.Rule.*;
 import static gr.dsigned.jmvc.types.operators.*;
 
 /**
@@ -133,7 +133,7 @@ public class Articles extends Controller {
             $.response.sendRedirect("/articles/show_articles/" + cats.get(0).get("name"));
         } else {
             String form = "<form  action='/articles/show_form' method='post'>";
-            form += f.build();
+            form += f.renderControl();
             form += "</form>";
             data.put("title", "Create Article");
             data.put("form", form);
@@ -182,7 +182,7 @@ public class Articles extends Controller {
             $.response.sendRedirect("/articles/show_articles/" + cats.get(0).get("name"));
         } else {
             String form = "<form  action='/articles/edit_form' method='post'>";
-            form += f.build();
+            form += f.renderControl();
             form += "</form>";
             data.put("title", "Edit Article");
             data.put("form", form);

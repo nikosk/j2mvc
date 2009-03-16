@@ -14,22 +14,26 @@
  */
 package gr.dsigned.jmvc.controls;
 
+import gr.dsigned.jmvc.types.Tuple2;
+
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
 public class Anchor extends HTMLControl {
 
-    Control control;
+    Control childControl;
     StringBuilder sb;
+    Tuple2[] attributes;
 
-    public Anchor(Control control) {
-        this.control = control;
+    public Anchor(Control control, Tuple2... attributes) {
+        this.childControl = control;
         sb = new StringBuilder();
+        this.attributes = attributes;
     }
 
     @Override
     public String renderControl() {
-        return "<"+tagName+" href='#' class='"+cssClass+"'>" + control.renderControl() + "</a>";
+        return htmlTag("a", childControl.renderControl(), attributes);
     }
 }
