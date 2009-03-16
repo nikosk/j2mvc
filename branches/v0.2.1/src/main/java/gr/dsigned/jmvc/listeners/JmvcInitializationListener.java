@@ -40,7 +40,7 @@ public class JmvcInitializationListener implements ServletContextListener {
                 if (f.isFile()) {
                     try {
                         String className = f.getName().substring(0, f.getName().lastIndexOf("."));
-                        controllerClasses.put(className, Class.forName(className));
+                        controllerClasses.put(className, Class.forName(Settings.get("SYSTEM_PACKAGE")+".controllers."+className));
                     } catch (ClassNotFoundException ex) {
                         Jmvc.logError(ex);
                     }

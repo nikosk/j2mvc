@@ -129,7 +129,8 @@ public class Jmvc {
         if (debug) {
             for (String s : view.getPositions().values()) {
                 if (!data.containsKey(s)) {
-                    throw new Exception("Page data not filled. Missing: " + s);
+                    logError("Page data not filled. Missing: " + s);
+                    //throw new Exception("Page data not filled. Missing: " + s);
                 }
             }
         }
@@ -212,7 +213,7 @@ public class Jmvc {
             out.println(template);
             out.flush();
         } catch (Exception exc) {
-            logError("[Jmvc:loadErrorPage] " + exc.getMessage());
+            logError(exc);
         }
     }
 

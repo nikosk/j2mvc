@@ -63,7 +63,7 @@ public class JmvcApplicationController extends HttpServlet {
         request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         String path = request.getRequestURI();
         try {
-            Class c = controllerClasses.get(Input.getController(path));
+            Class c = controllerClasses.get(Input.getController(path).get("controller"));
             Controller o = (Controller) c.newInstance();
             request.setAttribute("controller_name", Input.getController(path).get("controller") + "_page");
             o.$.setEnvironment(request, response, this.getServletContext());
@@ -98,7 +98,7 @@ public class JmvcApplicationController extends HttpServlet {
                 Jmvc.loadErrorPage(theCause, response, this.getServletContext(), theCause.getErrorCode());
             } else {
                 // This is an unchecked exception and we need to report it.
-                Jmvc.logError("[Adapter] " + ite.getMessage());
+                Jmvc.logError(ite);
                 Jmvc.loadErrorPage(ite, response, this.getServletContext(), HttpErrors.E500);
             }
         } catch (Exception e) {
