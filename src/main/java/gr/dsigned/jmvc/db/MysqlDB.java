@@ -48,7 +48,7 @@ public class MysqlDB extends DB {
             Context envCtx = (Context) initCtx.lookup("java:comp/env");            
             ds = (DataSource) envCtx.lookup("jdbc/"+Settings.get("DB_NAME"));
         } catch (NamingException ex) {
-            Jmvc.logError(ex.getExplanation());
+            Jmvc.logError(ex);
         }
         //poolMgr = new MiniConnectionPoolManager(ds, 255, 20);
         if (cacheEnabled) {
