@@ -46,14 +46,14 @@ Be careful to set the name of the table that this model corresponds to because s
 For the first step we will need to create a method that returns a list of all the todo lists currently stored in the database: 
 
 {{{
-public ArrayList<Bean> getLists() throws SQLException {
+public ArrayList<Hmap> getLists() throws SQLException {
         QuerySet qs = new QuerySet();
         qs.from("todo_lists");             
-        return db.get(qs);
+        return db.getList(qs);
 }
 }}}
 
-First we need to explain what Bean and QuerySet are. Bean is a shorthand way of writing LinkedHashMap<String, String>. Bean extends LinkedHashMap and therefore contains all the methods provided by it. 
+First we need to explain what Hmap and QuerySet are. Hmap is a shorthand way of writing LinkedHashMap<String, String>. Hmap extends LinkedHashMap and therefore contains all the methods provided by it. 
 QuerySet is a class that helps you write SQL statements, we will see how it works later on.
 
 The above method will return an ArrayList of hashmaps containing the values for each column in the result of the query. Each entry in the ArrayList corresponds to one row from the results and each entry of Bean contains the name/value pair of each column in the result.
@@ -90,7 +90,7 @@ When someone visits the home page of our app we want to show him our todo_lists.
 {{{
 public void index() throws Exception {
         PageData data = new PageData();
-        TodoList todoList = $.loadModel("TodoList"); // Load model
+        TodoList todoList = new TodoList(); // Load model
         ArrayList<Bean> todoList = todoList. getLists();  // Get all lists
         $.loadView("list", data);
 }
@@ -180,8 +180,8 @@ Create a new method in your controller :
 {{{
 public void add_site() throws Exception {
         PageData data = new PageData();
-        Site site = $.loadModel("Site"); // Load model
-        ArrayList<Bean> sites = site.getSites();
+        Site site = new Site(); // Load model
+        ArrayList<Hmap> sites = site.getSites();
         if ($.input.post("label").isEmpty()) {
             data.put("label", "");
             data.put("action", "/sites/add_list/");
