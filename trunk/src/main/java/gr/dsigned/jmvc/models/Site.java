@@ -4,7 +4,7 @@ import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.db.Model;
 
 import gr.dsigned.jmvc.db.QuerySet;
-import gr.dsigned.jmvc.db.QuerySet.Operand;
+import gr.dsigned.jmvc.db.QuerySet.LogicOperands;
 import gr.dsigned.jmvc.db.QuerySet.OrderBy;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -38,7 +38,7 @@ public class Site extends Model {
         QuerySet qs = new QuerySet();
         qs.update(tableName);
         qs.set("label", label);
-        qs.where("id", id, Operand.EQUALS);
+        qs.where("id", id, LogicOperands.EQUAL);
         db.update(qs);        
     }
 

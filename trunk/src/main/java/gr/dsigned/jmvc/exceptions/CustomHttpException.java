@@ -2,7 +2,7 @@ package gr.dsigned.jmvc.exceptions;
 
 /**
  *
- * @author Nikos Kastamoulas <nikosk@dsigned.gr>
+ * @author Nikosk <nikosk@dsigned.gr>
  */
 public class CustomHttpException extends Exception {
     public enum HttpErrors {

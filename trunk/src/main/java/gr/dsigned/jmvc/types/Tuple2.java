@@ -6,7 +6,7 @@ package gr.dsigned.jmvc.types;
 
 /**
  *
- * @author Nikos Kastamoulas <nikosk@dsigned.gr>
+ * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Tuple2<T1, T2> extends Tuple1<T1> {
     public T2 _2 = null;

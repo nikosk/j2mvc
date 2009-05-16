@@ -30,7 +30,7 @@ public class Home extends Controller {
     public void index() throws Exception{
         $.request.setAttribute("CACHE_PAGE", "TRUE");
         PageData data = new PageData();
-        data.append("content", div(h1("jmvc web framework")));        
+        data.put("content", div(h1("jmvc web framework")));
         $.loadView("index", data);
     }
 }

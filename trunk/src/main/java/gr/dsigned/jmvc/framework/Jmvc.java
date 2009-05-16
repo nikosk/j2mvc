@@ -1,7 +1,7 @@
 /*
  *  Jmvc.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -14,18 +14,20 @@
  */
 package gr.dsigned.jmvc.framework;
 
+import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.db.DB;
 import gr.dsigned.jmvc.db.Model;
-import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.libraries.Input;
 import gr.dsigned.jmvc.libraries.Session;
-import gr.dsigned.jmvc.framework.View;
 
-import gr.dsigned.jmvc.libraries.PageData;
-import gr.dsigned.jmvc.types.Hmap;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,9 +38,9 @@ import java.util.Locale;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import net.htmlparser.jericho.Source;
+import net.htmlparser.jericho.SourceFormatter;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 
 /**
@@ -49,15 +51,13 @@ public class Jmvc {
     private static final Logger infoLogger = Logger.getLogger("Info");
     private static final Logger debugLogger = Logger.getLogger("Debug");
     private static final Logger errorLogger = Logger.getLogger("Error");
-    private static boolean debug = Settings.get("DEBUG").equals("TRUE");
+    private boolean debug = Settings.get("DEBUG").equals("TRUE");
     private boolean showDebugLog = Settings.get("DEBUG_LOG").equals("TRUE");
-    private static final boolean cacheEnabled = Settings.get("CACHE_PAGES").equals("TRUE");
-    private static ArrayList<String> dbDebug;
+    private static ArrayList<String> dbDebug = null;
     public HttpServletRequest request;
     public ServletContext context;
     public static HashMap<String, View> parsedViews = null;
     public HttpServletResponse response;
-    private static String viewDirectory;
     /*
      * These are the default auto-loaded libraries To load
      * others use Jmvc.loadLibrary()
@@ -65,33 +65,22 @@ public class Jmvc {
     public DB db;
     public Input input;
     public Session session;
-    private static CacheManager singletonManager;
-    private static Cache cache;
 
-    public Jmvc() throws Exception {
+    public Jmvc() {
+        init();
+    }
+
+    private void init() {
         if (parsedViews == null) {
             parsedViews = new HashMap<String, View>();
         }
-        if (dbDebug == null) {
+        if (debug) {
             dbDebug = new ArrayList<String>();
-        }
-        input = new Input(null, null);
-        if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none")) {
-            if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql")) {
-                db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
+            if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none")) {
+                if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql")) {
+                    db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
+                }
             }
-        }
-    }
-    /**
-     * Creates an new Page cache if not already created.
-     *
-     */
-    private static void initCache() {
-        if (cache == null) {
-            singletonManager = CacheManager.create();
-            cache = new Cache("pageCache", 10, true, false, 3600, 3600);
-            singletonManager.addCache(cache);
-            cache = singletonManager.getCache("pageCache");
         }
     }
 
@@ -104,37 +93,24 @@ public class Jmvc {
     }
 
     /**
-     * Return the directory that contains the html files of 
-     * the views
-     * @return the absolute path to the view directory
-     */
-    public static String getViewDirectory() {
-        return viewDirectory;
-    }
-
-    /**
      * Sets the environment environment
      * @param req
      * @param resp
      * @param cont
      */
-    public void setEnvironment(HttpServletRequest req, HttpServletResponse resp, ServletContext cont) throws Exception {
+    public void setEnvironment(HttpServletRequest req, HttpServletResponse resp, ServletContext cont) throws IOException, FileUploadException {
         request = req;
         response = resp;
         context = cont;
         input = new Input(request, context);
         session = new Session(req);
-        viewDirectory = context.getRealPath("/") + "views" + File.separator;
-        if (debug) {
-            dbDebug = new ArrayList<String>();
-        }
     }
 
     /**
      * Loads a template and replaces tags with the variables
      * stored in the HashMap. The key is used to find the
      * tag in the template.
-     *
+     * 
      * @param view_name
      *            The name of the template (the path and
      *            extension is added automatically)
@@ -145,31 +121,31 @@ public class Jmvc {
      */
     public void loadView(String view_name, LinkedHashMap<String, String> data) throws Exception {
         View view = parsedViews.get(view_name);
+        data.put("controller_name", request.getAttribute("controller_name").toString().trim());
         if (view == null) {
-            String template = View.readViewTemplate(context.getRealPath("/") + "/views/" + view_name + ".html");
+            String template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
             view = new View(template);
             parsedViews.put(view_name, view);
         }
         if (debug) {
             for (String s : view.getPositions().values()) {
                 if (!data.containsKey(s)) {
-                    throw new Exception("Page data not filled. Missing: " + s);
+                    logError("Page data not filled. Missing: " + s);
+                //throw new Exception("Page data not filled. Missing: " + s);
                 }
             }
         }
         String output = view.format(data);
-        if (cacheEnabled && request.getAttribute("CACHE_PAGE") != null) {
-            String cacheKey = request.getRequestURI();
-            Element e = getCache().get(cacheKey);
-            if (e == null) {
-                Element pageCacheElement = new Element(cacheKey, output);
-                getCache().put(pageCacheElement);
-            }
-        }
         response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out.write(output);
+        if (debug) {
+            Source s = new Source(output);
+            SourceFormatter sf = new SourceFormatter(s);
+            out.write(sf.toString());
+        } else {
+            out.write(output);
+        }
         if (showDebugLog) {
             try {
                 out.println(buildDebugOutput());
@@ -189,7 +165,7 @@ public class Jmvc {
      */
     public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont, HttpErrors er) {
         try {
-            
+            String template = "";
             String errorTemplate = "";
 
             switch (er) {
@@ -207,13 +183,12 @@ public class Jmvc {
                     break;
             }
 
-            View view = new View(View.readViewTemplate(cont.getRealPath("/") + "error_pages" + File.separator + errorTemplate));
+            template = Jmvc.readWithStringBuilder(cont.getRealPath("/") + "error_pages" + File.separator + errorTemplate);
             response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
             PrintWriter out = response.getWriter();
-            String html = "";
             if (Settings.get("DEBUG").equals("TRUE")) {
                 String message = e.toString();
-                html = "<h1>Something went wrong: </h1>";
+                String html = "<h1>Something went wrong: </h1>";
                 html += "<pre>" + message + "</pre>";
                 StackTraceElement traceElements[] = e.getStackTrace();
                 html += "<h2>Stacktrace: </h2>";
@@ -234,20 +209,22 @@ public class Jmvc {
                     }
                     html += "</pre>";
                 }
-                
-                String debugInfo = "<div style='margin:10px auto;padding:5px;width:50%;font:10px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
-                debugInfo += "<div style='background-color:#000;color:#fff'> Database queries ran: " + dbDebug.size() + "</div>";
-                for (String s : dbDebug) {
-                    debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + "</div>";
+                if (dbDebug != null) {
+                    html = "<div style='margin:10px auto;padding:5px;width:50%;font:10px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
+                    html += "<div style='background-color:#000;color:#fff'> Database queries ran: " + "</div>";
+                    html += dbDebug.size();
+                    html += "</div>";
+                    for (String s : dbDebug) {
+                        html += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + "</div>";
+                    }
+                    html += "</div>";
                 }
-                debugInfo += "</div>";
+                template = template.replace("<!--%error%-->", html);
             }
-            PageData data = new PageData();
-            data.append("error", html);
-            out.println(view.format(data));
+            out.println(template);
             out.flush();
         } catch (Exception exc) {
-            logError("[Jmvc:loadErrorPage] " + exc.getMessage());
+            logError(exc);
         }
     }
 
@@ -269,6 +246,28 @@ public class Jmvc {
     private static ArrayList<String> getParamsArray(String path) {
         ArrayList<String> params = new ArrayList<String>(Arrays.asList(path.split("/")));
         return params;
+    }
+
+    /**
+     * Reads the file from disk and returns the content as a
+     * string. Used to load templates.
+     * 
+     * @param fileName
+     *            The name of the file to be read.
+     * @return Returns the contents of the file.
+     * @throws java.io.IOException
+     */
+    static String readWithStringBuilder(String fileName) throws IOException {
+        Reader in = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
+        BufferedReader br = new BufferedReader(in);
+        String line;
+        StringBuilder result = new StringBuilder();
+        while ((line = br.readLine()) != null) {
+            result.append(line).append("\n");
+        }
+        br.close();
+        in.close();
+        return result.toString();
     }
 
     /**
@@ -375,6 +374,17 @@ public class Jmvc {
         errorLogger.error(msg);
     }
 
+    public static void logError(Exception e) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(e);
+        sb.append("\n");
+        StackTraceElement traceElements[] = e.getStackTrace();
+        for (StackTraceElement elem : traceElements) {
+            sb.append(elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n");
+        }
+        logError(sb.toString());
+    }
+
     /**
      * Used by db to log query info. 
      * CAUTION: This is not thread safe. Only use it in development.
@@ -390,11 +400,6 @@ public class Jmvc {
      */
     public void debug(boolean debugMode) {
         debug = debugMode;
-    }
-
-    public static Cache getCache() {
-        initCache();
-        return cache;
     }
 
     private String buildDebugOutput() throws Exception {

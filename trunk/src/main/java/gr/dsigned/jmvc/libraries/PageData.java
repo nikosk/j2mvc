@@ -1,7 +1,7 @@
 /*
  *  PageData.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -14,7 +14,8 @@
  */
 package gr.dsigned.jmvc.libraries;
 
-import gr.dsigned.jmvc.framework.View;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 /**
@@ -24,62 +25,79 @@ import java.util.LinkedHashMap;
  */
 public class PageData extends LinkedHashMap<String, String> {
 
-    private static final String cssLinkTemplate = "<link href='%1$s' media='screen' rel='stylesheet' type='text/css' />";
-    private static final String scriptFileTemplate = "<script src='%1$s' type='text/javascript'></script>";
-    private LinkedHashMap<String, StringBuilder> data = new LinkedHashMap<String, StringBuilder>();
-    private View view;
-    private String viewName;
+    private HashMap<String, ArrayList<String>> pageElements;
 
-    public PageData(String view_name) throws Exception {
-        this.view = new View(view_name);
-        this.viewName = view_name;
+    public PageData() {
+        pageElements = new HashMap<String, ArrayList<String>>();
     }
 
-    public PageData() throws Exception {
-        //this.view = new View(view_name);
-    }
-
-    public void append(String tag, String value) {
-        StringBuilder sb = data.get(tag);
-        if (sb == null) {
-            sb = new StringBuilder();
+    /**
+     * Overides LinkedHashMap.put() to implement 
+     * inserting to a specified position in the page element
+     * @param key
+     * @param value
+     * @return
+     */
+    @Override
+    public String put(String key, String value) {
+        if (pageElements.containsKey(key)) {
+            pageElements.get(key).add(value);
+        } else {
+            ArrayList<String> pageElement = new ArrayList<String>();
+            pageElement.add(value);
+            pageElements.put(key, pageElement);
         }
-        sb.append(value);
-        data.put(tag, sb);
-        this.put(tag, null);//create the key for $.loadView
+        return null;
+    }
+
+    /**
+     * Insert the specified value in the specified page module at the 
+     * specified position.
+     * @param key The name of the module to insert to.
+     * @param value The value to insert
+     * @param position The index of the position to add to 
+     */
+    public void insert(String key, String value, int position) {
+        if (pageElements.containsKey(key) && position >= 0 && pageElements.get(key).size() > position) {
+            pageElements.get(key).add(position, value);
+        } else {
+            put(key, value);
+        }
+    }
+
+    /**
+     * Removes all other values for this page element
+     * and inserts the one passed.
+     * @param key
+     * @param value
+     */
+    public void set(String key, String value) {
+        if (pageElements.containsKey(key)) {
+            pageElements.get(key).clear();
+            pageElements.get(key).add(value);
+        } else {
+            put(key, value);
+        }
     }
 
     @Override
     public String get(Object key) {
-        String result = "";
-        StringBuilder sb = data.get(key);
-        if (sb != null) {
-            result = sb.toString();
-        } else {
-            result = super.get(key);
+        StringBuilder sb = new StringBuilder();
+        if (pageElements.get(key) != null) {
+            for (String s : pageElements.get(key)) {
+                sb.append(s);
+                sb.append("\n");
+            }
         }
-        return result;
+        return sb.toString();
     }
 
-    public void appendScript(String s) {
-        append("scripts", s);
-    }
-
-    public void appendScriptFile(String s) {
-        append("scripts", String.format(scriptFileTemplate, s));
-    }
-
-    public void appendCss(String s) {
-        append("css", s);
-    }
-
-    public void appendCssFile(String s) {
-        append("css", String.format(cssLinkTemplate, s));
-    }
-
-    public View getView() {
-        return view;
+    @Override
+    public boolean containsKey(Object key) {
+        return pageElements.containsKey(key);
     }
     
-    
+    public HashMap<String, ArrayList<String>> getPageElements() {
+        return pageElements;
+    }
 }

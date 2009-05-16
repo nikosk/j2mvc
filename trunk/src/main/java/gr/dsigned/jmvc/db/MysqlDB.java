@@ -1,7 +1,7 @@
 /*
  *  MysqlDB.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.db;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.framework.Jmvc;
 import java.sql.Connection;
@@ -34,37 +34,26 @@ import net.sf.ehcache.CacheManager;
 public class MysqlDB extends DB {
 
     private static final MysqlDB INSTANCE = new MysqlDB();
-    private static MiniConnectionPoolManager poolMgr;
-    MysqlConnectionPoolDataSource ds;
+   
+    DataSource ds;
     Cache cache;
-
     /**
      * Creates a new instance of MysqlDB
      */
     private MysqlDB() {
-        if (true) {
-            ds = new MysqlConnectionPoolDataSource();
-            ds.setDatabaseName(Settings.get("DB_NAME"));
-            ds.setServerName(Settings.get("DB_URL"));
-            ds.setPort(Integer.valueOf(Settings.get("DB_PORT")));
-            ds.setUser(Settings.get("DB_USER"));
-            ds.setPassword(Settings.get("DB_PASS"));
-            ds.setAutoReconnect(true);
-            ds.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
-            poolMgr = new MiniConnectionPoolManager(ds, 20);
-        } else {
-            Context initCtx;
-            try {
-                initCtx = new InitialContext();
-                Context envCtx = (Context) initCtx.lookup("java:comp/env");
-                ds = (MysqlConnectionPoolDataSource) envCtx.lookup("jdbc/social");
-            } catch (NamingException ex) {
-                Jmvc.logError(ex.getExplanation());
-            }
+        
+        Context initCtx;
+        try {
+            initCtx = new InitialContext();            
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");            
+            ds = (DataSource) envCtx.lookup("jdbc/"+Settings.get("DB_NAME"));
+        } catch (NamingException ex) {
+            Jmvc.logError(ex);
         }
+        //poolMgr = new MiniConnectionPoolManager(ds, 255, 20);
         if (cacheEnabled) {
             CacheManager singletonManager = CacheManager.create();
-            Cache memoryOnlyCache = new Cache("dbCache", 10000, false, false, 3600, 3600);
+            Cache memoryOnlyCache = new Cache("dbCache", 100, false, true, 86400, 86400);
             singletonManager.addCache(memoryOnlyCache);
             cache = singletonManager.getCache("dbCache");
         }
@@ -83,7 +72,7 @@ public class MysqlDB extends DB {
     public void closeConn(Connection conn) throws SQLException {
         conn.close();
     }
-
+    
     @Override
     public Cache getCache() throws Exception {
         return cache;

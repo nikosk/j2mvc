@@ -1,7 +1,7 @@
 /*
  *  DB.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -567,19 +567,6 @@ public abstract class DB {
             Jmvc.dbDebug("SQL: " + sb.toString());
         }
         executeUpdate(sb.toString());
-    }
-
-    /**
-     * Deletes a row from a table
-     * @param table
-     * @param id
-     * @throws java.sql.SQLException
-     */
-    public void delete(String table, String id) throws SQLException {
-        if (!id.isEmpty()) {
-            String sql = "DELETE FROM " + table + " WHERE id=" + id;
-            executeUpdate(sql);
-        }
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  *  User.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -18,8 +18,7 @@ import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.db.Model;
 
 import gr.dsigned.jmvc.db.QuerySet;
-import gr.dsigned.jmvc.db.QuerySet.Operand;
-import java.util.ArrayList;
+import gr.dsigned.jmvc.db.QuerySet.LogicOperands;
 
 /**
  *
@@ -31,13 +30,13 @@ public class User extends Model {
         this.tableName = "users";
     }
 
-    public ArrayList<Hmap> auth(String username, String password) throws Exception {
+    public Hmap auth(String username, String password) throws Exception {
         // TODO Fix db to escape values properly
         QuerySet qs = new QuerySet();
-        qs.where("username", username, Operand.EQUALS);
-        qs.where("password", password, Operand.EQUALS);
+        qs.where("username", username, LogicOperands.EQUAL);
+        qs.where("password", password, LogicOperands.EQUAL);
         qs.from(this.tableName);
-        ArrayList<Hmap> al = db.getList(qs);
-        return (al.size() > 0) ? al : null;
+        Hmap al =db.getObject(qs);
+        return al;
     }
 }
