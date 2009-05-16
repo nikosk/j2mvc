@@ -1,7 +1,7 @@
 /*
  *  Tuple3.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -16,7 +16,7 @@ package gr.dsigned.jmvc.types;
 
 /**
  *
- * @author Nikos Kastamoulas <nikosk@dsigned.gr>
+ * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Tuple3<T1,T2,T3> extends Tuple2<T1,T2>{
 

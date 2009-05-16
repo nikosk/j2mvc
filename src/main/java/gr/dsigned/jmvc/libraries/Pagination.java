@@ -1,7 +1,7 @@
 /*
  *  Pagination.java
  *
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  *
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,31 +31,27 @@ public class Pagination extends Library {
 
         SEARCH, ITEM, AJAX;
     }
-    public String baseUrl = "";
-    public int totalRows = 0;
-    public int curPage = 0;
-    public int noItemsPerQuery = 0;    //DEFAULT VALUES
+    private String baseUrl = "";
+    private int totalRows = 0;
+    private int curPage = 0;
     private int perPage = 10;
-    private int leftRight = 5;
-    private String separationChar = "&nbsp;&nbsp;";
-    private String classStartArrowOn = "";
-    private String classStartArrowOff = "";
-    private String classEndArrowOn = "";
-    private String classEndArrowOff = "";
-    private String classBackArrowOn = "";
-    private String classBackArrowOff = "";
-    private String classFwdArrowOn = "";
-    private String classFwdArrowOff = "";
-    private String imgStartArrowOn = get("First") + "  &iota;&laquo;";
-    private String imgStartArrowOff = get("First") + " &iota;&laquo;";
-    private String imgEndArrowOn = "&raquo;&iota; " + get("Last");
-    private String imgEndArrowOff = "&raquo;&iota; " + get("Last");
-    private String imgBackArrowOn = get("Prev") + " &laquo;";
-    private String imgBackArrowOff = get("Prev") + "&laquo;";
-    private String imgFwdArrowOn = "&raquo; " + get("Next");
-    private String imgFwdArrowOff = "&raquo; " + get("Next");
+    private int numLinksToDisplay = 3;
+    ///// CSS CLASSES
+    private String nextLinkClass = "next_link";
+    private String prevLinkClass = "prev_link";
+    private String prevLinkClassDisabled = "prev_link_disabled";
+    private String nextLinkDisabledClass = "next_link_disabled";
+    private String startLinkClass = "start_link";
+    private String startLinkClassDisabled = "start_link_disabled";
+    private String lastLinkClass = "end_link";
+    private String lastLinkClassDisabled = "end_link_disabled";
+    //// LINK TEXT
+    private String startLinkText = "&laquo; " + get("First") ;
+    private String lastLinkText = get("Last") + " &raquo; ";
+    private String previousLinkText = "&laquo; " + get("Prev");
+    private String nextLinkText = get("Next") + " &raquo;";
 
-    public String createLinks(int currentPage) {
+    public String createPagingLinks(int currentPage) {
         return this.createLinks(currentPage, PagingType.SEARCH);
     }
 
@@ -83,40 +79,84 @@ public class Pagination extends Library {
                         value = (totalRows % perPage) + (perPage * currentPage);
                     }
                 }
-                sb.append("<span>").append((currentPage * perPage) + 1).append(" - ").append(value).append(" of ").append(totalRows).append(" </span>");
+                sb.append("<div class='item_page_links'>");
+
+                sb.append("<span class='paging_item_count'>");
+                sb.append((currentPage * perPage) + 1).append(" - ");
+                sb.append(value).append(" / ").append(totalRows);
+                sb.append(" </span>");
+                sb.append(" <span class='item_page_navigation'>");
                 if (currentPage != 0 && totalRows != perPage) {
-                    sb.append(" <a class='").append(classStartArrowOn).append("' href='").append(baseUrl).append("").append("' >").append(imgStartArrowOn).append("</a>");
-                    sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseUrl).append((currentPage - 1) == 0 ? "" : (currentPage - 1)).append("' >").append(imgBackArrowOn).append("</a>");
+                    sb.append(" <a class='").append(startLinkClass).append("' href='").append(baseUrl).append("").append("' >");
+                    sb.append(startLinkText);
+                    sb.append("</a>");
+                    sb.append(" <a class='").append(prevLinkClass).append("' href='").append(baseUrl).append((currentPage - 1) == 0 ? "" : (currentPage - 1)).append("' >");
+                    sb.append(previousLinkText);
+                    sb.append("</a>");
                 } else {
-                    sb.append(" <span>").append(imgStartArrowOff).append("</span> ");
-                    sb.append(" <span>").append(imgBackArrowOff).append("</span> ");
+                    sb.append(" <span class='").append(startLinkClassDisabled).append("'>").append(startLinkText).append("</span> ");
+                    sb.append(" <span class='").append(prevLinkClassDisabled).append("'>").append(previousLinkText).append("</span> ");
                 }
                 if (currentPage + 1 < pageCount && totalRows != perPage) {
-                    sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
-                    sb.append(" <a class='").append(classEndArrowOn).append("' href='").append(baseUrl).append(pageCount - 1).append("' >").append(imgEndArrowOn).append("</a>");
+                    sb.append(" <a class='").append(nextLinkClass).append("' href='").append(baseUrl).append(currentPage + 1).append("' >");
+                    sb.append(nextLinkText);
+                    sb.append("</a>");
+                    sb.append(" <a class='").append(lastLinkClass).append("' href='").append(baseUrl).append(pageCount - 1).append("' >");
+                    sb.append(lastLinkText);
+                    sb.append("</a>");
                 } else {
-                    sb.append(" <span>").append(imgFwdArrowOff).append("</span> ");
-                    sb.append(" <span>").append(imgEndArrowOff).append("</span> ");
+                    sb.append(" <span class='").append(nextLinkDisabledClass).append("'>").append(nextLinkText).append("</span> ");
+                    sb.append(" <span class='").append(lastLinkClassDisabled).append("'>").append(lastLinkText).append("</span> ");
                 }
-            } else if (type == PagingType.SEARCH) {                
+                sb.append(" </span>");
+                sb.append("</div>");
+
+            } else if (type == PagingType.SEARCH) {
                 if (totalRows > perPage) {
-                    if (currentPage != 0) {
-                        sb.append(" <a class='").append(classBackArrowOn).append("' href='").append(baseUrl).append((currentPage - 1) == 0 ? "" : currentPage - 1).append("' >").append(imgBackArrowOn).append("</a>");
+                    sb.append("<ul>");
+                    sb.append("<li>");
+                    if (currentPage == 0) {
+                        sb.append(" <span class='").append(prevLinkClassDisabled).append("'>");
+                        sb.append(previousLinkText);
+                        sb.append("</span>");
+                    } else {
+                        sb.append(" <a class='").append(prevLinkClass).append("' href='").append(baseUrl).append((currentPage - 1) == 0 ? "" : currentPage - 1).append("' >");
+                        sb.append(previousLinkText);
+                        sb.append("</a>");
                     }
-                    for (int i = currentPage - leftRight; i <= currentPage + leftRight; i++) {
-                        if (i < 0 || i >= pageCount) {
+                    sb.append("</li>");
+                    for (int i = currentPage - numLinksToDisplay; i <= currentPage + numLinksToDisplay; i++) {
+                        int countPreviousLinks = 0;
+                        int countNextLinks = 0;
+                        boolean prev = true;
+                        if (i < 0) {
                             continue;
+                        } else if (i >= pageCount) {
+                            break;
                         } else {
+                            sb.append("<li>");
                             if (i != currentPage) {
-                                sb.append(" <a href='").append(baseUrl).append((i == 0) ? "" : i).append("'>").append((i + 1)).append("</a>").append(separationChar);
+                                sb.append(" <a href='").append(baseUrl).append((i == 0) ? "" : i).append("'>").append((i + 1)).append("</a>");
+                                if (prev) {
+                                    countPreviousLinks++;
+                                } else {
+                                    countNextLinks++;
+                                }
                             } else {//CURRENT PAGE NO LINK
-                                sb.append(" <b>").append(i + 1).append("</b>").append(separationChar);
+                                sb.append(" <b>").append(i + 1).append("</b>");
+                                prev = false;
                             }
+                            sb.append("</li>");
                         }
                     }
+                    sb.append("<li>");
                     if (currentPage + 1 < pageCount) {
-                        sb.append(" <a class='").append(classFwdArrowOn).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(imgFwdArrowOn).append("</a>");
+                        sb.append(" <a class='").append(nextLinkClass).append("' href='").append(baseUrl).append(currentPage + 1).append("' >").append(nextLinkText).append("</a>");
+                    } else {
+                        sb.append(" <span class='").append(nextLinkDisabledClass).append("'>").append(nextLinkText).append("</span>");
                     }
+                    sb.append("</li>");
+                    sb.append("</ul>");
                 }
             } else if (type == PagingType.AJAX) {
                 sb.ensureCapacity(300);
@@ -134,7 +174,7 @@ public class Pagination extends Library {
                         "req.addEvent('complete', function(responseTree, responseElements, responseHTML, responseJavaScript){\n" +
                         "     req.options.update2.innerHTML = responseHTML;\n" +
                         "     req.options.update2.set('tween', {duration:1000});\n" +
-                        "     req.options.update2.tween('height',req.options.update2.scrollHeight);\n" +
+                        "     req.options.update2.tween('height',req.options.update2.getScrollSize().y);\n" +
                         "});\n" +
                         "$$('.toggler').each( function(el,index){\n" +
                         "     el.addEvent('click' , function(evt){\n" +
@@ -215,21 +255,7 @@ public class Pagination extends Library {
         this.curPage = curPage;
     }
 
-    /**
-     * @return the number of records retruned per query with specific limit offset
-     */
-    public int getNoItemsPerQuery() {
-        return noItemsPerQuery;
-    }
-
-    /**
-     * Sets the number of records per query with specific limit offset
-     * @param noItemsPerQuery
-     */
-    public void setNoItemsPerQuery(int noItemsPerQuery) {
-        this.noItemsPerQuery = noItemsPerQuery;
-    }
-
+    
     /**
      * @return the max visible number of items per page
      */
@@ -249,8 +275,8 @@ public class Pagination extends Library {
      * @return the number of page values that will be next-left and
      * next-right to the current page value in SEARCH PAGING TYPE
      */
-    public int getLeftRight() {
-        return leftRight;
+    public int getNumLinksToDisplay() {
+        return numLinksToDisplay;
     }
 
     /**
@@ -258,151 +284,72 @@ public class Pagination extends Library {
      * next-right to the current page value in SEARCH PAGING TYPE
      * @param leftRight
      */
-    public void setLeftRight(int leftRight) {
-        this.leftRight = leftRight;
-    }
-
-    /**
-     * @return the separation character between page numbers in SEARCH PAGING TYPE
-     */
-    public String getSeparationChar() {
-        return separationChar;
-    }
-
-    /**
-     * Sets the separation character between page numbers in SEARCH PAGING TYPE
-     * @param separationChar
-     */
-    public void setSeparationChar(String separationChar) {
-        this.separationChar = separationChar;
+    public void setNumLinksToDisplay(int leftRight) {
+        this.numLinksToDisplay = leftRight;
     }
 
     public String getClassStartArrowOn() {
-        return classStartArrowOn;
+        return startLinkClass;
     }
 
     public void setClassStartArrowOn(String classStartArrowOn) {
-        this.classStartArrowOn = classStartArrowOn;
-    }
-
-    public String getClassStartArrowOff() {
-        return classStartArrowOff;
-    }
-
-    public void setClassStartArrowOff(String classStartArrowOff) {
-        this.classStartArrowOff = classStartArrowOff;
+        this.startLinkClass = classStartArrowOn;
     }
 
     public String getClassEndArrowOn() {
-        return classEndArrowOn;
+        return nextLinkClass;
     }
 
     public void setClassEndArrowOn(String classEndArrowOn) {
-        this.classEndArrowOn = classEndArrowOn;
-    }
-
-    public String getClassEndArrowOff() {
-        return classEndArrowOff;
-    }
-
-    public void setClassEndArrowOff(String classEndArrowOff) {
-        this.classEndArrowOff = classEndArrowOff;
+        this.nextLinkClass = classEndArrowOn;
     }
 
     public String getClassBackArrowOn() {
-        return classBackArrowOn;
+        return prevLinkClass;
     }
 
     public void setClassBackArrowOn(String classBackArrowOn) {
-        this.classBackArrowOn = classBackArrowOn;
-    }
-
-    public String getClassBackArrowOff() {
-        return classBackArrowOff;
-    }
-
-    public void setClassBackArrowOff(String classBackArrowOff) {
-        this.classBackArrowOff = classBackArrowOff;
+        this.prevLinkClass = classBackArrowOn;
     }
 
     public String getClassFwdArrowOn() {
-        return classFwdArrowOn;
+        return nextLinkClass;
     }
 
     public void setClassFwdArrowOn(String classFwdArrowOn) {
-        this.classFwdArrowOn = classFwdArrowOn;
-    }
-
-    public String getClassFwdArrowOff() {
-        return classFwdArrowOff;
-    }
-
-    public void setClassFwdArrowOff(String classFwdArrowOff) {
-        this.classFwdArrowOff = classFwdArrowOff;
+        this.nextLinkClass = classFwdArrowOn;
     }
 
     public String getImgStartArrowOn() {
-        return imgStartArrowOn;
+        return startLinkText;
     }
 
     public void setImgStartArrowOn(String imgStartArrowOn) {
-        this.imgStartArrowOn = imgStartArrowOn;
-    }
-
-    public String getImgStartArrowOff() {
-        return imgStartArrowOff;
-    }
-
-    public void setImgStartArrowOff(String imgStartArrowOff) {
-        this.imgStartArrowOff = imgStartArrowOff;
+        this.startLinkText = imgStartArrowOn;
     }
 
     public String getImgEndArrowOn() {
-        return imgEndArrowOn;
+        return nextLinkText;
     }
 
     public void setImgEndArrowOn(String imgEndArrowOn) {
-        this.imgEndArrowOn = imgEndArrowOn;
-    }
-
-    public String getImgEndArrowOff() {
-        return imgEndArrowOff;
-    }
-
-    public void setImgEndArrowOff(String imgEndArrowOff) {
-        this.imgEndArrowOff = imgEndArrowOff;
+        this.nextLinkText = imgEndArrowOn;
     }
 
     public String getImgBackArrowOn() {
-        return imgBackArrowOn;
+        return previousLinkText;
     }
 
     public void setImgBackArrowOn(String imgBackArrowOn) {
-        this.imgBackArrowOn = imgBackArrowOn;
-    }
-
-    public String getImgBackArrowOff() {
-        return imgBackArrowOff;
-    }
-
-    public void setImgBackArrowOff(String imgBackArrowOff) {
-        this.imgBackArrowOff = imgBackArrowOff;
+        this.previousLinkText = imgBackArrowOn;
     }
 
     public String getImgFwdArrowOn() {
-        return imgFwdArrowOn;
+        return nextLinkText;
     }
 
     public void setImgFwdArrowOn(String imgFwdArrowOn) {
-        this.imgFwdArrowOn = imgFwdArrowOn;
-    }
-
-    public String getImgFwdArrowOff() {
-        return imgFwdArrowOff;
-    }
-
-    public void setImgFwdArrowOff(String imgFwdArrowOff) {
-        this.imgFwdArrowOff = imgFwdArrowOff;
+        this.nextLinkText = imgFwdArrowOn;
     }
 
     public int pageCount() {

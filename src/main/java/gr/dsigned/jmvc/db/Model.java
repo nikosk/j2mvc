@@ -1,7 +1,7 @@
 /*
  *  Model.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -16,8 +16,10 @@ package gr.dsigned.jmvc.db;
 
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.Settings;
-import gr.dsigned.jmvc.db.QuerySet.Operand;
+import gr.dsigned.jmvc.types.Tuple2;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -25,11 +27,9 @@ import java.sql.SQLException;
  */
 public class Model {
 
-    public String tableName = "";
-    public DB db;
-    public Hmap data = new Hmap();
-    public Hmap modelDefinition = new Hmap();
-
+    protected String tableName = "";
+    protected DB db;
+    
     /**
      * Creates a new instance of Model
      */
@@ -63,10 +63,10 @@ public class Model {
     public Hmap getById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.from(tableName);
-        qs.where("id", id, Operand.EQUALS);
+        qs.where("id", id, QuerySet.LogicOperands.EQUAL);
         return db.getObject(qs);
     }
-    
+
     /**
      * Deletes a bean from the db
      * @todo Do something in case we didn't find any data to load
@@ -77,11 +77,11 @@ public class Model {
     public int deleteById(String id) throws Exception {
         QuerySet qs = new QuerySet();
         qs.delete(tableName);
-        qs.where("id", id, Operand.EQUALS);
+        qs.where("id", id, QuerySet.LogicOperands.EQUAL);
         qs.limit(1);
         return db.delete(qs);
     }
-    
+
     /**
      * Inserts a bean into the db
      * @param bean The bean to insert
@@ -90,11 +90,7 @@ public class Model {
      */
     public String insert(Hmap bean) throws Exception {
         QuerySet qs = new QuerySet();
-        qs.insert(tableName,bean);
+        qs.insert(tableName, bean);
         return db.insert(qs);
-    }
-
-    public void delete(String id) throws Exception {
-        db.delete(tableName, id);
-    }
+    }    
 }

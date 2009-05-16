@@ -1,7 +1,7 @@
 /*
  *  Renderer.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -17,7 +17,6 @@ package gr.dsigned.jmvc.framework;
 import gr.dsigned.jmvc.*;
 import gr.dsigned.jmvc.types.Tuple2;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 
 /**
  *
@@ -54,7 +53,7 @@ public class Renderer {
      */
     public static String anchor(String segments, String innerHtml, Tuple2... attributes) {
         segments = (segments.startsWith("/") && segments.length() > 2) ? segments.substring(1) : segments;
-        String href = Settings.get("ROOT_URL");        
+        String href = Settings.get("ROOT_URL");
         href += (segments.startsWith("/") && segments.length() < 2) ? "" : segments;
         if (attributes == null) {
             return String.format("<a href='%1$s' title='%2$s'>%2$s</a>", href, innerHtml);
@@ -79,6 +78,14 @@ public class Renderer {
         return htmlTag("span", innerHTML, attr);
     }
 
+    public static String p(String innerHTML, Tuple2... attr) {
+        return htmlTag("p", innerHTML, attr);
+    }
+
+    public static String li(String innerHTML, Tuple2... attr) {
+        return htmlTag("li", innerHTML, attr);
+    }
+
     public static String h1(String innerHTML, Tuple2... attr) {
         return htmlTag("h1", innerHTML, attr);
     }
@@ -90,31 +97,51 @@ public class Renderer {
     public static String h3(String innerHTML, Tuple2... attr) {
         return htmlTag("h3", innerHTML, attr);
     }
+
+    public static String h4(String innerHTML, Tuple2... attr) {
+        return htmlTag("h4", innerHTML, attr);
+    }
+
+    public static String h5(String innerHTML, Tuple2... attr) {
+        return htmlTag("h5", innerHTML, attr);
+    }
+
+    public static String h6(String innerHTML, Tuple2... attr) {
+        return htmlTag("h6", innerHTML, attr);
+    }
+
     public static String b(String innerHTML, Tuple2... attr) {
         return htmlTag("b", innerHTML, attr);
     }
+
     public static String a(String innerHTML, Tuple2... attr) {
         return htmlTag("a", innerHTML, attr);
     }
-    public static String img(Tuple2... attr) {
-        return htmlTag("img",attr);
-    }
     
+
+    public static String img(Tuple2... attr) {
+        return htmlTag("img", attr);
+    }
+
     private static String htmlTag(String tagName, String innerHTML, Tuple2... attr) {
         StringBuilder sb = new StringBuilder();
         sb.append("<").append(tagName);
         for (Tuple2 t : attr) {
-            sb.append(" ").append(t._1).append("='").append(t._2).append("'");
+            if (!t._1.toString().isEmpty()) {
+                sb.append(" ").append(t._1).append("='").append(t._2).append("'");
+            }
         }
         sb.append(">").append(innerHTML).append("</").append(tagName).append(">");
         return sb.toString();
     }
-    
-    private static String htmlTag(String tagName,Tuple2... attr) {
+
+    private static String htmlTag(String tagName, Tuple2... attr) {
         StringBuilder sb = new StringBuilder();
         sb.append("<").append(tagName);
         for (Tuple2 t : attr) {
-            sb.append(" ").append(t._1).append("='").append(t._2).append("'");
+            if (!t._1.toString().isEmpty()) {
+                sb.append(" ").append(t._1).append("='").append(t._2).append("'");
+            }
         }
         sb.append("/>");
         return sb.toString();

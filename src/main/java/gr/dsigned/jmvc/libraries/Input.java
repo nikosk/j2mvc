@@ -1,7 +1,7 @@
 /*
  *  Input.java
  * 
- *  Copyright (C) 2008 Nikos Kastamoulas <nikosk@dsigned.gr>
+ *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
  * 
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import gr.dsigned.jmvc.framework.Library;
 import gr.dsigned.jmvc.types.Hmap;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,10 +45,12 @@ public class Input extends Library {
 
     private HttpServletRequest request;
     private ServletContext context;
-    private Hmap postParams = new Hmap();
-    private Hmap getParams = new Hmap();
+    private Hmap postParams;
+    private Hmap getParams;
 
-    public Input(HttpServletRequest req, ServletContext cont) throws Exception {
+    public Input(HttpServletRequest req, ServletContext cont) throws IOException, FileUploadException{
+        postParams = new Hmap();
+        getParams = new Hmap();
         this.context = cont;
         this.setRequest(req);
     }
@@ -64,13 +67,12 @@ public class Input extends Library {
      * @param req
      *            The request object.
      */
-    @SuppressWarnings("unchecked")
-    public void setRequest(HttpServletRequest req) throws Exception {
+    public void setRequest(HttpServletRequest req) throws IOException, FileUploadException{
         if (req != null) { // check for null or tests fail
             this.request = req; // Set the local request
 
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-            if (isMultipart) {
+            if (isMultipart) { // Multipart means there is a file being uploaded
                 ServletFileUpload upload = new ServletFileUpload();
                 FileItemIterator iter = upload.getItemIterator(request);
                 while (iter.hasNext()) {
@@ -78,7 +80,7 @@ public class Input extends Library {
                     String name = item.getFieldName();
                     InputStream stream = item.openStream();
                     if (item.isFormField()) {
-                        postParams.put(name, Streams.asString(stream,"UTF-8"));
+                        postParams.put(name, Streams.asString(stream, "UTF-8"));
                     } else {
                         if (item.getName() != null && item.getName().length() != 0) {
                             File tmpDir = new File(context.getRealPath("/") + "tmp/");
@@ -91,8 +93,8 @@ public class Input extends Library {
                             int c;
                             while ((c = stream.read()) != -1) {
                                 fos.write(c);
-                                postParams.put(name, context.getRealPath("/") + "tmp/" + tmpfileName);
                             }
+                            postParams.put(name, context.getRealPath("/") + "tmp/" + tmpfileName);
                             fos.close();
                             stream.close();
                         }
@@ -105,13 +107,9 @@ public class Input extends Library {
                     String value = ""; // init the string that will receive our param
                     // value
                     if (val.length > 1) { // If multi-value param
-                        for (int i = 0; i < val.length; i++) { // For each value in
-                            // multi-value param
+                        for (int i = 0; i < val.length; i++) { // For each value in multi-value param
                             value += val[i];
-                            value += (i + 1 != val.length) ? "," : ""; // Add it to the
-                        // string as
-                        // comma
-                        // separated values
+                            value += (i + 1 != val.length) ? "," : ""; // Add it to the string as comma separated values
                         }
                     } else {
                         value = val[0];
@@ -126,12 +124,19 @@ public class Input extends Library {
         }
     }
 
+    /**
+     * Returns Nth part of the request URL.
+     * e.g.: /0/1/2/3
+     * @param index
+     * @return the URL part
+     * @throws java.lang.Exception
+     */
     public String segment(int index) throws Exception {
         String path = this.request.getRequestURI();
         ArrayList<String> pathParts = new ArrayList<String>(Arrays.asList(path.split("/")));
         pathParts.remove("");
         if (pathParts.size() == 0) {
-            throw new ArrayIndexOutOfBoundsException("Segment not found");
+            return null;
         } else if (pathParts.size() > 0 && pathParts.size() > index) {
             return pathParts.get(index);
         } else {
@@ -194,32 +199,5 @@ public class Input extends Library {
 
     public boolean isGet() {
         return this.request.getMethod().equalsIgnoreCase("get");
-    }
-
-    /**
-     * Given a URI it returns the controller part and the method part. Used by
-     * Adapter to call the appropriate Controller and method.
-     * 
-     * @param path
-     *            HttpServletRequest.getRequestURI()
-     * @return
-     */
-    public static LinkedHashMap<String, String> getController(String path) {
-        LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-        ArrayList<String> pathParts = new ArrayList<String>(Arrays.asList(path.split("/")));
-        pathParts.remove("");
-        if (pathParts.size() == 0) {
-            params.put("controller", Settings.get("DEFAULT_CONTROLLER"));
-            params.put("method", "index");
-        } else {
-            if (pathParts.size() == 1) {
-                params.put("controller", pathParts.get(0));
-                params.put("method", "index");
-            } else {
-                params.put("controller", pathParts.get(0));
-                params.put("method", pathParts.get(1));
-            }
-        }
-        return params;
     }
 }

@@ -14,13 +14,13 @@
  */
 package gr.dsigned.jmvc.controllers;
 
-import gr.dsigned.jmvc.forms.NewForms;
-import gr.dsigned.jmvc.forms.fields.CharField;
-import gr.dsigned.jmvc.forms.fields.DropdownMenu;
-import gr.dsigned.jmvc.forms.fields.DropdownOption;
-import gr.dsigned.jmvc.forms.fields.HiddenField;
-import gr.dsigned.jmvc.forms.fields.SubmitButtonField;
-import gr.dsigned.jmvc.forms.fields.TextareaField;
+import gr.dsigned.jmvc.controls.forms.NewForms;
+import gr.dsigned.jmvc.controls.forms.fields.CharField;
+import gr.dsigned.jmvc.controls.forms.fields.DropdownMenu;
+import gr.dsigned.jmvc.controls.forms.fields.HiddenField;
+import gr.dsigned.jmvc.controls.forms.fields.SubmitButton;
+import gr.dsigned.jmvc.controls.forms.fields.TextareaField;
+
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.libraries.PageData;
 import gr.dsigned.jmvc.libraries.Pagination;
@@ -30,7 +30,7 @@ import gr.dsigned.jmvc.models.Article;
 import gr.dsigned.jmvc.renderers.BlogRenderer;
 import gr.dsigned.jmvc.types.Hmap;
 import java.util.ArrayList;
-import static gr.dsigned.jmvc.forms.fields.Field.Rule.*;
+import static gr.dsigned.jmvc.controls.forms.fields.Field.Rule.*;
 import static gr.dsigned.jmvc.types.operators.*;
 
 /**
@@ -60,9 +60,9 @@ public class Articles extends Controller {
         String username = $.input.post("id");
         String pass = $.input.post("pass");
         User user = $.loadModel("User");
-        ArrayList<Hmap> al = user.auth(username, pass);
+        Hmap al = user.auth(username, pass);
         if (al != null) {
-            $.session.set("userId", al.get(0).get("id"));
+            $.session.set("userId", al.get("id"));
             $.session.set("loggedin", "true");
             $.response.sendRedirect("show_articles/news");
         } else {
@@ -93,11 +93,11 @@ public class Articles extends Controller {
         }
         Pagination p = new Pagination();
         p.setBaseUrl("/articles/show_articles/" + category);
-        p.setTotalRows(article.countArticlesByCat(category));
+        p.setTotalRows(article.countArticlesByCatName(category));
         // Now we are ready to get some data (limit to 10
         // articles with offset page number * 10)
-        ArrayList<Hmap> posts = article.getArticlesByCat(category, p.getPerPage(), p.getPerPage() * offset);
-        p.setNoItemsPerQuery(posts.size());
+        ArrayList<Hmap> posts = article.getArticlesByCatName(category, p.getPerPage(), p.getPerPage() * offset);
+        p.setTotalRows(posts.size());
         int i = (p.getPerPage() * offset) + 1;
 
         data.put("category", "-" + category);
@@ -126,18 +126,18 @@ public class Articles extends Controller {
                 new CharField("Sub Title", "sub_title", $.input.post("sub_title")),
                 new CharField("Lead In", "lead_in", $.input.post("lead_in")),
                 new TextareaField("Content", "content", "5", "20", $.input.post("content"), o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "10")),
-                new SubmitButtonField("submit_button", ""));
+                new SubmitButton("submit_button", ""));
 
         if ($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()) {
             Article art = $.loadModel("Article");
             Hmap bArt = f.getFormData();
             bArt.put("userId", $.session.data("userId"));
             art.insertArticle(bArt);
-            ArrayList<Hmap> cats = cat.getCategoryById($.input.post("category"));
-            $.response.sendRedirect("/articles/show_articles/" + cats.get(0).get("name"));
+           Hmap cats = cat.getById($.input.post("category"));
+            $.response.sendRedirect("/articles/show_articles/" + cats.get("name"));
         } else {
             String form = "<form  action='/articles/show_form' method='post'>";
-            form += f.build();
+            form += f.renderControl();
             form += "</form>";
             data.put("title", "Create Article");
             data.put("form", form);
@@ -179,14 +179,14 @@ public class Articles extends Controller {
                 new CharField("Sub Title", "sub_title", ""),
                 new CharField("Lead In", "lead_in", ""),
                 new TextareaField("Content", "content", "5", "20", "", o(REQUIRED, "true"), o(MAX_LENGTH, "20000"), o(MIN_LENGTH, "100")),
-                new SubmitButtonField("submit_button", ""));
+                new SubmitButton("submit_button"));
         if ($.input.getRequest().getMethod().equalsIgnoreCase("post") && f.isValid()) {
             article.editArticle(id, $.input.post("category"), $.input.post("title"), $.input.post("real_title"), $.input.post("sub_title"), $.input.post("lead_in"), $.input.post("content"));
-            ArrayList<Hmap> cats = cat.getCategoryById($.input.post("category"));
-            $.response.sendRedirect("/articles/show_articles/" + cats.get(0).get("name"));
+            Hmap cats = cat.getCategoryById($.input.post("category"));
+            $.response.sendRedirect("/articles/show_articles/" + cats.get("name"));
         } else {
             String form = "<form  action='/articles/edit_form' method='post'>";
-            form += f.build();
+            form += f.renderControl();
             form += "</form>";
             data.put("title", "Edit Article");
             data.put("form", form);
@@ -197,7 +197,7 @@ public class Articles extends Controller {
     public void delete_article() throws Exception {
         String cat = $.input.segment(2);
         String id = $.input.segment(3);
-        article.deleteArticle(id);
+        article.deleteById(id);
         $.response.sendRedirect("/articles/show_articles/" + cat);
     }
 }

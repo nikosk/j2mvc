@@ -7,7 +7,7 @@ package gr.dsigned.jmvc.types;
 
 /**
  *
- * @author Nikos Kastamoulas <nikosk@dsigned.gr>
+ * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Tuple1<T1> {
 	public T1 _1 = null;

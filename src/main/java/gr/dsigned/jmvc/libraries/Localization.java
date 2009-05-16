@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  *
- * @author Nikos Kastamoulas <nikosk@dsigned.gr>
+ * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Localization extends Library {
 
