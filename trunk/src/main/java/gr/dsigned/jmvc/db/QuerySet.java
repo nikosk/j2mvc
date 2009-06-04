@@ -137,6 +137,24 @@ public class QuerySet {
         selectSet = cols;
         return this;
     }
+    
+    /**
+     * Build the event statement.
+     * @param str The columns you need to event as string parameters
+     * @return QuerySet
+     */
+    public QuerySet event(String... str) throws SQLException {
+        hasRan();
+        String cols = "";
+        for (int i = 0; i < str.length; i++) {
+            cols += str[i];
+            if (str.length != i + 1) {
+                cols += ", ";
+            }
+        }
+        selectSet = cols;
+        return this;
+    }
 
     /**
      * Select distinct (same as select but builds a distict select)
