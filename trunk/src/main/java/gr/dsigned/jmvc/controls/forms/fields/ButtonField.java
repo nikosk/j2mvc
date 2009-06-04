@@ -28,18 +28,30 @@ public class ButtonField extends Field{
      * @param value
      * @param rules
      */
+	
+	private String onclick;
+	
     public ButtonField(String fieldName, String value) {
         super(fieldName, value);
     }
 
     @Override
     public String renderField() {
-        return String.format("<input type='button' name='%1$s' id='id_%2$s' value='%3$s' onclick ='%4$s'/>", getFieldName(), "id_" + getFieldName(), getValue(), getErrors());
+        return String.format("<input type='button' name='%1$s' id='%2$s' value='%3$s' onclick ='%4$s'/>", getFieldName(), "id_" + getFieldName(), getValue(), getOnclick());
     }
 
     @Override
     public String renderLabel() {
         return "";
     }
+
+	public String getOnclick() {
+		return onclick==null?getErrors():onclick;
+	}
+
+	public void setOnclick(String onclick) {
+		this.onclick = onclick;
+	}
+    
 
 }
