@@ -210,7 +210,7 @@ public class Jmvc {
                     html += "</pre>";
                 }
                 if (dbDebug != null) {
-                    html = "<div style='margin:10px auto;padding:5px;width:50%;font:10px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
+                    html += "<div style='margin:10px auto;padding:5px;width:50%;font:10px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
                     html += "<div style='background-color:#000;color:#fff'> Database queries ran: " + "</div>";
                     html += dbDebug.size();
                     html += "</div>";
