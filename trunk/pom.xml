@@ -7,6 +7,12 @@
     <version>0.1</version>
     <name>j2mvc</name>
     <url>http://maven.apache.org</url>
+    <scm>
+        <connection>scm:svn:http://j2mvc.googlecode.com/svn/trunk/</connection>
+        <developerConnection>scm:svn:https://j2mvc.googlecode.com/svn/trunk/</developerConnection>
+        <tag>HEAD</tag>
+        <url>http://code.google.com/p/j2mvc/</url>
+    </scm>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
