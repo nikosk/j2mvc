@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * executed.
  * @author Nikosk <nikosk@dsigned.gr>
  */
-public class QuerySet {
+public class QuerySet { 
 
     public enum Join {
 
