@@ -1,15 +1,15 @@
 /*
  *  QuerySet.java
- * 
+ *
  *  Copyright (C) 2008 Nikosk <nikosk@dsigned.gr>
- * 
+ *
  *  This module is free software: you can redistribute it and/or modify it under
  *  the terms of the GNU Lesser General Public License as published by the Free
  *  Software Foundation, either version 3 of the License, or (at your option)
  *  any later version. See http://www.gnu.org/licenses/lgpl.html.
- * 
+ *
  *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
 package gr.dsigned.jmvc.db;
@@ -19,9 +19,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * This object permits you to chain 
+ * This object permits you to chain
  * commands to build a query. QuerySets do not
- * make database connections until they are explicitly 
+ * make database connections until they are explicitly
  * executed.
  * @author Nikosk <nikosk@dsigned.gr>
  */
@@ -137,7 +137,7 @@ public class QuerySet {
         selectSet = cols;
         return this;
     }
-    
+
     /**
      * Build the event statement.
      * @param str The columns you need to event as string parameters
@@ -241,6 +241,31 @@ public class QuerySet {
             whereSet += "\n" + type + " ";
         }
         whereSet += column + " " + LogicOperands.IN + " (" + innerQuery.compileSelect() + ")";
+        whereData.addAll(innerQuery.getData());
+        sourceTables.addAll(innerQuery.getSourceTables());
+        return this;
+    }
+
+    public QuerySet whereNotIn(String column, String value, String type) throws SQLException {
+        hasRan();
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        checkSqlInValue(value);
+        whereSet += column + " " + LogicOperands.NOT_IN + " (" + value + ")";
+        return this;
+    }
+
+    public QuerySet whereNotIn(String column, QuerySet innerQuery, String type) throws SQLException {
+        hasRan();
+        if (whereSet == null) {
+            whereSet = "\nWHERE ";
+        } else {
+            whereSet += "\n" + type + " ";
+        }
+        whereSet += column + " " + LogicOperands.NOT_IN + " (" + innerQuery.compileSelect() + ")";
         whereData.addAll(innerQuery.getData());
         sourceTables.addAll(innerQuery.getSourceTables());
         return this;
@@ -643,7 +668,7 @@ public class QuerySet {
         return sourceTables;
     }
 
-    protected ArrayList<String> getUpdatedTables() {
+    public ArrayList<String> getUpdatedTables() {
         return updatedTables;
     }
 }
