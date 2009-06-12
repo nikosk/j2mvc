@@ -44,7 +44,7 @@ public abstract class DB {
     private long endTime = 0;
     private long startTime = 0;
 
-    private String executeInsert(String sql, ArrayList<String> values) throws SQLException {
+    protected String executeInsert(String sql, ArrayList<String> values) throws SQLException {
         if (debug) {
             Jmvc.logDebug("[DB:executeInsert] " + " sql: " + sql + " values: " + values);
             startTime = System.nanoTime();
@@ -82,7 +82,7 @@ public abstract class DB {
         return output;
     }
 
-    private int executeUpdate(String sql, ArrayList<String> values) throws SQLException {
+    protected int executeUpdate(String sql, ArrayList<String> values) throws SQLException {
         if (debug) {
             Jmvc.logDebug("[DB:executeUpdate] " + " sql: " + sql + " values: " + values);
             startTime = System.nanoTime();
@@ -393,7 +393,7 @@ public abstract class DB {
         }
     }
 
-    private void invalidateCachedQueries(QuerySet theQuery) throws Exception {
+    protected void invalidateCachedQueries(QuerySet theQuery) throws Exception {
         Element tableCacheKeys;
         ArrayList<String> keys;
         for (String t : theQuery.getUpdatedTables()) {
