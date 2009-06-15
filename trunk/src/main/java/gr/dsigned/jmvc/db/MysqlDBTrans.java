@@ -131,8 +131,10 @@ public class MysqlDBTrans extends DB {
     public void commit() throws Exception {
         getConn().commit();
         getConn().close();
-        for (QuerySet qs : querySets) {
-            invalidateCachedQueries(qs);
+        if(Settings.get("CACHE_DB").equals("TRUE")) {
+            for (QuerySet qs : querySets) {
+                invalidateCachedQueries(qs);
+            }
         }
     }
 
