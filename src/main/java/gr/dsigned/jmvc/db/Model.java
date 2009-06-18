@@ -85,12 +85,52 @@ public class Model {
     /**
      * Inserts a bean into the db
      * @param bean The bean to insert
-     * @return 
+     * @return
      * @throws SQLException
      */
     public String insert(Hmap bean) throws Exception {
         QuerySet qs = new QuerySet();
         qs.insert(tableName, bean);
         return db.insert(qs);
+    }    
+    /**
+     * Retrieves a bean from the db using an established transaction
+     * @todo Do something in case we didn't find any data to load
+     * @param id The id of the row to load
+     * @return
+     * @throws SQLException
+     */
+    public Hmap getById(String id, MysqlDBTrans dbTrans) throws Exception {
+        QuerySet qs = new QuerySet();
+        qs.from(tableName);
+        qs.where("id", id, QuerySet.LogicOperands.EQUAL);
+        return dbTrans.getObject(qs);
+    }
+
+    /**
+     * Deletes a bean from the db using an established transaction
+     * @todo Do something in case we didn't find any data to load
+     * @param id The id of the row to delete
+     * @return
+     * @throws SQLException
+     */
+    public int deleteById(String id, MysqlDBTrans dbTrans) throws Exception {
+        QuerySet qs = new QuerySet();
+        qs.delete(tableName);
+        qs.where("id", id, QuerySet.LogicOperands.EQUAL);
+        qs.limit(1);
+        return dbTrans.delete(qs);
+    }
+
+    /**
+     * Inserts a bean into the db using an established transaction
+     * @param bean The bean to insert
+     * @return 
+     * @throws SQLException
+     */
+    public String insert(Hmap bean, MysqlDBTrans dbTrans) throws Exception {
+        QuerySet qs = new QuerySet();
+        qs.insert(tableName, bean);
+        return dbTrans.insert(qs);
     }    
 }
