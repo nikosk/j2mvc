@@ -2,11 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gr.dsigned.jmvc.framework;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -31,18 +28,15 @@ public class RouterTest {
 
     @Test
     public void testGetControllerName() {
-//        SortedMap<String,String> entries = new TreeMap<String,String>();
-//        entries.put("/admin/", "AdminController");
-//        entries.put("/admin", "AdminController");
-//        entries.put("/admin/articles/edit/", "AdminController.edit");
-//        entries.put("/article/preview/", "AdminController");
-//        Router r = new Router();
-//        r.setEntries(entries);
-//        Assert.assertEquals(r.getControllerName("/admin/articles/edit/"),"AdminController.edit");
+        Router r = new Router();
+        r.addControllerClass(SampleController.class);
+        Assert.assertEquals(r.getControllerName("samplecontroller"),"Samplecontroller");
+        Assert.assertEquals(r.getControllerName("controllertest"),"Samplecontroller");
+        Assert.assertEquals(r.getControllerName("controllertest/methodtest"),"Samplecontroller");
+        Assert.assertEquals(r.getControllerName("controllertest/methodtest"),"Samplecontroller");
     }
 
     @Test
     public void testGetControllerName_String() {
     }
-
 }

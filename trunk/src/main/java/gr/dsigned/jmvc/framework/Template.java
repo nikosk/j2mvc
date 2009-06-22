@@ -12,7 +12,7 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package gr.dsigned.j2cmsdb.dto;
+package gr.dsigned.jmvc.framework;
 
 /**
  *
@@ -20,45 +20,11 @@ package gr.dsigned.j2cmsdb.dto;
  */
 public class Template {
 
-    private String title;
-    private String bodyCSSClass;
-    private String css;
-    private String js;
-    private String content;
-    private String sidebar;
-    private String rightSidebar;
+    protected String title;
 
-    public String getRightSidebar() {
-        return rightSidebar;
-    }
+    protected String css;
 
-    public void setRightSidebar(String rightSidebar) {
-        this.rightSidebar = rightSidebar;
-    }
-
-    public String getSidebar() {
-        return sidebar;
-    }
-
-    public void setSidebar(String sidebar) {
-        this.sidebar = sidebar;
-    }
-
-    public String getBodyCSSClass() {
-        return bodyCSSClass;
-    }
-
-    public void setBodyCSSClass(String bodyCSSClass) {
-        this.bodyCSSClass = bodyCSSClass;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
+    protected String js;
 
     public String getCss() {
         return css;
