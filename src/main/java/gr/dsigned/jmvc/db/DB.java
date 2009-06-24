@@ -25,6 +25,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
@@ -41,6 +42,8 @@ public abstract class DB {
     public abstract void closeConn(Connection conn) throws SQLException;
     private static final boolean debug = Settings.get("DEBUG").equals("TRUE");
     protected static final boolean cacheEnabled = Settings.get("CACHE_DB").equals("TRUE");
+    protected static final ConcurrentHashMap<String,ArrayList<String>> cacheKeyStore = new ConcurrentHashMap<String, ArrayList<String>>();
+
     private long endTime = 0;
     private long startTime = 0;
 
@@ -378,30 +381,26 @@ public abstract class DB {
 
     private void storeCacheKeys(String key, QuerySet theQuery) throws Exception {
         ArrayList<String> tables = theQuery.getSourceTables();
-        ArrayList<String> keys;
-        Element tableCacheKeys;
+        ArrayList<String> tableCacheKeys;
         for (String t : tables) {
-            tableCacheKeys = getCache().get(t);
-            if (tableCacheKeys != null) {
-                keys = (ArrayList<String>) tableCacheKeys.getObjectValue();
-                keys.add(key);
-            } else {
-                keys = new ArrayList<String>();
-                keys.add(key);
+            tableCacheKeys = cacheKeyStore.get(t);
+            if (tableCacheKeys == null) {
+                tableCacheKeys = new ArrayList<String>();
             }
-            getCache().put(new Element(t, keys));
+            tableCacheKeys.add(key);
+            cacheKeyStore.put(t, tableCacheKeys);
         }
     }
 
     protected void invalidateCachedQueries(QuerySet theQuery) throws Exception {
-        Element tableCacheKeys;
-        ArrayList<String> keys;
+        ArrayList<String> tableCacheKeys;
         for (String t : theQuery.getUpdatedTables()) {
-            tableCacheKeys = getCache().get(t);
+            tableCacheKeys = cacheKeyStore.get(t);
             if (tableCacheKeys != null) {
-                keys = (ArrayList<String>) tableCacheKeys.getObjectValue();
-                for (String r : keys) {
+                for(int i = 0 ; i<tableCacheKeys.size();i++){
+                String r = tableCacheKeys.get(i);
                     getCache().remove(r);
+                    //@TODO: We need to remove the entries from tableCacheKeys as well. What happens when you modify the arraylist inside the loop ?
                 }
             }
         }
