@@ -414,6 +414,9 @@ public class Jmvc {
      * @param s
      */
     public static void dbDebug(String s) {
+        if (dbDebug == null) {
+            dbDebug = new ArrayList<String>();
+        }
         dbDebug.add(s);
     }
 

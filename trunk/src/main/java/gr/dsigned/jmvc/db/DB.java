@@ -379,7 +379,7 @@ public abstract class DB {
         }
     }
 
-    private void storeCacheKeys(String key, QuerySet theQuery) throws Exception {
+    protected void storeCacheKeys(String key, QuerySet theQuery) throws Exception {
         ArrayList<String> tables = theQuery.getSourceTables();
         ArrayList<String> tableCacheKeys;
         for (String t : tables) {

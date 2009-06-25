@@ -53,7 +53,7 @@ public class MysqlDB extends DB {
         //poolMgr = new MiniConnectionPoolManager(ds, 255, 20);
         if (cacheEnabled) {
             CacheManager singletonManager = CacheManager.create();
-            Cache memoryOnlyCache = new Cache("dbCache", 10000, false, true, 86400, 86400);
+            Cache memoryOnlyCache = new Cache("dbCache", 100, false, true, 86400, 86400);
             singletonManager.addCache(memoryOnlyCache);
             cache = singletonManager.getCache("dbCache");
         }
