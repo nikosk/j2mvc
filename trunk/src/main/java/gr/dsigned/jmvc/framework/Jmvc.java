@@ -49,33 +49,21 @@ import org.apache.log4j.Logger;
 public class Jmvc {
 
     private static final Logger infoLogger = Logger.getLogger("Info");
-
     private static final Logger debugLogger = Logger.getLogger("Debug");
-
     private static final Logger errorLogger = Logger.getLogger("Error");
-
     private boolean debug = Settings.get("DEBUG").equals("TRUE");
-
     private boolean showDebugLog = Settings.get("DEBUG_LOG").equals("TRUE");
-
     private static ArrayList<String> dbDebug = null;
-
     public HttpServletRequest request;
-
     public ServletContext context;
-
     public static HashMap<String, View> parsedViews = null;
-
     public HttpServletResponse response;
     /*
      * These are the default auto-loaded libraries To load
      * others use Jmvc.loadLibrary()
      */
-
     public DB db;
-
     public Input input;
-
     public Session session;
 
     public Jmvc() {
@@ -143,7 +131,7 @@ public class Jmvc {
             for (String s : view.getPositions().values()) {
                 if (!data.containsKey(s)) {
                     logError("Page data not filled. Missing: " + s);
-                //throw new Exception("Page data not filled. Missing: " + s);
+                    //throw new Exception("Page data not filled. Missing: " + s);
                 }
             }
         }
@@ -404,6 +392,15 @@ public class Jmvc {
         StackTraceElement traceElements[] = e.getStackTrace();
         for (StackTraceElement elem : traceElements) {
             sb.append(elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n");
+        }
+        Throwable c = e.getCause();
+        if (c != null) {
+            String cause = e.getCause().toString();            
+            sb.append(cause+"\n");
+            StackTraceElement[] causeTraceElements = e.getCause().getStackTrace();
+            for (StackTraceElement elem : causeTraceElements) {
+                sb.append( elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() +"\n");
+            }            
         }
         logError(sb.toString());
     }
