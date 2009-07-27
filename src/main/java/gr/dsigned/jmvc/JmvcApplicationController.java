@@ -18,12 +18,11 @@ import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Router;
-import gr.dsigned.jmvc.libraries.Input;
 
+import gr.dsigned.jmvc.framework.Template;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import java.util.LinkedHashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -66,7 +65,11 @@ public class JmvcApplicationController extends HttpServlet {
             Controller o = (Controller) c.newInstance();
             o.$.setEnvironment(request, response, this.getServletContext());
             request.setAttribute("controller_name", router.getControllerName(path) + "_page");
-            m.invoke(o, new Object[0]);
+            Template t = (Template)m.invoke(o, new Object[0]);
+            if(t!= null){
+                request.setAttribute("template", t);
+                request.getRequestDispatcher("/views/" + t.getViewname() + ".jsp").forward(request, response);
+            }
         } catch (Exception e) {
             Jmvc.logError(e);
             Jmvc.loadErrorPage(e, response, this.getServletContext(), HttpErrors.E500);
