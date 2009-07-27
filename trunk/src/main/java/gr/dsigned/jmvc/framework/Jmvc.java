@@ -110,6 +110,9 @@ public class Jmvc {
      * Loads a template and replaces tags with the variables
      * stored in the HashMap. The key is used to find the
      * tag in the template.
+     * This method is deprecated in favor of use of JSPs.
+     * Users of this method should use a Template return
+     * in controller methods.
      * 
      * @param view_name
      *            The name of the template (the path and
@@ -119,57 +122,73 @@ public class Jmvc {
      *            of the tag to be replaced and the value
      *            the replacement.
      */
+    @Deprecated
     public void loadView(String view_name, LinkedHashMap<String, String> data) throws Exception {
-        View view = parsedViews.get(view_name);
-        data.put("controller_name", request.getAttribute("controller_name").toString().trim());
-        if (view == null) {
-            String template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
-            view = new View(template);
-            parsedViews.put(view_name, view);
-        }
         if (debug) {
-            for (String s : view.getPositions().values()) {
-                if (!data.containsKey(s)) {
-                    logError("Page data not filled. Missing: " + s);
-                    //throw new Exception("Page data not filled. Missing: " + s);
+            request.setAttribute("debugLog", buildDebugOutput());
+        } 
+        Template t =  new Template();
+        t.setViewname(view_name);
+        t.setData(data);
+        request.setAttribute("template", t);
+        request.getRequestDispatcher("/views/" + view_name + ".jsp").forward(request, response);
+        if (false) {
+            View view = parsedViews.get(view_name);
+            data.put("controller_name", request.getAttribute("controller_name").toString().trim());
+            if (view == null) {
+                String template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
+                view = new View(template);
+                parsedViews.put(view_name, view);
+            }
+            if (debug) {
+                for (String s : view.getPositions().values()) {
+                    if (!data.containsKey(s)) {
+                        logError("Page data not filled. Missing: " + s);
+                        //throw new Exception("Page data not filled. Missing: " + s);
+                        }
                 }
             }
-        }
-        String output = view.format(data);
-        response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        if (debug) {
-            Source s = new Source(output);
-            SourceFormatter sf = new SourceFormatter(s);
-            out.write(sf.toString());
-        } else {
-            out.write(output);
-        }
-        if (showDebugLog) {
-            try {
-                out.println(buildDebugOutput());
-            } catch (Exception e) {
-                Jmvc.logError(e.toString());
+            String output = view.format(data);
+            response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            if (debug) {
+                Source s = new Source(output);
+                SourceFormatter sf = new SourceFormatter(s);
+                out.write(sf.toString());
+            } else {
+                out.write(output);
             }
+            if (showDebugLog) {
+                try {
+                    out.println(buildDebugOutput());
+                } catch (Exception e) {
+                    Jmvc.logError(e.toString());
+                }
+            }
+            out.flush();
+            out.close();
         }
-        out.flush();
-        out.close();
     }
 
     /**
      * This method forwards the request to a jsp page.
-     * Use the template to pass required data. 
+     * Use the template to pass required data.
+     * This method is deprecated in favor of use of JSPs.
+     * Users of this method should use a Template return
+     * in controller methods.
      * @param viewName
      * @param template
      */
-    public <T extends Template> void loadView(String viewName, T template) throws Exception {
+    @Deprecated
+    public <T extends Template> void loadView(String viewName,
+            T template) throws Exception {
         request.setAttribute("template", template);
         request.getRequestDispatcher("/views/" + viewName + ".jsp").forward(request, response);
     }
 
     /**
-     * Displays the default error page 
+     * Displays the default error page
      * @param e The exception that caused the error
      * @param response Servlet response to write to
      * @param cont Servlet context to load the template
@@ -395,12 +414,12 @@ public class Jmvc {
         }
         Throwable c = e.getCause();
         if (c != null) {
-            String cause = e.getCause().toString();            
-            sb.append(cause+"\n");
+            String cause = e.getCause().toString();
+            sb.append(cause + "\n");
             StackTraceElement[] causeTraceElements = e.getCause().getStackTrace();
             for (StackTraceElement elem : causeTraceElements) {
-                sb.append( elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() +"\n");
-            }            
+                sb.append(elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n");
+            }
         }
         logError(sb.toString());
     }
@@ -431,9 +450,9 @@ public class Jmvc {
         String debugInfo = "<div style='margin:10px auto;padding:5px;width:50%;font:11px/1.2em Arial; background-color:#eee;border:1px dotted #d00;'>";
         debugInfo += "<div><b>Request processed in " + ((double) (now - then) / 1000000) + " milliseconds.</b></div>";
         debugInfo += "<div style='background-color:#000;color:#fff'><b>Database queries ran: " + dbDebug.size() + "</b></div>";
-        for (String s : dbDebug) {
-            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + "</div>";
-        }
+//        for (String s : dbDebug) {
+//            debugInfo += "<div style='margin:5px 0px;padding:10px;border:1px dotted #999;'>" + s + "</div>";
+//        }
         if (this.session != null) {
             debugInfo += (session.permHM.size() > 0) ? "<div style='background-color:#000;color:#fff'><b>Permanent session data</b></div>" : "";
             for (String s : session.permHM.keySet()) {

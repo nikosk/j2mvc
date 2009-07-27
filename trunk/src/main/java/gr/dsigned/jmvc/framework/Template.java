@@ -14,39 +14,30 @@
  */
 package gr.dsigned.jmvc.framework;
 
+import gr.dsigned.jmvc.types.Hmap;
+
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
 public class Template {
 
-    protected String title;
+    protected String viewname;
+    protected Object data;
 
-    protected String css;
-
-    protected String js;
-
-    public String getCss() {
-        return css;
+    public String getViewname() {
+        return viewname;
     }
 
-    public void setCss(String css) {
-        this.css = css;
+    public void setViewname(String viewname) {
+        this.viewname = viewname;
     }
 
-    public String getJs() {
-        return js;
+    public Object getData() {
+        return data;
     }
 
-    public void setJs(String js) {
-        this.js = js;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setData(Object data) {
+        this.data = data;
     }
 }
