@@ -143,6 +143,23 @@ public class Input extends Library {
             return "";
         }
     }
+    
+    /**
+     * Returns Nth part of the path.
+     * e.g.: /0/1/2/3
+     * @param index
+     * @return the URL part
+     * @throws java.lang.Exception
+     */
+    public static String segment(String path, int index){
+        ArrayList<String> pathParts = new ArrayList<String>(Arrays.asList(path.split("/")));
+        pathParts.remove("");
+        if (pathParts.size() > 0 && pathParts.size() > index) {
+            return pathParts.get(index);
+        } else {
+            return "";
+        }
+    }
 
     /**
      * If you use parameters in your URI you can retrieve 
