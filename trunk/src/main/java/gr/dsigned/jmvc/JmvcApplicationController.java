@@ -14,15 +14,20 @@
  */
 package gr.dsigned.jmvc;
 
+import gr.dsigned.jmvc.annotations.Implementation;
 import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.framework.Controller;
 import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Router;
 
 import gr.dsigned.jmvc.framework.Template;
+import gr.dsigned.jmvc.listeners.JmvcInitializationListener;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +62,7 @@ public class JmvcApplicationController extends HttpServlet {
         if (debug) {
             request.setAttribute("begin_time", System.nanoTime());
         } // keep time for debug purposes.
+        EntityManager em = JmvcInitializationListener.entityManager();
         request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         String path = request.getRequestURI();
         try {
@@ -65,14 +71,30 @@ public class JmvcApplicationController extends HttpServlet {
             Controller o = (Controller) c.newInstance();
             o.$.setEnvironment(request, response, this.getServletContext());
             request.setAttribute("controller_name", router.getControllerName(path) + "_page");
-            Template t = (Template)m.invoke(o, new Object[0]);
-            if(t!= null){
+            Class[] paramClasses = m.getParameterTypes();
+            Annotation[][] paramAnnotations = m.getParameterAnnotations();
+            Object[] paramInst = new Object[paramClasses.length];
+            for (int i = 0; i < paramClasses.length; i++) {
+                if (paramAnnotations[i][0] instanceof Implementation) {
+                    Implementation a = (Implementation) paramAnnotations[i][0];
+                    Class param = a.value();
+                    paramInst[i] = param.getDeclaredConstructor(EntityManager.class).newInstance(em);                    
+                }
+            }
+            Template t = (Template) m.invoke(o, paramInst);
+            if (t != null) {
                 request.setAttribute("template", t);
                 request.getRequestDispatcher("/views/" + t.getViewname() + ".jsp").forward(request, response);
             }
         } catch (Exception e) {
+            final EntityTransaction transaction = em.getTransaction();
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
             Jmvc.logError(e);
             Jmvc.loadErrorPage(e, response, this.getServletContext(), HttpErrors.E500);
+        } finally {
+            em.close();
         }
     }
 

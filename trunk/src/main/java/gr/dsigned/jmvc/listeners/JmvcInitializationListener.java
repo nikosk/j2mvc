@@ -15,13 +15,13 @@
 package gr.dsigned.jmvc.listeners;
 
 import gr.dsigned.jmvc.Settings;
-import gr.dsigned.jmvc.annotations.ControllerURLAlias;
-import gr.dsigned.jmvc.annotations.MethodURLAlias;
 import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Router;
 import gr.dsigned.jmvc.types.Hmap;
 import java.io.File;
-import java.lang.reflect.Method;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -32,6 +32,9 @@ import org.apache.commons.io.FilenameUtils;
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class JmvcInitializationListener implements ServletContextListener {
+
+    private static final String PERSISTENCE_UNIT = "persistence";
+    private static EntityManagerFactory emf;
 
     /**
      * In the init method we find all the controller classes and use reflection
@@ -52,9 +55,9 @@ public class JmvcInitializationListener implements ServletContextListener {
             for (File f : controllerDirectory.listFiles()) {
                 if (f.isFile()) {
                     try {
-                        String className = f.getName().substring(0, f.getName().lastIndexOf("."));                        
-                        Class theClass = Class.forName(Settings.get("SYSTEM_PACKAGE") + ".controllers." + className);                        
-                        r.addControllerClass(theClass);                        
+                        String className = f.getName().substring(0, f.getName().lastIndexOf("."));
+                        Class theClass = Class.forName(Settings.get("SYSTEM_PACKAGE") + ".controllers." + className);
+                        r.addControllerClass(theClass);
                     } catch (ClassNotFoundException ex) {
                         Jmvc.logError(ex);
                     }
@@ -72,10 +75,34 @@ public class JmvcInitializationListener implements ServletContextListener {
         }
         ctx.setAttribute("router", r);
         ctx.setAttribute("templates", templates);
+        emf = createEntityManagerFactory();
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        emf.close();
+    }
+
+    /**
+     *
+     * @return a new {@link EntityManager}
+     *
+     * @see EntityManagerFactory#createEntityManager()
+     */
+    public static EntityManager entityManager() {
+        return emf.createEntityManager();
+    }
+
+    public static EntityManagerFactory entityManagerFactory() {
+        return emf;
+    }
+
+    /*
+     * @return An {@link EntityManagerFactory} to create an {@link EntityManager}
+     *
+     * @see {@link EntityManagerFactory#createEntityManager()};
+     */
+    private EntityManagerFactory createEntityManagerFactory() {
+        return Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
     }
 }
