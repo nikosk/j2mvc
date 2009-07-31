@@ -4,9 +4,6 @@
  */
 package gr.dsigned.jmvc.framework;
 
-import gr.dsigned.jmvc.controllers.CMSController;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -32,28 +29,28 @@ public class RouterTest {
     @Test
     public void testGetController() {
         Router r = new Router();
-        r.addControllerClass(CMSController.class);
+        r.addControllerClass(TestController.class);
 
-        Assert.assertEquals(r.getControllerName("cmscontroller"), "Cmscontroller");
-        Assert.assertEquals(r.getControllerName("cmscontroller"), "Cmscontroller");
-        Assert.assertEquals(r.getControllerName("controllertest/methodtest"), "Cmscontroller");
-        Assert.assertEquals(r.getControllerName("controllertest/methodtest"), "Cmscontroller");
+        Assert.assertEquals(r.getControllerName("testcontroller"), "Testcontroller");
+        Assert.assertEquals(r.getControllerName("testcontroller"), "Testcontroller");
+        Assert.assertEquals(r.getControllerName("controllertest/methodtest"), "Testcontroller");
+        Assert.assertEquals(r.getControllerName("controllertest/methodtest"), "Testcontroller");
 
-        Assert.assertEquals(r.getControllerClassByReqURI("controllertest/methodtest"), CMSController.class);
-        Assert.assertEquals(r.getControllerClassByReqURI("cmscontroller/methodtest"), CMSController.class);
-        Assert.assertEquals(r.getControllerClassByReqURI("cmscontroller/index"), CMSController.class);
-        Assert.assertEquals(r.getControllerClassByReqURI("controllertest/index"), CMSController.class);
+        Assert.assertEquals(r.getControllerClassByReqURI("controllertest/methodtest"), TestController.class);
+        Assert.assertEquals(r.getControllerClassByReqURI("testcontroller/methodtest"), TestController.class);
+        Assert.assertEquals(r.getControllerClassByReqURI("testcontroller/index"), TestController.class);
+        Assert.assertEquals(r.getControllerClassByReqURI("controllertest/index"), TestController.class);
 
         Assert.assertEquals(r.getMethodName("controllertest/index"), "index");
-        Assert.assertEquals(r.getMethodName("cmscontroller/index"), "index");
+        Assert.assertEquals(r.getMethodName("testcontroller/index"), "index");
         Assert.assertEquals(r.getMethodName("controllertest/methodtest"), "index");
-        Assert.assertEquals(r.getMethodName("cmscontroller/methodtest"), "index");
+        Assert.assertEquals(r.getMethodName("testcontroller/methodtest"), "index");
         
         try {
-            Assert.assertEquals(r.getMethodClassByReqURI("controllertest/index"), CMSController.class.getMethod("index", new Class[0]));
-            Assert.assertEquals(r.getMethodClassByReqURI("cmscontroller/index"), CMSController.class.getMethod("index", new Class[0]));
-            Assert.assertEquals(r.getMethodClassByReqURI("controllertest/methodtest"), CMSController.class.getMethod("index", new Class[0]));
-            Assert.assertEquals(r.getMethodClassByReqURI("cmscontroller/methodtest"), CMSController.class.getMethod("index", new Class[0]));
+            Assert.assertEquals(r.getMethodClassByReqURI("controllertest/index"), TestController.class.getMethod("index", new Class[0]));
+            Assert.assertEquals(r.getMethodClassByReqURI("testcontroller/index"), TestController.class.getMethod("index", new Class[0]));
+            Assert.assertEquals(r.getMethodClassByReqURI("controllertest/methodtest"), TestController.class.getMethod("index", new Class[0]));
+            Assert.assertEquals(r.getMethodClassByReqURI("testcontroller/methodtest"), TestController.class.getMethod("index", new Class[0]));
         } catch (Exception ex) {
             //Do nothing
             Assert.fail(ex.getMessage());
