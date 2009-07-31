@@ -227,13 +227,12 @@ public class Jmvc {
                     html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
                 }
                 html += "</pre>";
-                Throwable c = e.getCause();
-                if (c != null) {
-                    String cause = e.getCause().toString();
+                
+                for(Throwable c = e.getCause(); c != null; c=c.getCause()) {
                     html += "<h2>Exception caused by: </h2>";
-                    html += "<pre>" + cause + "</pre>";
+                    html += "<pre>" + c.getMessage() + "</pre>";
                     html += "<pre>";
-                    StackTraceElement[] causeTraceElements = e.getCause().getStackTrace();
+                    StackTraceElement[] causeTraceElements = c.getStackTrace();
                     for (StackTraceElement elem : causeTraceElements) {
                         html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
                     }
@@ -405,23 +404,7 @@ public class Jmvc {
     }
 
     public static void logError(Exception e) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(e);
-        sb.append("\n");
-        StackTraceElement traceElements[] = e.getStackTrace();
-        for (StackTraceElement elem : traceElements) {
-            sb.append(elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n");
-        }
-        Throwable c = e.getCause();
-        if (c != null) {
-            String cause = e.getCause().toString();
-            sb.append(cause + "\n");
-            StackTraceElement[] causeTraceElements = e.getCause().getStackTrace();
-            for (StackTraceElement elem : causeTraceElements) {
-                sb.append(elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n");
-            }
-        }
-        logError(sb.toString());
+       errorLogger.error(e.getMessage(), e);
     }
 
     /**
