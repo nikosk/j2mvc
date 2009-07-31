@@ -124,6 +124,7 @@ public class Router {
                 addControllerMethodClass(className, m);
                 if (m.isAnnotationPresent(MethodURLAlias.class)) {
                     addRoute(alias + "/" + m.getAnnotation(MethodURLAlias.class).value(), controllerClass.getSimpleName(), m.getName());
+                    addRoute(className + "/" + m.getAnnotation(MethodURLAlias.class).value(), controllerClass.getSimpleName(), m.getName());
                 }
             }
         }
