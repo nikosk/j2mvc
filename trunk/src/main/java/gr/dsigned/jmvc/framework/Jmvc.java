@@ -127,66 +127,13 @@ public class Jmvc {
         if (debug) {
             request.setAttribute("debugLog", buildDebugOutput());
         } 
-        Template t =  new Template();
-        t.setViewname(view_name);
+        Template t =  new Template(view_name);        
         t.setData(data);
         request.setAttribute("template", t);
-        request.getRequestDispatcher("/views/" + view_name + ".jsp").forward(request, response);
-        if (false) {
-            View view = parsedViews.get(view_name);
-            data.put("controller_name", request.getAttribute("controller_name").toString().trim());
-            if (view == null) {
-                String template = Jmvc.readWithStringBuilder(context.getRealPath("/") + "/views/" + view_name + ".html");
-                view = new View(template);
-                parsedViews.put(view_name, view);
-            }
-            if (debug) {
-                for (String s : view.getPositions().values()) {
-                    if (!data.containsKey(s)) {
-                        logError("Page data not filled. Missing: " + s);
-                        //throw new Exception("Page data not filled. Missing: " + s);
-                        }
-                }
-            }
-            String output = view.format(data);
-            response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
-            response.setContentType("text/html");
-            PrintWriter out = response.getWriter();
-            if (debug) {
-                Source s = new Source(output);
-                SourceFormatter sf = new SourceFormatter(s);
-                out.write(sf.toString());
-            } else {
-                out.write(output);
-            }
-            if (showDebugLog) {
-                try {
-                    out.println(buildDebugOutput());
-                } catch (Exception e) {
-                    Jmvc.logError(e.toString());
-                }
-            }
-            out.flush();
-            out.close();
-        }
+        request.getRequestDispatcher("/views/" + view_name + ".jsp").forward(request, response);        
     }
 
-    /**
-     * This method forwards the request to a jsp page.
-     * Use the template to pass required data.
-     * This method is deprecated in favor of use of JSPs.
-     * Users of this method should use a Template return
-     * in controller methods.
-     * @param viewName
-     * @param template
-     */
-    @Deprecated
-    public <T extends Template> void loadView(String viewName,
-            T template) throws Exception {
-        request.setAttribute("template", template);
-        request.getRequestDispatcher("/views/" + viewName + ".jsp").forward(request, response);
-    }
-
+    
     /**
      * Displays the default error page
      * @param e The exception that caused the error
