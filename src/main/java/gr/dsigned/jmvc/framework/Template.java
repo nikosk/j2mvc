@@ -14,16 +14,22 @@
  */
 package gr.dsigned.jmvc.framework;
 
-import gr.dsigned.jmvc.types.Hmap;
+import java.util.LinkedHashMap;
 
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
-public class Template {
+public class Template extends LinkedHashMap {
 
     protected String viewname;
-    protected Object data;
+
+    public Template() {
+    }
+
+    public Template(String viewname) {
+        this.viewname = viewname;
+    }
 
     public String getViewname() {
         return viewname;
@@ -34,10 +40,16 @@ public class Template {
     }
 
     public Object getData() {
-        return data;
+        return this.get("data");
     }
 
+    /**
+     * Legacy method. Takes a map
+     * and puts all its entries in this instance
+     * using the key "data"
+     * @param data usually a pagedata object
+     */
     public void setData(Object data) {
-        this.data = data;
+        this.put("data", data);
     }
 }
