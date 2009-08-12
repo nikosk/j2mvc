@@ -20,9 +20,10 @@ import java.util.LinkedHashMap;
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
-public class Template extends LinkedHashMap {
+public class Template {
 
     protected String viewname;
+    protected Object data;
 
     public Template() {
     }
@@ -40,7 +41,7 @@ public class Template extends LinkedHashMap {
     }
 
     public Object getData() {
-        return this.get("data");
+        return data;
     }
 
     /**
@@ -50,6 +51,7 @@ public class Template extends LinkedHashMap {
      * @param data usually a pagedata object
      */
     public void setData(Object data) {
-        this.put("data", data);
+        this.data = data;
     }
+
 }
