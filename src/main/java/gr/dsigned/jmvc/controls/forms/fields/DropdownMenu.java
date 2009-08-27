@@ -178,6 +178,12 @@ public class DropdownMenu extends Field {
                         validates = false;
                     }
                     break;
+                     case EITHER:
+                    if (this.getSelectedValue().isEmpty()&& r._2.isEmpty()) {
+                        addError(get("Both fields cannot be empty."));
+                        validates = false;
+                    }
+                    break;
 //                case DEFAULT_NOT_ALLOWED:
 //                    System.out.println(getSelectedValue());
 //                    System.out.println(getValue());
