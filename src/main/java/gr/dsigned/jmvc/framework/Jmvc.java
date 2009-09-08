@@ -104,6 +104,7 @@ public class Jmvc {
         context = cont;
         input = new Input(request, context);
         session = new Session(req);
+        req.setAttribute("sessionObj", session);
     }
 
     /**
@@ -126,14 +127,13 @@ public class Jmvc {
     public void loadView(String view_name, LinkedHashMap<String, String> data) throws Exception {
         if (debug) {
             request.setAttribute("debugLog", buildDebugOutput());
-        } 
-        Template t =  new Template(view_name);        
+        }
+        Template t = new Template(view_name);
         t.setData(data);
         request.setAttribute("template", t);
-        request.getRequestDispatcher("/views/" + view_name + ".jsp").forward(request, response);        
+        request.getRequestDispatcher("/views/" + view_name + ".jsp").forward(request, response);
     }
 
-    
     /**
      * Displays the default error page
      * @param e The exception that caused the error
@@ -174,8 +174,8 @@ public class Jmvc {
                     html += elem.getClassName() + ": " + elem.getMethodName() + " on line:" + elem.getLineNumber() + "\n";
                 }
                 html += "</pre>";
-                
-                for(Throwable c = e.getCause(); c != null; c=c.getCause()) {
+
+                for (Throwable c = e.getCause(); c != null; c = c.getCause()) {
                     html += "<h2>Exception caused by: </h2>";
                     html += "<pre>" + c.getMessage() + "</pre>";
                     html += "<pre>";
@@ -351,7 +351,7 @@ public class Jmvc {
     }
 
     public static void logError(Exception e) {
-       errorLogger.error(e.getMessage(), e);
+        errorLogger.error(e.getMessage(), e);
     }
 
     /**
