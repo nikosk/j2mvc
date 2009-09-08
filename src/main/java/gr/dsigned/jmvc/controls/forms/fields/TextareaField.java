@@ -26,6 +26,7 @@ public class TextareaField extends Field {
     private String rows;
     private boolean disabled = false;
     private boolean readonly = false;
+    private String classStyle="";
 
     String template = "<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s'>%5$s</textarea>";
 
@@ -46,7 +47,7 @@ public class TextareaField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<textarea name='%1$s' id='%2$s' rows='%3$s' cols='%4$s' %6$s %7$s >%5$s</textarea>", getFieldName(), "id_" + getFieldName(), getRows(), getCols(), getValue(), isDisabled(), isReadonly(), getErrors());
+        return String.format("<textarea class='%9$s' name='%1$s' id='%2$s' rows='%3$s' cols='%4$s' %6$s %7$s >%5$s</textarea>", getFieldName(), "id_" + getFieldName(), getRows(), getCols(), getValue(), isDisabled(), isReadonly(), getErrors(), getClassStyle());
     }
         
     public String getCols() {
@@ -92,4 +93,14 @@ public class TextareaField extends Field {
     public void setReadonly() {
         this.readonly = true;
     }
+
+    public String getClassStyle() {
+        return classStyle;
+    }
+
+    public TextareaField classStyle(String style) {
+        this.classStyle = style;
+        return this;
+    }
+
 }

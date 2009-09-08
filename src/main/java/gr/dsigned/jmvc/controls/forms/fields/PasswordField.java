@@ -23,6 +23,7 @@ public class PasswordField extends Field {
 
     private boolean disabled = false ;
     private boolean readonly = false ;
+    private String classStyle="";
     
     String template = "<input type='password' name='%1$s' id='%2$s' value='%3$s'/>";
 
@@ -39,7 +40,7 @@ public class PasswordField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<input class='txt' type='password' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getErrors());
+        return String.format("<input class='%6$s' type='password' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getErrors(), getClassStyle());
     }
     
     public String isDisabled() {
@@ -68,6 +69,15 @@ public class PasswordField extends Field {
 
     public void setReadonly() {
         this.readonly = true;
+    }
+    
+    public String getClassStyle() {
+        return classStyle;
+    }
+
+    public PasswordField classStyle(String style) {
+           this.classStyle=style;
+        return this;
     }
 
 }
