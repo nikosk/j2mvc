@@ -27,6 +27,7 @@ public class CharField extends Field {
     private boolean readonly = false;
     private String maxlength = "" ;
     private String onclick ="";
+    private String classStyle="";
     
     String template = "<input type='text' name='%1$s' id='%2$s' value='%3$s'/>";
     
@@ -43,7 +44,7 @@ public class CharField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<input class='txt' type='text' name='%1$s' id='%2$s' value='%3$s' onclick ='%8$s' %4$s %5$s %6$s />", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getMaxlength(), getErrors(), getOnclick());
+        return String.format("<input class='%9$s' type='text' name='%1$s' id='%2$s' value='%3$s' onclick ='%8$s' %4$s %5$s %6$s />", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getMaxlength(), getErrors(), getOnclick(), getClassStyle());
     }
     
     public String isDisabled() {
@@ -89,5 +90,13 @@ public class CharField extends Field {
 	public void setOnclick(String onclick) {
 		this.onclick = onclick;
 	}
-    
+
+    public String getClassStyle() {
+        return classStyle;
+    }
+
+    public CharField classStyle(String style){
+        this.classStyle=style;
+        return this; 
+    }
 }
