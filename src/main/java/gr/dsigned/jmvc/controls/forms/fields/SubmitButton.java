@@ -21,6 +21,7 @@ package gr.dsigned.jmvc.controls.forms.fields;
  */
 public class SubmitButton extends Field {
     private boolean imageType = false;
+    private String src="";
 
     /**
      * 
@@ -32,9 +33,10 @@ public class SubmitButton extends Field {
         super("submit_button", value);
     }
    
-    public SubmitButton(String value, boolean imageType) {
+    public SubmitButton(String value, boolean imageType, String src) {
         super("submit_button", value);
         this.imageType =  imageType;
+        this.src = src;
     }
     
     /**
@@ -50,7 +52,7 @@ public class SubmitButton extends Field {
     @Override
     public String renderField() {
         if(imageType){
-            return String.format("<input name='%1$s' type='image' src='/images/icons/famfam/accept.png' class='image' id='%2$s' />", getFieldName(), "id_" + getFieldName());
+            return String.format("<input name='%1$s' type='image' class='submit' id='%2$s' src='%3$s' />", getFieldName(), "id_" + getFieldName(), getSrc());
         }
             return String.format("<input name='%1$s' type='submit' value='%3$s' />", getFieldName(), "id_" + getFieldName(), getValue());
     }
@@ -59,6 +61,8 @@ public class SubmitButton extends Field {
     public String renderLabel() {
         return "";
     }
-    
-    
+
+    public String getSrc() {
+        return src;
+    }
 }
