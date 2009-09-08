@@ -39,7 +39,7 @@ public class PasswordField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<input class='text' type='password' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getErrors());
+        return String.format("<input class='txt' type='password' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getErrors());
     }
     
     public String isDisabled() {

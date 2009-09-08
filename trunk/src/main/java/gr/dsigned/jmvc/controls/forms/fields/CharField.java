@@ -43,7 +43,7 @@ public class CharField extends Field {
 
     @Override
     public String renderField() {
-        return String.format("<input class='text' type='text' name='%1$s' id='%2$s' value='%3$s' onclick ='%8$s' %4$s %5$s %6$s />", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getMaxlength(), getErrors(), getOnclick());
+        return String.format("<input class='txt' type='text' name='%1$s' id='%2$s' value='%3$s' onclick ='%8$s' %4$s %5$s %6$s />", getFieldName(), "id_" + getFieldName(), getValue(), isDisabled(), isReadonly(), getMaxlength(), getErrors(), getOnclick());
     }
     
     public String isDisabled() {
