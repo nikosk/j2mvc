@@ -81,7 +81,7 @@ public class Mail extends Library {
     }
 
     /**
-     * Send the email. This is static so you dont need a Mail instance. Example: 
+     * Send the email. This is static so you dont need a Mail instance. Example:
      * <pre>
      *   Hmap h = new Hmap();
      *   h.put("mail@domain.com");

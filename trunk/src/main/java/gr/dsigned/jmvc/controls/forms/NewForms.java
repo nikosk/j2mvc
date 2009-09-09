@@ -46,7 +46,9 @@ public class NewForms extends HTMLControl {
     public String renderControl() {
         return String.format("<form id='%4$s' action='%1$s' method='post' %2$s>%3$s</form>", getAction(), enctype(), buildAsUList(), getId());
     }
-
+    public String renderFormTag(){
+        return String.format("<form id='%3$s' action='%1$s' method='post' %2$s>", getAction(), enctype(), getId());
+    }
     private String buildAsTable() {
         StringBuilder sb = new StringBuilder("<table>");
         sb.append("\n\t");
