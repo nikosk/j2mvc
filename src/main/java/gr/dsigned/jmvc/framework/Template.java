@@ -14,8 +14,6 @@
  */
 package gr.dsigned.jmvc.framework;
 
-import java.util.LinkedHashMap;
-
 /**
  *
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
@@ -54,4 +52,5 @@ public class Template {
         this.data = data;
     }
 
+    
 }

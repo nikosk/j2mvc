@@ -27,7 +27,7 @@ public class CharField extends Field {
     private boolean readonly = false;
     private String maxlength = "" ;
     private String onclick ="";
-    private String classStyle="";
+    private String classStyle="txt";
     
     String template = "<input type='text' name='%1$s' id='%2$s' value='%3$s'/>";
     
