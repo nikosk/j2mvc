@@ -43,7 +43,7 @@ public class Checkbox extends Field {
 
     public String isChecked() {
         String out = "";
-        if (getValue() != null && getValue().equalsIgnoreCase("1") || checked) {
+        if (checked) {
             out = " checked ";
         }
         return out;
@@ -70,11 +70,7 @@ public class Checkbox extends Field {
 
     @Override
     public String getValue() {
-        String out = "0";
-        if (!value.isEmpty()) {
-            out = "1";
-        }
-        return out;
+        return value;
     }
     
     
@@ -84,7 +80,7 @@ public class Checkbox extends Field {
         for (Tuple2<Rule, String> r : rules) {
             switch (r._1) {
                 case REQUIRED:
-                    if (getValue().equals("0")) {
+                    if (!checked) {
                         addError(get("The field ") + getLabelName() + get(" is required."));
                         validates = false;
                     }
