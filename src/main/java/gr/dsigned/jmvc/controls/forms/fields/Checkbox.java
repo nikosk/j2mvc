@@ -24,6 +24,7 @@ public class Checkbox extends Field {
     private boolean checked = false;
     private boolean disabled = false;
     String template = "<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s />";
+    private String defaultvalue="";
 
     /**
      * 
@@ -32,13 +33,14 @@ public class Checkbox extends Field {
      * @param value (the value we are going to get from the post:: if checked we are going to get the inputValue else an empty string)
      * @param rules
      */
-    public Checkbox(String labelName, String fieldName, String value, Tuple2<Rule, String>... rules) {
+    public Checkbox(String labelName, String fieldName, String defaultvalue, String value, Tuple2<Rule, String>... rules) {
         super(labelName, fieldName, value, rules);
+        this.defaultvalue=defaultvalue;
     }
 
     @Override
     public String renderField() {
-        return String.format("<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />", getFieldName(), "id_" + getFieldName(), getValue(),  isChecked(), isDisabled(), getErrors());
+        return String.format("<input type='checkbox' name='%1$s' id='%2$s' value='%3$s' %4$s %5$s />", getFieldName(), "id_" + getFieldName(), getDefaultvalue(),  isChecked(), isDisabled(), getErrors());
     }
 
     public String isChecked() {
@@ -74,13 +76,21 @@ public class Checkbox extends Field {
     }
     
     
+    public String getDefaultvalue() {
+        return defaultvalue;
+    }
+
+    public void setDefaultvalue(String defaultvalue) {
+        this.defaultvalue = defaultvalue;
+    }
+
     @Override
     public boolean validates() {
         validates = true;
         for (Tuple2<Rule, String> r : rules) {
             switch (r._1) {
                 case REQUIRED:
-                    if (!checked) {
+                    if (getValue().isEmpty()) {
                         addError(get("The field ") + getLabelName() + get(" is required."));
                         validates = false;
                     }
