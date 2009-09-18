@@ -142,6 +142,7 @@ public class Jmvc {
      */
     public static void loadErrorPage(Exception e, HttpServletResponse response, ServletContext cont, HttpErrors er) {
         try {
+
             String template = "";
             String errorTemplate = "";
 
@@ -161,6 +162,7 @@ public class Jmvc {
             }
 
             template = Jmvc.readWithStringBuilder(cont.getRealPath("/") + "error_pages" + File.separator + errorTemplate);
+            response.setContentType("text/html");
             response.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
             PrintWriter out = response.getWriter();
             if (Settings.get("DEBUG").equals("TRUE")) {
