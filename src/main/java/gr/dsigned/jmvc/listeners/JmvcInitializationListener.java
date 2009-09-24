@@ -89,7 +89,7 @@ public class JmvcInitializationListener implements ServletContextListener {
      *
      * @see EntityManagerFactory#createEntityManager()
      */
-    public static EntityManager entityManager() {
+    public static EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 

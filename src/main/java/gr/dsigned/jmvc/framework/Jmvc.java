@@ -38,8 +38,6 @@ import java.util.Locale;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.htmlparser.jericho.Source;
-import net.htmlparser.jericho.SourceFormatter;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 
@@ -51,37 +49,48 @@ public class Jmvc {
     private static final Logger infoLogger = Logger.getLogger("Info");
     private static final Logger debugLogger = Logger.getLogger("Debug");
     private static final Logger errorLogger = Logger.getLogger("Error");
+    
     private boolean debug = Settings.get("DEBUG").equals("TRUE");
     private boolean showDebugLog = Settings.get("DEBUG_LOG").equals("TRUE");
     private static ArrayList<String> dbDebug = null;
-    public HttpServletRequest request;
-    public ServletContext context;
+
+    private HttpServletRequest request;
+    private ServletContext context;
+    private HttpServletResponse response;
+
     public static HashMap<String, View> parsedViews = null;
-    public HttpServletResponse response;
     /*
      * These are the default auto-loaded libraries To load
      * others use Jmvc.loadLibrary()
      */
     public DB db;
     public Input input;
-    public Session session;
+    private Session session;
 
     public Jmvc() {
-        init();
+    }
+    public Jmvc(HttpServletRequest req, HttpServletResponse resp, ServletContext cont) throws Exception {
+        setEnvironment(req, resp, cont);
     }
 
-    private void init() {
-        if (parsedViews == null) {
-            parsedViews = new HashMap<String, View>();
-        }
-        if (debug) {
-            dbDebug = new ArrayList<String>();
-            if (!Settings.get("DATABASE_TYPE").equalsIgnoreCase("none")) {
-                if (Settings.get("DATABASE_TYPE").equalsIgnoreCase("mysql")) {
-                    db = gr.dsigned.jmvc.db.MysqlDB.getInstance();
-                }
-            }
-        }
+    public ServletContext getContext() {
+        return context;
+    }
+
+    public void setContext(ServletContext context) {
+        this.context = context;
+    }
+
+    public HttpServletResponse getResponse() {
+        return response;
+    }
+
+    public void setResponse(HttpServletResponse response) {
+        this.response = response;
+    }
+
+    public Session getSession() {
+        return session;
     }
 
     /**
@@ -98,7 +107,7 @@ public class Jmvc {
      * @param resp
      * @param cont
      */
-    public void setEnvironment(HttpServletRequest req, HttpServletResponse resp, ServletContext cont) throws IOException, FileUploadException {
+    private void setEnvironment(HttpServletRequest req, HttpServletResponse resp, ServletContext cont) throws IOException, FileUploadException {
         request = req;
         response = resp;
         context = cont;
@@ -372,7 +381,7 @@ public class Jmvc {
      * Append debug info
      * @param debug
      */
-    public void debug(boolean debugMode) {
+    public void setDebug(boolean debugMode) {
         debug = debugMode;
     }
 
