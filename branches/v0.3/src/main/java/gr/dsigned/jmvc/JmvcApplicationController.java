@@ -62,15 +62,19 @@ public class JmvcApplicationController extends HttpServlet {
         if (debug) {
             request.setAttribute("begin_time", System.nanoTime());
         } // keep time for debug purposes.
-        EntityManager em = JmvcInitializationListener.entityManager();
+        EntityManager em = JmvcInitializationListener.getEntityManager();
         request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         String path = request.getRequestURI();
         try {
             Class c = router.getControllerClassByReqURI(path);
             Method m = router.getMethodClassByReqURI(path);
-            Controller o = (Controller) c.newInstance();
-            o.$.setEnvironment(request, response, this.getServletContext());
+            Jmvc $ = new Jmvc(request, response, this.getServletContext());
+            Controller o = (Controller) c.getDeclaredConstructor().newInstance();
+            o.set$($);
+            
+            //o.get$().setEnvironment(request, response, this.getServletContext());
             request.setAttribute("controller_name", router.getControllerName(path) + "_page");
+            // Dependency injection
             Class[] paramClasses = m.getParameterTypes();
             Annotation[][] paramAnnotations = m.getParameterAnnotations();
             Object[] paramInst = new Object[paramClasses.length];
@@ -85,6 +89,8 @@ public class JmvcApplicationController extends HttpServlet {
             if (t != null) {
                 request.setAttribute("template", t);
                 request.getRequestDispatcher("/views/" + t.getViewname() + ".jsp").forward(request, response);
+            }else{
+                Jmvc.loadErrorPage(new Exception("Controller did not return a Template"), response, this.getServletContext(), HttpErrors.E500);
             }
         } catch (Exception e) {
             final EntityTransaction transaction = em.getTransaction();

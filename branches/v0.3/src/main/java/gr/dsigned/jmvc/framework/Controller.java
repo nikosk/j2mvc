@@ -14,16 +14,26 @@
  */
 package gr.dsigned.jmvc.framework;
 
-
 /**
  *
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Controller {
 
-    public Jmvc $ = null;
+    protected Jmvc $ = null;
 
-    public Controller(){
-    	$ = new Jmvc();
+    public Controller() {
+    }
+
+    public Controller(Jmvc $) {
+        this.$ = $;
+    }
+
+    public void set$(Jmvc $) {
+        this.$ = $;
+    }
+
+    public Jmvc get$() {
+        return $;
     }
 }

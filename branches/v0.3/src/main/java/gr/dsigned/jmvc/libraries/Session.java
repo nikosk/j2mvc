@@ -17,24 +17,31 @@ package gr.dsigned.jmvc.libraries;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.framework.Library;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
 
 /**
- * 09 Μαρ 2008, gr.dsigned.jmvc.libraries 
+ * 09 Μαρ 2008, gr.dsigned.jmvc.libraries
+ * 
+ * A wrapper for HttpSession that adds the functionality of
+ * adding attributes for 1 request only (Flash data).
+ * 
  * Session.java
  * @author Nikosk <nikosk@dsigned.gr>
  * @author Vassilki Chryssikou <vchrys@gmail.com>
  */
-public class Session extends Library {
+public class Session extends Library implements HttpSession {
 
-    HttpServletRequest request;
-    HttpSession session;
-    public HashMap<String, String> permHM = new HashMap<String, String>();
-    public HashMap<String, String> tempHM = new HashMap<String, String>();
+    private HttpServletRequest request;
+    private HttpSession session;
+    public HashMap<String, Object> permHM = new HashMap<String, Object>();
+    public HashMap<String, Object> tempHM = new HashMap<String, Object>();
 
     public Session(HttpServletRequest req) {
         session = req.getSession(false);
@@ -59,22 +66,32 @@ public class Session extends Library {
      * @param paramName
      * @return (string) value of the parameter given 
      */
+    @Deprecated
     public String data(String paramName) {
         String out = "";
         if (tempHM.containsKey(paramName)) {
-            out = tempHM.get(paramName);
-        } else {
-            out = permHM.get(paramName);
+            out = tempHM.get(paramName).toString();
+        } else if(permHM.containsKey(paramName)){
+            out = permHM.get(paramName).toString();
         }
         return (out == null) ? "" : out;
     }
 
+    public Object get(String paramName) {        
+        if (tempHM.containsKey(paramName)) {
+            return tempHM.get(paramName);
+        } else {
+            return permHM.get(paramName);
+        }        
+    }
+
     /**
-     * Method that sets a permanant attribute to the session and to the appropriate hashmap
+     * Method that sets a permanant attribute to the session and to the appropriate hashmap.
+     * If the session is already created
      * @param key
      * @param value
      */
-    public void set(String key, String value) {
+    public void set(String key, Object value) {
         if (this.session == null) {
             session = this.request.getSession(true);
             String expiry = Settings.get("SESSION_EXPIRY");
@@ -106,6 +123,7 @@ public class Session extends Library {
     /**
      * invalidates session and initialise parametres
      */
+    @Override
     public void invalidate() {
         if (session != null) {
             session.invalidate();
@@ -113,5 +131,100 @@ public class Session extends Library {
         }
         permHM.clear();
         tempHM.clear();
+    }
+
+    @Override
+    public long getCreationTime() {
+        return session.getCreationTime();
+    }
+
+    @Override
+    public String getId() {
+        return session.getId();
+    }
+
+    @Override
+    public long getLastAccessedTime() {
+        return session.getLastAccessedTime();
+    }
+
+    @Override
+    public ServletContext getServletContext() {
+        return session.getServletContext();
+    }
+
+    @Override
+    public void setMaxInactiveInterval(int interval) {
+        session.setMaxInactiveInterval(interval);
+    }
+
+    @Override
+    public int getMaxInactiveInterval() {
+        return session.getMaxInactiveInterval();
+    }
+
+    @Override
+    @Deprecated
+    public HttpSessionContext getSessionContext() {
+        throw new UnsupportedOperationException("Deprecated");
+    }
+
+    /**
+     * Overrides the default behaviour to return
+     * either permanent data or temporary.
+     * @param name
+     * @return
+     */
+    @Override
+    public Object getAttribute(String name) {
+        return this.data(name);
+    }
+
+    @Override
+    @Deprecated
+    public Object getValue(String name) {
+        throw new UnsupportedOperationException("Deprecated");
+    }
+
+    @Override
+    public Enumeration getAttributeNames() {
+        return Collections.enumeration(this.permHM.keySet());
+    }
+
+    @Override
+    @Deprecated
+    public String[] getValueNames() {
+        throw new UnsupportedOperationException("Deprecated");
+    }
+
+    @Override
+    public void setAttribute(String name, Object value) {
+        this.set(name, value);
+    }
+
+    @Override
+    @Deprecated
+    public void putValue(String name, Object value) {
+        throw new UnsupportedOperationException("Deprecated");
+    }
+
+    @Override
+    public void removeAttribute(String name) {
+        if (this.permHM.containsKey(name)) {
+            this.permHM.remove(name);
+        } else {
+            this.session.removeAttribute(name);
+        }
+    }
+
+    @Override
+    @Deprecated
+    public void removeValue(String name) {
+        throw new UnsupportedOperationException("Deprecated");
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.session.isNew();
     }
 }
