@@ -1,0 +1,139 @@
+/*******************************************
+** light blue : #c3d9ff
+** light grey : #eee
+** logo blue  : #009DEB
+** 
+*******************************************/
+
+/*** Globals  ***/
+
+h1, h2, h3, h4, h5, h6 {
+font-family: Georgia;
+line-height: normal;
+font-weight: bold;
+}
+
+/**************** Structure ****************/
+#left_sidebar{
+    padding:0px 0px 0px 10px
+}
+#cms_footer{
+    background: #fff url(/images/admin/footer_bg.jpg) repeat-x top left;
+    height:30px;
+}
+#pcms_header{
+    text-align:left;
+    overflow:hidden;
+    background: #fff url(/images/admin/header_bg.jpg) repeat-x top left;
+    height:59px;
+}
+#logo{
+    float:left;
+}
+#header_right_col{
+    float:right;
+}
+#logo h1{
+    font: 3em/1.5em Georgia;
+    color:#009DEB;
+    padding-left:20px;
+}
+
+.logout_link{
+    background: transparent url(/images/admin/logout_bg.gif) no-repeat 50% center;
+    margin:15px 40px 0px 0px;
+    color:#fff;
+    text-decoration:none;
+    display:block;
+    padding:10px;
+}
+#nav {
+    overflow:hidden;
+    padding:5px 0px;
+    background-color:#eeeeee;
+}
+#nav ul{
+    float:left;
+    width:50%;
+    margin:0px 0px 0px 15px;
+}
+#nav ul li{ float:left;}
+#nav ul li a{ 
+    padding:5px;
+    color:#000;
+    text-decoration:none;
+}
+#super_admin_menu{
+    float:right;
+    width:20%;
+    text-align:right;
+}
+#super_admin_menu a{    
+    color:black;
+    text-decoration:none;
+    padding:5px;
+}
+#content_list tr{
+    border-bottom: 1px dotted #aaa;
+}
+.toolbar td{
+    text-align:center;
+}
+#ft{
+    background-color:#eee;
+    padding: 5px 5px;
+    margin:5px 0px;
+}
+.help{
+    background-color:#eee;
+    padding:5px;
+}
+#menu_list{
+    float:left;
+    width:20%;
+}
+
+#menu_form{
+    float:left;
+    width:80%;
+}
+
+.tool{
+ padding:3px 0px 0px 60px; 
+ float:right;
+}
+.tool a{
+    text-decoration:none;
+    color:#000;   
+}
+.tool img{
+    vertical-align:text-bottom;
+}
+.highlight{
+    background: transparent url(/images/admin/nav_bg.jpg) 50% 50% no-repeat !important;
+}
+#content_wrapper{
+    background-color:#eee;
+}
+.message_area{
+     padding:5px 10px;  
+     min-height:30px;
+}
+.toolbar{
+   background-color:#c3d9ff; 
+   padding:5px 10px;
+   overflow:hidden;
+}
+.content{
+    padding:5px 10px;
+}
+
+
+/** zebra tables**/
+.highlight		{ background:#d5fcdc; }
+.even			{ background:#fff; }
+.mo			{ background:#e3f1fb; }
+.odd			{ background:#eee; }
+.zebra th		{ padding:5px; background:#ddd; border-bottom:1px solid #999; text-align:left; font-weight:bold; }
+.zebra td		{ padding:5px 20px 5px 5px; border-bottom:1px solid #ddd; }
+
