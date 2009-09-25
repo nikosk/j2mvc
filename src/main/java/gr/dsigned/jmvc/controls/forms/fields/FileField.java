@@ -52,13 +52,13 @@ public class FileField extends Field {
         for (Tuple2<Rule, String> r : rules) {
             switch (r._1) {
                 case REQUIRED:
-                    if (f==null || !f.exists()) {
+                    if (f.getName().equals("")) {
                         addError(get("The field ") + getLabelName() + get(" is required."));
                         validates = false;
                     }
                     break;
                 case ALLOWED_EXTENSIONS:
-                    if(f!=null){
+                    if(!f.getName().equals("")){
                         boolean found = false;
                         String[] allowedExtensions = r._2.split("\\|");
                         String fileExtension = getExtension(f.getAbsolutePath());
@@ -74,7 +74,7 @@ public class FileField extends Field {
                     }
                     break;
                 case MAX_FILE_SIZE:
-                    if(f!=null){
+                    if(!f.getName().equals("")){
                         long allowedSize = Integer.parseInt(r._2);
                         long fileSize = f.length();
                         if(allowedSize < fileSize){
