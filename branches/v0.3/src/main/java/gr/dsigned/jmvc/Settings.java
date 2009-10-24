@@ -16,9 +16,7 @@ package gr.dsigned.jmvc;
 
 import gr.dsigned.jmvc.framework.Jmvc;
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URI;
-import java.util.Date;
 import java.util.Properties;
 
 /**
@@ -39,29 +37,8 @@ public class Settings {
     }
 
     public static String get(String property) {
-        String value = "";
-        if (file == null) {
-            init();
-        }
-        try {
-            boolean checkForChanges = false;
-            if (nextCheck - new Date().getTime() < 0) {
-                checkForChanges = file.lastModified() > fileTimeStamp;                
-                nextCheck = new Date().getTime() + recheckInterval;
-                count = count + 1;
-            }
-            if (properties == null || checkForChanges) {
-                fileTimeStamp = file.lastModified();
-                properties = new Properties();
-                properties.clear();
-                properties.load(new FileInputStream(file));
-                value = properties.getProperty(property);                
-            } else {
-                value = properties.getProperty(property);
-            }
-        } catch (Exception e) {
-            Jmvc.logError(e.toString());
-        }
+        String value = "";       
+        value = properties.getProperty(property);
         return value;
     }
 

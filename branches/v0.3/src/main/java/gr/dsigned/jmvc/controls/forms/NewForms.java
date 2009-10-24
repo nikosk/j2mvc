@@ -14,11 +14,9 @@
  */
 package gr.dsigned.jmvc.controls.forms;
 
-import gr.dsigned.jmvc.controls.HTMLControl;
 import gr.dsigned.jmvc.controls.forms.fields.Field;
 import gr.dsigned.jmvc.controls.forms.fields.HiddenField;
 import gr.dsigned.jmvc.types.Hmap;
-import gr.dsigned.jmvc.framework.Library;
 import java.util.LinkedHashMap;
 import static gr.dsigned.jmvc.framework.Renderer.*;
 import static gr.dsigned.jmvc.types.operators.*;
@@ -28,7 +26,7 @@ import static gr.dsigned.jmvc.types.operators.*;
  * @author Nikosk <nikosk@dsigned.gr>
  * @author Vas Chryssikou <vchrys@gmail.com>
  */
-public class NewForms extends HTMLControl {
+public class NewForms {
 
     private LinkedHashMap<String, Field> fields = new LinkedHashMap<String, Field>();
     private String id;
@@ -42,7 +40,6 @@ public class NewForms extends HTMLControl {
         this.action = act;
     }
 
-    @Override
     public String renderControl() {
         return String.format("<form id='%4$s' action='%1$s' method='post' %2$s>%3$s</form>", getAction(), enctype(), buildAsUList(), getId());
     }

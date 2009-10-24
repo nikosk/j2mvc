@@ -12,13 +12,13 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  *  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  */
-package gr.dsigned.jmvc.libraries;
+package gr.dsigned.jmvc.helpers;
 
 import gr.dsigned.jmvc.framework.Library;
 import static gr.dsigned.jmvc.framework.Renderer.div;
 import static gr.dsigned.jmvc.framework.Renderer.a;
 import static gr.dsigned.jmvc.types.operators.*;
-import static gr.dsigned.jmvc.libraries.Localization.get;
+import static gr.dsigned.jmvc.helpers.Localization.get;
 
 /**
  * 16 Μαρ 2008, gr.dsigned.jmvc.libraries

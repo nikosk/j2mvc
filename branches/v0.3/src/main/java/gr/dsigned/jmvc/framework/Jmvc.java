@@ -18,8 +18,8 @@ import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.db.DB;
 import gr.dsigned.jmvc.db.Model;
-import gr.dsigned.jmvc.libraries.Input;
-import gr.dsigned.jmvc.libraries.Session;
+import gr.dsigned.jmvc.helpers.Input;
+import gr.dsigned.jmvc.helpers.Session;
 
 import java.io.BufferedReader;
 import java.io.File;

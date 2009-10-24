@@ -71,10 +71,7 @@ public class JmvcApplicationController extends HttpServlet {
             Jmvc $ = new Jmvc(request, response, this.getServletContext());
             Controller o = (Controller) c.getDeclaredConstructor().newInstance();
             o.set$($);
-            
-            //o.get$().setEnvironment(request, response, this.getServletContext());
             request.setAttribute("controller_name", router.getControllerName(path) + "_page");
-            // Dependency injection
             Class[] paramClasses = m.getParameterTypes();
             Annotation[][] paramAnnotations = m.getParameterAnnotations();
             Object[] paramInst = new Object[paramClasses.length];

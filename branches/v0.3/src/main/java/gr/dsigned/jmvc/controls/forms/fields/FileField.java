@@ -18,7 +18,7 @@ import gr.dsigned.jmvc.controls.forms.fields.Field.Rule;
 import gr.dsigned.jmvc.types.Tuple2;
 import java.io.File;
 import static org.apache.commons.io.FilenameUtils.getExtension;
-import static gr.dsigned.jmvc.libraries.Localization.get;
+import static gr.dsigned.jmvc.helpers.Localization.get;
 /**
  * @author Vas Chryssikou <vchrys@gmail.com>
  */

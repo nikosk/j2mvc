@@ -1,4 +1,4 @@
-package gr.dsigned.jmvc.libraries;
+package gr.dsigned.jmvc.helpers;
 
 import java.util.*;
 import net.htmlparser.jericho.*;

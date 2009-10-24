@@ -17,7 +17,7 @@ package gr.dsigned.jmvc.controls.forms.fields;
 import gr.dsigned.jmvc.types.Hmap;
 import gr.dsigned.jmvc.types.Tuple2;
 import java.util.ArrayList;
-import static gr.dsigned.jmvc.libraries.Localization.get;
+import static gr.dsigned.jmvc.helpers.Localization.get;
 /**
  * @author Vas Chryssikou <vchrys@gmail.com>
  * @author Nikosk <nikosk@dsigned.gr>
