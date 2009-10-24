@@ -19,6 +19,14 @@ public class TestController extends Controller {
     public void index() {
     }
 
+    @MethodURLAlias("testIndex")
+    public void testIndex() {
+    }
+
+    @MethodURLAlias("TestIndeX")
+    public void TestIndeX() {
+    }
+
     @Test
     public void empty() {
     }
