@@ -14,7 +14,7 @@
  */
 package gr.dsigned.jmvc.framework;
 
-import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
+import gr.dsigned.jmvc.exceptions.HttpException.HttpErrors;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.db.DB;
 import gr.dsigned.jmvc.db.Model;

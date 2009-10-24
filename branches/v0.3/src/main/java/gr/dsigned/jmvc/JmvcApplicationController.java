@@ -14,17 +14,16 @@
  */
 package gr.dsigned.jmvc;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import gr.dsigned.jmvc.annotations.Implementation;
-import gr.dsigned.jmvc.exceptions.CustomHttpException.HttpErrors;
-import gr.dsigned.jmvc.framework.Controller;
+import gr.dsigned.jmvc.exceptions.HttpException.HttpErrors;
 import gr.dsigned.jmvc.framework.Jmvc;
 import gr.dsigned.jmvc.framework.Router;
 
-import gr.dsigned.jmvc.framework.Template;
 import gr.dsigned.jmvc.listeners.JmvcInitializationListener;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -66,11 +65,7 @@ public class JmvcApplicationController extends HttpServlet {
         request.setCharacterEncoding(Settings.get("DEFAULT_ENCODING"));
         String path = request.getRequestURI();
         try {
-            Class c = router.getControllerClassByReqURI(path);
-            Method m = router.getMethodClassByReqURI(path);
-            Jmvc $ = new Jmvc(request, response, this.getServletContext());
-            Controller o = (Controller) c.getDeclaredConstructor().newInstance();
-            o.set$($);
+            Injector injector = Guice.createInjector(new PersistenceModule(em, request, response));
             request.setAttribute("controller_name", router.getControllerName(path) + "_page");
             Class[] paramClasses = m.getParameterTypes();
             Annotation[][] paramAnnotations = m.getParameterAnnotations();
@@ -82,10 +77,10 @@ public class JmvcApplicationController extends HttpServlet {
                     paramInst[i] = param.getDeclaredConstructor(EntityManager.class).newInstance(em);                    
                 }
             }
-            Template t = (Template) m.invoke(o, paramInst);
+            Object t = m.invoke(o, paramInst);
             if (t != null) {
                 request.setAttribute("template", t);
-                request.getRequestDispatcher("/views/" + t.getViewname() + ".jsp").forward(request, response);
+                request.getRequestDispatcher("/views/index.jsp").forward(request, response);
             }else{
                 Jmvc.loadErrorPage(new Exception("Controller did not return a Template"), response, this.getServletContext(), HttpErrors.E500);
             }
