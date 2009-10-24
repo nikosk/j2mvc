@@ -89,7 +89,7 @@ public class Router {
      * @return
      */
     public Method getMethodClassByReqURI(String requestURI) {
-        if(methodCache.get(getControllerName(requestURI)) == null){
+        if (methodCache.get(getControllerName(requestURI)) == null) {
             return methodCache.get(capitalize(Settings.get("DEFAULT_CONTROLLER"))).get("index");
         }
         return methodCache.get(getControllerName(requestURI)).get(getMethodName(requestURI));
@@ -111,30 +111,35 @@ public class Router {
      * @param controllerClass
      */
     public void addControllerClass(Class controllerClass) {
-        String alias = "";
+        String className = controllerClass.getSimpleName(); // Get Original Class Name
+        String classNameKey = controllerClass.getSimpleName().toLowerCase(); // Get Name lower cased to be used a map key
+        controllerClassesCache.put(className, controllerClass); // Cache the Class object
+        String classAlias = "";
         if (controllerClass.isAnnotationPresent(ControllerURLAlias.class)) {
             ControllerURLAlias annotation = (ControllerURLAlias) controllerClass.getAnnotation(ControllerURLAlias.class);
-            alias = annotation.value();
+            classAlias = annotation.value().toLowerCase();
+            addRoute(classAlias + "/", className, null); // Add this route to the default controller method
         }
-        String className = capitalize(controllerClass.getSimpleName());
-        controllerClassesCache.put(className, controllerClass);
-        addRoute(alias + "/", className, null);
         for (Method m : controllerClass.getDeclaredMethods()) {
             if (m.getModifiers() == java.lang.reflect.Modifier.PUBLIC) { // We only need public methods
-                addControllerMethodClass(className, m);
+                addMethodClass(className, m);
                 if (m.isAnnotationPresent(MethodURLAlias.class)) {
-                    addRoute(alias + "/" + m.getAnnotation(MethodURLAlias.class).value(), controllerClass.getSimpleName(), m.getName());
-                    addRoute(className + "/" + m.getAnnotation(MethodURLAlias.class).value(), controllerClass.getSimpleName(), m.getName());
+                    String methodAlias = m.getAnnotation(MethodURLAlias.class).value().toLowerCase();
+                    if (!classAlias.isEmpty()) {
+                        addRoute(classAlias + "/" + methodAlias, className, m.getName());                    
+                    }
+                    addRoute(classNameKey + "/" + methodAlias, className, m.getName());
                 }
+                addRoute(classNameKey + "/" + m.getName().toLowerCase(), className, m.getName());
             }
         }
     }
 
-    private void addControllerMethodClass(String normalizedClassName, Method method) {
-        if (methodCache.get(normalizedClassName) == null) {
-            methodCache.put(normalizedClassName, new LinkedHashMap<String, Method>());
+    private void addMethodClass(String className, Method method) {
+        if (methodCache.get(className) == null) {
+            methodCache.put(className, new LinkedHashMap<String, Method>());
         }
-        methodCache.get(normalizedClassName).put(method.getName(), method);
+        methodCache.get(className).put(method.getName(), method);
     }
 
     /**
@@ -183,6 +188,15 @@ public class Router {
             return s;
         }
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (String k : this.routeEntries.keySet()) {
+            sb.append("Key: ").append(k).append(" ->").append(routeEntries.get(k)._1).append(" - ").append(routeEntries.get(k)._2).append("\n");
+        }
+        return sb.toString();
     }
 
     /**

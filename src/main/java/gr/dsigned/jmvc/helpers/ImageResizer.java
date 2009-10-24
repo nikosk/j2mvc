@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package gr.dsigned.jmvc.libraries;
+package gr.dsigned.jmvc.helpers;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;

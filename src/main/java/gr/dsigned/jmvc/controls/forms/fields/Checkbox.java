@@ -15,7 +15,7 @@
 package gr.dsigned.jmvc.controls.forms.fields;
 
 import gr.dsigned.jmvc.types.Tuple2;
-import static gr.dsigned.jmvc.libraries.Localization.get;
+import static gr.dsigned.jmvc.helpers.Localization.get;
 /**
  * @author Vas Chryssikou <vchrys@gmail.com>
  */

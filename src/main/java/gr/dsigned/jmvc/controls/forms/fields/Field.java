@@ -16,15 +16,15 @@
  */
 package gr.dsigned.jmvc.controls.forms.fields;
 
-import gr.dsigned.jmvc.libraries.HTMLInputFilter;
-import gr.dsigned.jmvc.libraries.HTMLSanitiser;
+import gr.dsigned.jmvc.helpers.HTMLInputFilter;
+import gr.dsigned.jmvc.helpers.HTMLSanitiser;
 import gr.dsigned.jmvc.types.Tuple2;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static gr.dsigned.jmvc.libraries.Localization.get;
+import static gr.dsigned.jmvc.helpers.Localization.get;
 
 /**
  *

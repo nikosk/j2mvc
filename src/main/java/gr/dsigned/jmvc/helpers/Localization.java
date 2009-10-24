@@ -1,4 +1,4 @@
-package gr.dsigned.jmvc.libraries;
+package gr.dsigned.jmvc.helpers;
 
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.framework.Jmvc;
