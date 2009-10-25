@@ -2,6 +2,7 @@ package gr.dsigned.jmvc.helpers;
 
 import java.util.*;
 import net.htmlparser.jericho.*;
+import net.htmlparser.jericho.HTMLElementName;
 
 /**
  * Provides facilities to sanitise HTML containing unwanted or invalid tags into clean HTML.

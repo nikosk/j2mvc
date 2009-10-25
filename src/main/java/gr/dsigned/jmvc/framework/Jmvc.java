@@ -136,10 +136,7 @@ public class Jmvc {
     public void loadView(String view_name, LinkedHashMap<String, String> data) throws Exception {
         if (debug) {
             request.setAttribute("debugLog", buildDebugOutput());
-        }
-        Template t = new Template(view_name);
-        t.setData(data);
-        request.setAttribute("template", t);
+        }        
         request.getRequestDispatcher("/views/" + view_name + ".jsp").forward(request, response);
     }
 

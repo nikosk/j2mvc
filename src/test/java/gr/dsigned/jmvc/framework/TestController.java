@@ -13,7 +13,7 @@ import org.junit.Test;
  * @author nk
  */
 @ControllerURLAlias("controllertest")
-public class TestController extends Controller {
+public class TestController implements Controller {
 
     @MethodURLAlias("methodtest")
     public void index() {
