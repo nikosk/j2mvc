@@ -14,59 +14,43 @@
  */
 package gr.dsigned.jmvc;
 
-import gr.dsigned.jmvc.framework.Jmvc;
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.URI;
-import java.util.Date;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 /**
- *
+ * 
  * @author Nikosk <nikosk@dsigned.gr>
  */
 public class Settings {
 
-    private static long fileTimeStamp = 0;
-    private static long nextCheck = 0;
-    private static long recheckInterval = 60000;
-    private static Properties properties = null;
-    private static File file;
-    private static int count = 0;
+	Logger logger = Logger.getLogger(Settings.class);
 
-    Settings() {
-        
-    }
+	private static Properties properties = null;
 
-    public static String get(String property) {
-        String value = "";
-        if (file == null) {
-            init();
-        }
-        try {
-            boolean checkForChanges = false;
-            if (nextCheck - new Date().getTime() < 0) {
-                checkForChanges = file.lastModified() > fileTimeStamp;                
-                nextCheck = new Date().getTime() + recheckInterval;
-                count = count + 1;
-            }
-            if (properties == null || checkForChanges) {
-                fileTimeStamp = file.lastModified();
-                properties = new Properties();
-                
-                properties.clear();
-                properties.load(new FileInputStream(file));
-                value = properties.getProperty(property);                
-            } else {
-                properties = new Properties();
-                properties.load(new File(new FileInputStream(new URI(Settings.class.getResource("settings.properties").toString()))));
-                value = properties.getProperty(property);
-            }
-        } catch (Exception e) {
-            Jmvc.logError(e.toString());
-        }
-        return value;
-    }
+	Settings() throws FileNotFoundException, IOException {
+		File file = new File(Settings.class.getResource("settings.properties")
+				.toString());
+		properties.load(new FileInputStream(file));
+	}
 
-    
+	public static String get(String property) {
+		return properties.getProperty(property);
+	}
+
+	public static void reload() {
+		File file = new File(Settings.class.getResource("settings.properties")
+				.toString());
+		try {
+			properties.load(new FileInputStream(file));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

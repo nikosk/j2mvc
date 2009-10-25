@@ -22,7 +22,7 @@ import gr.dsigned.jmvc.annotations.MethodURLAlias;
  * @author Nikos Kastamoulas <nikosk@dsigned.gr>
  */
 @ControllerURLAlias("controllertest")
-public class SampleController extends Controller {
+public class SampleController implements Controller {
 
     
     public SampleController() throws Exception {
