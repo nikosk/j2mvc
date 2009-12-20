@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package gr.dsigned.jmvc.framework.interfaces;
+package gr.dsigned.jmvc.interfaces;
 
 import java.util.Map;
 

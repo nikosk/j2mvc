@@ -1,5 +1,6 @@
 package gr.dsigned.jmvc.framework.interfaces;
 
+import gr.dsigned.jmvc.interfaces.ViewAction;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

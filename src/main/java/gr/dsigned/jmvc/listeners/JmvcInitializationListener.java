@@ -16,7 +16,7 @@ package gr.dsigned.jmvc.listeners;
 
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.framework.Jmvc;
-import gr.dsigned.jmvc.framework.Router;
+import gr.dsigned.jmvc.routing.Router;
 import gr.dsigned.jmvc.types.Hmap;
 import java.io.File;
 import javax.persistence.EntityManager;
@@ -57,7 +57,7 @@ public class JmvcInitializationListener implements ServletContextListener {
                     try {
                         String className = f.getName().substring(0, f.getName().lastIndexOf("."));
                         Class theClass = Class.forName(Settings.get("SYSTEM_PACKAGE") + ".controllers." + className);
-                        r.addControllerClass(theClass);
+                        r.addController(theClass);
                     } catch (ClassNotFoundException ex) {
                         Jmvc.logError(ex);
                     }

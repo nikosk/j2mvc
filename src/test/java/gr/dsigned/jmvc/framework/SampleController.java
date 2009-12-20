@@ -14,6 +14,7 @@
  */
 package gr.dsigned.jmvc.framework;
 
+import gr.dsigned.jmvc.interfaces.Controller;
 import gr.dsigned.jmvc.annotations.ControllerURLAlias;
 import gr.dsigned.jmvc.annotations.MethodURLAlias;
 

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 /**
  * 
@@ -28,29 +29,32 @@ import org.apache.log4j.Logger;
  */
 public class Settings {
 
-	Logger logger = Logger.getLogger(Settings.class);
+    private static final Logger logger = Logger.getLogger(Settings.class);
+    private static Properties properties = new Properties();
 
-	private static Properties properties = null;
+    private static void init() throws FileNotFoundException, IOException {        
+        properties.load(Settings.class.getResourceAsStream("settings.properties"));
+    }
 
-	Settings() throws FileNotFoundException, IOException {
-		File file = new File(Settings.class.getResource("settings.properties")
-				.toString());
-		properties.load(new FileInputStream(file));
-	}
+    public static String get(String property) {
+        if (properties.isEmpty()) {
+            try {
+                init();
+            } catch (Exception ex) {
+                logger.log(Priority.FATAL, ex.getMessage(), ex);
+            } 
+        }
+        return properties.getProperty(property);
+    }
 
-	public static String get(String property) {
-		return properties.getProperty(property);
-	}
-
-	public static void reload() {
-		File file = new File(Settings.class.getResource("settings.properties")
-				.toString());
-		try {
-			properties.load(new FileInputStream(file));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    public static void reload() {
+        File file = new File(Settings.class.getResource("settings.properties").toString());
+        try {
+            properties.load(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            logger.log(Priority.FATAL,e.getMessage(), e);
+        } catch (IOException e) {
+            logger.log(Priority.FATAL, e.getMessage(), e);
+        }
+    }
 }
