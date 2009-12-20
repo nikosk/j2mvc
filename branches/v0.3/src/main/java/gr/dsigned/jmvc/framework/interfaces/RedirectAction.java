@@ -4,6 +4,8 @@
  */
 package gr.dsigned.jmvc.framework.interfaces;
 
+import gr.dsigned.jmvc.interfaces.Action;
+
 /**
  *
  * @author nk

@@ -15,12 +15,12 @@
 package gr.dsigned.jmvc.servlets;
 
 import gr.dsigned.jmvc.Settings;
-import gr.dsigned.jmvc.framework.Controller;
+import gr.dsigned.jmvc.interfaces.Controller;
 import gr.dsigned.jmvc.framework.JMVCGuiceModule;
-import gr.dsigned.jmvc.framework.Router;
-import gr.dsigned.jmvc.framework.interfaces.Action;
+import gr.dsigned.jmvc.routing.Router;
+import gr.dsigned.jmvc.interfaces.Action;
 import gr.dsigned.jmvc.framework.interfaces.RedirectAction;
-import gr.dsigned.jmvc.framework.interfaces.ViewAction;
+import gr.dsigned.jmvc.interfaces.ViewAction;
 import gr.dsigned.jmvc.listeners.JmvcInitializationListener;
 
 import java.io.IOException;
@@ -32,7 +32,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transaction;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -43,36 +42,34 @@ import com.google.inject.Injector;
  */
 public class JmvcApplicationController extends HttpServlet {
 
-	private static boolean debug = Settings.get("DEBUG").equals("TRUE");
-	private Router router;
+    private static boolean debug = Settings.get("DEBUG").equals("TRUE");
+    private Router router;
 
-	@Override
-	public void init() throws ServletException {
-		router = (Router) getServletContext().getAttribute("router");
-	}
+    @Override
+    public void init() throws ServletException {
+        router = (Router) getServletContext().getAttribute("router");
+    }
 
-	/**
-	 * This is the entry point of your application. Given the URI of the request
-	 * it loads the appropriate controller and passes to it the appropriate
-	 * environment variables (The GET, POST and Context objects).
-	 * 
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 */
-	@SuppressWarnings("unchecked")
-	protected void processRequest(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		if (debug) {
-			request.setAttribute("begin_time", System.nanoTime());
-		} // keep time for debug purposes.
-		EntityManager em = JmvcInitializationListener.getEntityManager();
+    /**
+     * This is the entry point of your application. Given the URI of the request
+     * it loads the appropriate controller and passes to it the appropriate
+     * environment variables (The GET, POST and Context objects).
+     *
+     * @param request
+     *            servlet request
+     * @param response
+     *            servlet response
+     */
+    @SuppressWarnings("unchecked")
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (debug) {
+            request.setAttribute("begin_time", System.nanoTime());
+        } // keep time for debug purposes.
+        EntityManager em = JmvcInitializationListener.getEntityManager();
         try {
-            Class c = Class.forName("gr.dsigned.guice.controllers.Controller");
             Injector injector = Guice.createInjector(new JMVCGuiceModule(em, request, response));
-            Controller cont = injector.getInstance(Controller.class);
-            Method m = cont.getClass().getMethod(request.getParameter("controller") == null ? "index" : request.getParameter("controller"));
+            Controller cont = (Controller) injector.getInstance(router.getControllerClass(request.getRequestURI()));
+            Method m = router.getMethodClass(request.getRequestURI());
             Action action = (Action) m.invoke(cont);
             if (action instanceof ViewAction) {
                 ViewAction va = (ViewAction) action;
@@ -82,54 +79,54 @@ public class JmvcApplicationController extends HttpServlet {
                 response.sendRedirect(((RedirectAction) action).getRedirectURL());
             }
         } catch (Exception ex) {
-        	EntityTransaction et = em.getTransaction();
-        	if(et.isActive()){
-        		et.rollback();
-        	}
+            EntityTransaction et = em.getTransaction();
+            if (et.isActive()) {
+                et.rollback();
+            }
             request.setAttribute("java.lang.Exception", ex);
             request.getRequestDispatcher(Settings.get("ERROR_PAGE")).forward(request, response);
         } finally {
             em.close();
         }
-	}
+    }
 
-	/**
-	 * Handles the HTTP <code>GET</code> method.
-	 * 
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
-	}
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request
+     *            servlet request
+     * @param response
+     *            servlet response
+     * @throws ServletException
+     * @throws IOException
+     */
+    @Override
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
+    }
 
-	/**
-	 * Handles the HTTP <code>POST</code> method.
-	 * 
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
-	}
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request
+     *            servlet request
+     * @param response
+     *            servlet response
+     * @throws ServletException
+     * @throws IOException
+     */
+    @Override
+    protected void doPost(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
+    }
 
-	/**
-	 * Returns a short description of the servlet.
-	 */
-	@Override
-	public String getServletInfo() {
-		return "Short description";
-	}
+    /**
+     * Returns a short description of the servlet.
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }
 }

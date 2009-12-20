@@ -40,8 +40,7 @@ public class MysqlDB extends DB {
     /**
      * Creates a new instance of MysqlDB
      */
-    private MysqlDB() {
-        
+    private MysqlDB() {        
         Context initCtx;
         try {
             initCtx = new InitialContext();            

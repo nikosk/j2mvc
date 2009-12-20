@@ -18,7 +18,6 @@ import gr.dsigned.jmvc.exceptions.HttpException.HttpErrors;
 import gr.dsigned.jmvc.Settings;
 import gr.dsigned.jmvc.db.DB;
 import gr.dsigned.jmvc.db.Model;
-import gr.dsigned.jmvc.helpers.Input;
 import gr.dsigned.jmvc.helpers.Session;
 
 import java.io.BufferedReader;
@@ -64,7 +63,7 @@ public class Jmvc {
      * others use Jmvc.loadLibrary()
      */
     public DB db;
-    public Input input;
+    public JMVCRequest input;
     private Session session;
 
     public Jmvc() {
@@ -111,7 +110,7 @@ public class Jmvc {
         request = req;
         response = resp;
         context = cont;
-        input = new Input(request, context);
+        input = new JMVCRequest(request);
         session = new Session(req);
         req.setAttribute("sessionObj", session);
     }
